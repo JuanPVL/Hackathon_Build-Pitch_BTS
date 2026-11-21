@@ -8,8 +8,8 @@ export type AuthConfig = { mode: 'jwks'; jwksUrl: string; issuer?: string } | { 
 
 export interface AppConfig {
   port: number;
-  /** '*' = cualquier origen; si no, allowlist exacta. */
-  corsOrigins: string[] | '*';
+  /** Allowlist de orígenes exactos (sin comodines). */
+  corsOrigins: string[];
   databaseUrl?: string;
   auth: AuthConfig;
 }
@@ -31,15 +31,47 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const port = Number(portRaw);
   if (!Number.isInteger(port) || port <= 0) throw new Error(`PORT inválido: ${portRaw}`);
 
-  // CORS_ORIGIN: "*" (por defecto, abierto para la demo) o lista de orígenes exactos separados por coma.
-  const corsRaw = read(env, 'CORS_ORIGIN') ?? '*';
-  const corsOrigins: string[] | '*' =
-    corsRaw === '*'
-      ? '*'
-      : corsRaw
-          .split(',')
-          .map((o) => o.trim().replace(/\/+$/, ''))
-          .filter(Boolean);
+  const corsOrigins = parseCorsOrigins(env);
 
   return { port, corsOrigins, databaseUrl: read(env, 'DATABASE_URL'), auth };
+}
+
+/** Orígenes localhost habituales del front (Vite, preview y puertos de demo) cuando CORS_ORIGIN está vacío en desarrollo. */
+export const DEV_LOCALHOST_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3001',
+] as const;
+
+const CORS_EXAMPLE = 'http://localhost:5173,https://front.dominio';
+
+/**
+ * CORS_ORIGIN: lista de orígenes exactos separados por coma, sin "/" final ni comodines.
+ * En producción (NODE_ENV=production) vacío o '*' impiden el arranque.
+ * En desarrollo, si está vacío se permiten los orígenes localhost comunes.
+ */
+export function parseCorsOrigins(env: NodeJS.ProcessEnv): string[] {
+  const isProduction = (env.NODE_ENV ?? '').trim() === 'production';
+  const raw = env.CORS_ORIGIN?.trim() ?? '';
+  const parts = raw
+    .split(',')
+    .map((o) => o.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+
+  if (isProduction && (parts.length === 0 || parts.includes('*'))) {
+    throw new Error(
+      `En producción CORS_ORIGIN es obligatorio y debe ser una lista de orígenes exactos separados por coma (por ejemplo ${CORS_EXAMPLE}). No se admite vacío ni '*'.`,
+    );
+  }
+  if (parts.includes('*')) {
+    throw new Error(
+      `CORS_ORIGIN no admite '*': usa orígenes exactos separados por coma (por ejemplo ${CORS_EXAMPLE}).`,
+    );
+  }
+  return parts.length ? parts : [...DEV_LOCALHOST_ORIGINS];
 }

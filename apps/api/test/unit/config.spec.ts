@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { loadConfig } from '../../src/config/app-config';
+import { DEV_LOCALHOST_ORIGINS, loadConfig } from '../../src/config/app-config';
 
 const apiRoot = join(__dirname, '../..');
 const repoRoot = join(apiRoot, '../..');
@@ -27,6 +27,7 @@ describe('.env.example (QB-02)', () => {
         'SUPABASE_JWKS_URL',
         'DATABASE_URL',
         'ANTHROPIC_API_KEY',
+        'CORS_ORIGIN',
       ].sort(),
     );
     expect(Object.values(example).every((v) => v === '')).toBe(true);
@@ -34,7 +35,10 @@ describe('.env.example (QB-02)', () => {
 
   it('con solo el example el API arranca en modo seguro (sin verificador ni base)', () => {
     const config = loadConfig(example as NodeJS.ProcessEnv);
-    expect(config).toEqual({ port: 8080, corsOrigins: '*', databaseUrl: undefined, auth: { mode: 'unconfigured' } });
+    expect(config.auth).toEqual({ mode: 'unconfigured' });
+    expect(config.databaseUrl).toBeUndefined();
+    expect(config.port).toBe(8080);
+    expect(config.corsOrigins).toEqual([...DEV_LOCALHOST_ORIGINS]);
   });
 });
 
@@ -57,9 +61,31 @@ describe('loadConfig', () => {
     expect(loadConfig({ SUPABASE_URL: 'https://ref.supabase.co' }).auth).toEqual({ mode: 'unconfigured' });
   });
 
-  it('CORS_ORIGIN: "*" por defecto o allowlist sin "/" final; PORT inválido falla', () => {
-    expect(loadConfig({}).corsOrigins).toBe('*');
-    expect(loadConfig({ CORS_ORIGIN: 'http://a.test/, http://b.test' }).corsOrigins).toEqual(['http://a.test', 'http://b.test']);
+  it('parsea una lista de orígenes exactos separados por coma y quita el "/" final', () => {
+    expect(loadConfig({ CORS_ORIGIN: 'http://localhost:5173, https://front.dominio/' }).corsOrigins).toEqual([
+      'http://localhost:5173',
+      'https://front.dominio',
+    ]);
+  });
+
+  it('en desarrollo, CORS_ORIGIN vacío usa los orígenes localhost comunes', () => {
+    expect(loadConfig({}).corsOrigins).toEqual([...DEV_LOCALHOST_ORIGINS]);
+    expect(loadConfig({ NODE_ENV: 'development', CORS_ORIGIN: '' }).corsOrigins).toEqual([...DEV_LOCALHOST_ORIGINS]);
+  });
+
+  it("en producción no arranca si CORS_ORIGIN está vacío o contiene '*'", () => {
+    expect(() => loadConfig({ NODE_ENV: 'production' })).toThrow(/En producción CORS_ORIGIN/);
+    expect(() => loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: '' })).toThrow(/En producción CORS_ORIGIN/);
+    expect(() => loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: '*' })).toThrow(/En producción CORS_ORIGIN/);
+    expect(() => loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: 'http://localhost:5173,*' })).toThrow(/En producción CORS_ORIGIN/);
+  });
+
+  it("también rechaza '*' fuera de producción", () => {
+    expect(() => loadConfig({ CORS_ORIGIN: '*' })).toThrow(/no admite/);
+  });
+
+  it('en producción arranca con una allowlist exacta; PORT inválido falla', () => {
+    expect(loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: 'https://front.dominio' }).corsOrigins).toEqual(['https://front.dominio']);
     expect(() => loadConfig({ PORT: 'abc' })).toThrow(/PORT/);
   });
 });

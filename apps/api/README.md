@@ -18,9 +18,11 @@ curl localhost:8080/api/health      # {"status":"ok","service":"quadra-api"}
 
 Variables del `.env.example` (todas vacías): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
 `SUPABASE_SECRET_KEY` (solo servidor; el API aún no la usa), `SUPABASE_JWKS_URL`, `DATABASE_URL` y
-`ANTHROPIC_API_KEY`. Las define la plataforma de despliegue, no el example: `PORT` (por defecto 8080; Cloud Run lo
-inyecta) y `CORS_ORIGIN` (`*` por defecto, o una lista de orígenes exactos separados por coma). Abrir CORS no abre
-datos: toda ruta de negocio exige un JWT verificado y pasa por RLS.
+`ANTHROPIC_API_KEY` y `CORS_ORIGIN` (lista de orígenes exactos separados por coma, por ejemplo
+`http://localhost:5173,https://front.dominio`). `PORT` (por defecto 8080) lo inyecta Cloud Run. En desarrollo,
+`CORS_ORIGIN` vacío permite los localhost comunes (5173, 4173, 3000, 3001). En producción (`NODE_ENV=production`)
+la variable es obligatoria y no admite `*` ni quedar vacía: la app no arranca. Toda ruta de negocio exige un JWT
+verificado y pasa por RLS.
 
 Con el `.env.example` vacío, el API arranca y responde el healthcheck. Las rutas de negocio
 responden 401 si no hay verificador de JWT y 503 si no hay `DATABASE_URL`.

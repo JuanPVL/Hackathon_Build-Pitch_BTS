@@ -7,8 +7,7 @@ import type { AppConfig } from './config/app-config';
 /** El front (nginx) reenvía /api/* al backend: todas las rutas cuelgan de /api. */
 export function configureApp(app: INestApplication, config: AppConfig): void {
   app.setGlobalPrefix('api');
-  // CORS_ORIGIN: '*' por defecto (demo) o allowlist. El front manda Bearer JWT, no cookies: sin credentials.
-  // Abrir CORS no abre datos: toda ruta de negocio exige JWT verificado y RLS.
+  // Allowlist exacta de CORS_ORIGIN. El front manda Bearer JWT, no cookies: sin credentials.
   app.enableCors({
     origin: config.corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

@@ -52,7 +52,7 @@ gcloud run deploy quadra-api \
   --region <REGION> \
   --project <PROJECT_ID> \
   --allow-unauthenticated \
-  --set-env-vars SUPABASE_URL=https://<project-ref>.supabase.co,SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json,SUPABASE_PUBLISHABLE_KEY=<publishable-key>,CORS_ORIGIN=* \
+  --set-env-vars '^;^SUPABASE_URL=https://<project-ref>.supabase.co;SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json;SUPABASE_PUBLISHABLE_KEY=<publishable-key>;CORS_ORIGIN=https://<front-prod>,https://<front-preview>' \
   --set-secrets DATABASE_URL=DATABASE_URL:latest,SUPABASE_SECRET_KEY=SUPABASE_SECRET_KEY:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest
 ```
 
@@ -60,9 +60,9 @@ gcloud run deploy quadra-api \
   autorización real la hace el API: cada ruta de negocio exige un JWT de Supabase verificado contra el JWKS, y
   Postgres aplica RLS con ese usuario. Solo `/api/health` es público.
 - `PORT` lo inyecta Cloud Run (8080); el contenedor escucha en `0.0.0.0:$PORT`.
-- `CORS_ORIGIN=*` sirve para la demo. Para cerrarlo, usa los orígenes exactos del front separados por coma. Como
-  `--set-env-vars` usa comas para separar variables, en ese caso hay que cambiar el delimitador:
-  `--set-env-vars '^;^SUPABASE_URL=...;CORS_ORIGIN=https://a.app,https://b.app'`.
+- `CORS_ORIGIN` es una lista de orígenes exactos separados por coma (sin `*`). Cloud Run pone
+  `NODE_ENV=production`: si la variable falta, está vacía o contiene `*`, el contenedor no arranca. Como
+  `--set-env-vars` también usa comas para separar variables, el delimitador se cambia a `;` con el prefijo `^;^`.
 - La imagen no lleva `.env` ni secretos (`.dockerignore`).
 
 ## 4. Verificación
