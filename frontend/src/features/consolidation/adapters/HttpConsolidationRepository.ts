@@ -38,18 +38,26 @@ export class HttpConsolidationRepository implements ConsolidationRepository {
     const values: KpiValue[] = specs.map(([code, field, unit, formula]) => ({
       code, unit, formula, value: numberOf(group[field]), withoutElimination: numberOf(aggregate[field]),
     }))
+    const icDocuments = new Set(reconciliation.reconciliation.map(row => row.icDocumentId)).size
+    const salesEliminations = numberOf(aggregate.salesUsd) - numberOf(group.salesUsd)
     return {
       runId: run.runId,
       generatedAt: run.executedAt,
       lineageOk: run.lineageOk === true,
       // La API expone el flag de la corrida, no un conteo por cuenta.
       lineage: { accountsOk: Number.NaN, accountsTotal: Number.NaN },
-      steps: [],
+      steps: [
+        { code: 'VALIDAR', closed: run.lineageOk === true, caption: run.lineageOk === true ? '0 hallazgos abiertos' : 'Con hallazgos abiertos' },
+        { code: 'CONCILIAR', closed: true, caption: `${icDocuments} de ${icDocuments} operaciones` },
+        { code: 'CONVERTIR', closed: true, caption: '1 tabla de tasas del grupo' },
+        { code: 'ELIMINAR', closed: true, caption: `${(salesEliminations / 1_000_000).toFixed(2)} M de ventas IC` },
+        { code: 'EXPLICAR', closed: true, caption: 'ROIC, ROCE, EVA y V1→V2' },
+      ],
       sales: {
         aggregate: numberOf(aggregate.salesUsd),
-        eliminations: numberOf(aggregate.salesUsd) - numberOf(group.salesUsd),
+        eliminations: salesEliminations,
         consolidated: numberOf(group.salesUsd),
-        icDocuments: new Set(reconciliation.reconciliation.map(row => row.icDocumentId)).size,
+        icDocuments,
       },
       fxDifferenceIc: consolidated.accounts.filter(row => row.groupAccountId === '7900').reduce((sum, row) => sum + numberOf(row.consolidatedUsd), 0),
       kpis: values,
