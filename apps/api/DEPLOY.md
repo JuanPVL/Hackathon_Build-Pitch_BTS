@@ -45,6 +45,11 @@ for s in DATABASE_URL SUPABASE_SECRET_KEY; do
     --member="serviceAccount:${SA_EMAIL}" \
     --role=roles/secretmanager.secretAccessor
 done
+# Quien despliega necesita actuar como esa cuenta para --service-account.
+gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" \
+  --project <PROJECT_ID> \
+  --member="user:<ACCOUNT_EMAIL>" \
+  --role=roles/iam.serviceAccountUser
 ```
 
 ## 3. Deploy
@@ -63,9 +68,14 @@ gcloud run deploy quadra-api \
   --region <REGION> \
   --project <PROJECT_ID> \
   --service-account "$SA_EMAIL" \
+  --port 8080 \
   --allow-unauthenticated \
-  --set-env-vars '^;^SUPABASE_URL=https://<project-ref>.supabase.co;SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json;SUPABASE_PUBLISHABLE_KEY=<publishable-key>;CORS_ORIGIN=https://hackathon-build-pitch-bts.vercel.app,http://localhost:5173' \
-  --set-secrets DATABASE_URL=DATABASE_URL:<version>,SUPABASE_SECRET_KEY=SUPABASE_SECRET_KEY:<version>
+  --set-env-vars '^;^NODE_ENV=production;SUPABASE_URL=https://<project-ref>.supabase.co;SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json;SUPABASE_PUBLISHABLE_KEY=<publishable-key>;CORS_ORIGIN=https://hackathon-build-pitch-bts.vercel.app,http://localhost:5173' \
+  --set-secrets DATABASE_URL=DATABASE_URL:<version>,SUPABASE_SECRET_KEY=SUPABASE_SECRET_KEY:<version> \
+  --memory 512Mi \
+  --cpu 1 \
+  --concurrency 20 \
+  --timeout 300
 ```
 
 Usa una versión habilitada verificada de cada secreto (no asumas `:1` ni dejes de comprobarla). `ANTHROPIC_API_KEY` solo se añade a `--set-secrets` si hace falta; el API arranca sin ella.
@@ -73,10 +83,13 @@ Usa una versión habilitada verificada de cada secreto (no asumas `:1` ni dejes 
 - `--allow-unauthenticated` solo abre el servicio a nivel de Cloud Run para que el navegador llegue. La
   autorización real la hace el API: cada ruta de negocio exige un JWT de Supabase verificado contra el JWKS, y
   Postgres aplica RLS con ese usuario. Son públicos `/api/health`, `/api/docs` y `/api/openapi.json`.
-- `PORT` lo inyecta Cloud Run (8080); el contenedor escucha en `0.0.0.0:$PORT`.
-- `CORS_ORIGIN` es una lista de orígenes exactos separados por coma (sin `*`). Cloud Run pone
-  `NODE_ENV=production`: si la variable falta, está vacía o contiene `*`, el contenedor no arranca. Como
-  `--set-env-vars` también usa comas para separar variables, el delimitador se cambia a `;` con el prefijo `^;^`.
+- `--port 8080`: el servicio debe publicar ese puerto. Cloud Run inyecta `PORT=8080` al contenedor, que
+  escucha en `0.0.0.0:$PORT`.
+- `NODE_ENV=production` hay que pasarlo en `--set-env-vars`. Cloud Run no lo define por su cuenta. Si la
+  variable falta, está vacía o contiene `*`, el contenedor no arranca.
+- `CORS_ORIGIN` es una lista de orígenes exactos separados por coma (sin `*`). Como `--set-env-vars` también
+  usa comas para separar variables, el delimitador se cambia a `;` con el prefijo `^;^`.
+- Recursos alineados con el script: `--memory 512Mi`, `--cpu 1`, `--concurrency 20`, `--timeout 300`.
 - La imagen no lleva `.env` ni secretos (`.dockerignore`).
 
 ## 4. Verificación
