@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/shared/auth'
 import { ButtonLink, FullState } from '@/shared/ui'
 import { PublicationStatus } from '@/features/validation'
 import { LoginPage } from './LoginPage'
+import { LandingPage } from './LandingPage'
 
 // Cada módulo se carga por separado (code splitting por ruta).
 const RunsPage = lazy(() => import('@/features/backend/RunsPage'))
@@ -29,6 +30,8 @@ function NotFound() {
 export function AppRoutes() {
   return (
     <Routes>
+      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/presentacion" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute><BackendAccess><AppShell status={<PublicationStatus />} /></BackendAccess></ProtectedRoute>}>
         <Route index element={<ConsolidationPage />} />

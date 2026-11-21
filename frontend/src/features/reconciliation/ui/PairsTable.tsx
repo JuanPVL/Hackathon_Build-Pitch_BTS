@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Info } from 'lucide-react'
-import { Card, CardHeader, ResponsiveTable, textTone } from '@/shared/ui'
+import { Button, Card, CardHeader, ResponsiveTable, textTone } from '@/shared/ui'
 import type { Column } from '@/shared/ui'
 import { agreedLabel, differenceLabel, routeLabel, toleranceLabel } from '../domain/results'
 import { formatMoney } from '@/shared/format/number'
@@ -51,13 +52,57 @@ function PairCard({ pair }: { pair: IcPair }) {
 export function PairsTable({ report }: { report: ReconciliationReport }) {
   const [params] = useSearchParams()
   const esc = params.get('esc')
+  const [resultFilter, setResultFilter] = useState<'TODOS' | 'CONCILIADO' | 'CONCILIADO_FX' | 'ALERTA'>('TODOS')
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const visiblePairs = report.pairs.filter(p => {
+    if (resultFilter === 'CONCILIADO' && p.result !== 'CONCILIADO') return false
+    if (resultFilter === 'CONCILIADO_FX' && p.result !== 'CONCILIADO_FX') return false
+    if (resultFilter === 'ALERTA' && (p.result === 'CONCILIADO' || p.result === 'CONCILIADO_FX')) return false
+    if (searchTerm.trim()) {
+      const q = searchTerm.trim().toUpperCase()
+      return (
+        p.key.toUpperCase().includes(q) ||
+        (p.issuer ?? '').toUpperCase().includes(q) ||
+        (p.receiver ?? '').toUpperCase().includes(q)
+      )
+    }
+    return true
+  })
+
   return (
     <Card>
-      <CardHeader title="Pares CxC ↔ CxP espejo" aside={`${report.pairs.length} de ${report.totals.documents}`} />
+      <CardHeader title="Pares CxC ↔ CxP espejo" aside={`${visiblePairs.length} de ${report.totals.documents}`} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {([
+            ['TODOS', 'Todos los resultados'],
+            ['CONCILIADO', 'Cuadran exacto'],
+            ['CONCILIADO_FX', 'Dif. cambiaria'],
+            ['ALERTA', 'Con diferencia / Sin pareja'],
+          ] as const).map(([code, label]) => (
+            <Button
+              key={code}
+              variant={resultFilter === code ? 'primary' : 'secondary'}
+              onClick={() => setResultFilter(code)}
+            >
+              {label}
+            </Button>
+          ))}
+        </div>
+        <input
+          type="search"
+          placeholder="Buscar por llave o empresa (ej. GT1, IC-F5)…"
+          aria-label="Buscar documento o empresa"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ minHeight: 34, padding: '4px 10px', borderRadius: 8, border: '1px solid var(--q-line)', minWidth: 240, fontSize: 13 }}
+        />
+      </div>
       <ResponsiveTable
         caption="Pares de documentos intercompany: llave, tipo, ruta, monto pactado, diferencia y resultado"
         columns={columns}
-        rows={report.pairs}
+        rows={visiblePairs}
         rowKey={p => p.key + (p.statement ?? '')}
         onRowClick={p => {
           window.location.assign(`/documentos/${encodeURIComponent(p.key)}${esc ? '?esc=' + encodeURIComponent(esc) : ''}`)

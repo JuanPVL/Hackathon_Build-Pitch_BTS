@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { LogOut, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { LogOut, Presentation, Search } from 'lucide-react'
 import { useBackendAccess } from '@/shared/auth/useBackendAccess'
 import { useAuth } from '@/shared/auth'
 import { SCENARIOS, useScenarioContext } from '@/shared/hooks'
@@ -38,6 +39,26 @@ export function TopBar({ status }: { status?: ReactNode }) {
       <label className={s.ctx}><span className={s.ctxK}>Versión</span><ScenarioSelect /></label>
       <div className={s.ctx}><span className={s.ctxK}>Moneda</span><span className={s.ctxV}>USD</span></div>
       <span className={s.flex} />
+      <Link
+        to="/landing"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '5px 12px',
+          borderRadius: 999,
+          border: '1px solid var(--q-line)',
+          background: 'var(--q-surface-alt, #f8fafc)',
+          color: 'var(--q-navy, #0F2341)',
+          fontSize: 12,
+          fontWeight: 600,
+          textDecoration: 'none',
+        }}
+        title="Ver Landing Page y presentación ejecutiva de QUADRA"
+      >
+        <Presentation size={14} aria-hidden />
+        Presentación
+      </Link>
       {status}
       <button type="button" className={s.iconBtn} aria-label="Buscar" disabled title="Búsqueda próximamente"><Search size={20} /></button>
       <UserMenu />
