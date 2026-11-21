@@ -1,13 +1,20 @@
 import { Fragment, useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { Check, Ellipsis } from 'lucide-react'
+import { useBackendAccess } from '@/shared/auth/useBackendAccess'
 import { NAV_ITEMS, STEP_GROUPS, groupForPath, visibleItems } from './navigation'
 import s from './AppShell.module.css'
 
 const linkClass = (base: string) => ({ isActive }: { isActive: boolean }) => `${base} ${isActive ? s.active : ''}`
 
+function useActiveRoles(): string[] {
+  const access = useBackendAccess()
+  return access.data?.grants.map(g => g.roleCode) ?? []
+}
+
 /** Barra lateral de escritorio agrupada por los 5 pasos. */
 export function Sidebar() {
+  const roles = useActiveRoles()
   return (
     <aside className={s.sidebar} aria-label="Navegación principal">
       <img className={s.logo} src="/brand/quadra-horizontal-negativo.svg" alt="QUADRA" />
@@ -18,7 +25,7 @@ export function Sidebar() {
               {g.step && <span className={s.stepDot}><Check size={12} aria-hidden /></span>}
               {g.label}
             </p>
-            {visibleItems(g.group).map(item => (
+            {visibleItems(g.group, roles).map(item => (
               <NavLink key={item.path} to={item.path} end={item.path === '/'} className={linkClass(s.navLink)}>
                 <item.icon size={18} aria-hidden />{item.label}
               </NavLink>
@@ -37,11 +44,12 @@ export function Sidebar() {
 /** Riel de tableta: un ícono por paso; lleva a la primera pantalla del paso. */
 export function Rail() {
   const active = groupForPath(useLocation().pathname)
+  const roles = useActiveRoles()
   return (
     <nav className={s.rail} aria-label="Navegación principal">
       <img className={s.railLogo} src="/brand/quadra-simbolo-negativo.svg" alt="QUADRA" />
       {STEP_GROUPS.map(g => {
-        const first = visibleItems(g.group)[0]
+        const first = visibleItems(g.group, roles)[0]
         return (
           <NavLink key={g.group} to={first.path} end={first.path === '/'} className={`${s.railLink} ${active === g.group ? s.active : ''}`} aria-current={active === g.group ? 'page' : undefined}>
             <first.icon size={20} aria-hidden />{g.label}
@@ -56,9 +64,10 @@ export function Rail() {
 export function BottomNav() {
   const { pathname } = useLocation()
   const [moreOpen, setMoreOpen] = useState(false)
+  const roles = useActiveRoles()
   useEffect(() => setMoreOpen(false), [pathname])
   const tabs = NAV_ITEMS.filter(i => i.mobileTab)
-  const extras = visibleItems().filter(i => !i.mobileTab)
+  const extras = visibleItems(undefined, roles).filter(i => !i.mobileTab)
   // La pestaña activa sigue al paso (p. ej. Cuenta corriente → Conciliar); "Más" solo si el paso no tiene pestaña.
   const activeGroup = groupForPath(pathname)
   const extraActive = !tabs.some(t => t.group === activeGroup)

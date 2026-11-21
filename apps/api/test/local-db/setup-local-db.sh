@@ -19,8 +19,9 @@ psql "$ADMIN_URL" -v ON_ERROR_STOP=1 -qc "drop database if exists \"$DB_NAME\" w
 psql "$ADMIN_URL" -v ON_ERROR_STOP=1 -qc "create database \"$DB_NAME\""
 psql "$LOCAL_DB_URL" -v ON_ERROR_STOP=1 -q -f "$HERE/00_supabase_stubs.sql"
 for f in 01_schema.sql 02_seed_master_data.sql 03_seed_loads_v1_with_errors.sql 04_seed_loads_v2.sql 05_security_rls.sql \
-         07_motor_conciliar_consolidar.sql 08_redondeo_al_final.sql 09_ic_matrix_por_corrida.sql; do
+         07_motor_conciliar_consolidar.sql 08_redondeo_al_final.sql 09_ic_matrix_por_corrida.sql \
+         10_load_validation_and_workflow.sql; do
   echo "-> $f"
   psql "$LOCAL_DB_URL" -v ON_ERROR_STOP=1 -q -f "$SQL_DIR/$f" >/dev/null
 done
-echo "Base local lista: $DB_NAME (01-05 + 07 + 08 + 09, sin seed 06)"
+echo "Base local lista: $DB_NAME (01-05 + 07 + 08 + 09 + 10, sin seed 06)"

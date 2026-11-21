@@ -19,6 +19,7 @@ const RatesPage = lazy(() => import('@/features/rates/RatesPage'))
 const EliminationsPage = lazy(() => import('@/features/eliminations/EliminationsPage'))
 const ProfitabilityPage = lazy(() => import('@/features/profitability/ProfitabilityPage'))
 const VariancePage = lazy(() => import('@/features/variance/VariancePage'))
+const UsersPage = lazy(() => import('@/features/users/UsersPage'))
 
 function NotFound() {
   return <FullState title="Página no encontrada" action={<ButtonLink to="/" variant="primary">Volver al inicio</ButtonLink>}>La dirección no existe o cambió.</FullState>
@@ -30,6 +31,7 @@ export function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute><BackendAccess><AppShell status={<PublicationStatus />} /></BackendAccess></ProtectedRoute>}>
         <Route index element={<ConsolidationPage />} />
+        <Route path="usuarios" element={<UsersPage />} />
         <Route path="corridas/:runId" element={<RunPage />} />
         <Route path="cargas/:loadId" element={<LoadPage />} />
         <Route path="validacion" element={<ValidationPage />} />

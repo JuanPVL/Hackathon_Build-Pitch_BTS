@@ -18,4 +18,10 @@ describe('navegación', () => {
     const paths = NAV_ITEMS.map(i => i.path)
     expect(new Set(paths).size).toBe(paths.length)
   })
+  it('la opción Usuarios solo es visible para GROUP_CONTROLLER', () => {
+    expect(visibleItems('INICIO').map(i => i.path)).toEqual(['/'])
+    expect(visibleItems('INICIO', ['COMPANY_ACCOUNTANT']).map(i => i.path)).toEqual(['/'])
+    expect(visibleItems('INICIO', ['AUDITOR']).map(i => i.path)).toEqual(['/'])
+    expect(visibleItems('INICIO', ['GROUP_CONTROLLER']).map(i => i.path)).toEqual(['/', '/usuarios'])
+  })
 })

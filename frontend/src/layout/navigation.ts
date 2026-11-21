@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { ArrowLeftRight, ChartColumn, CircleDollarSign, CircleMinus, FileText, Grid3x3, LayoutGrid, Link2, Upload } from 'lucide-react'
+import { ArrowLeftRight, ChartColumn, CircleDollarSign, CircleMinus, FileText, Grid3x3, LayoutGrid, Link2, Upload, Users } from 'lucide-react'
 
 export type StepGroup = 'INICIO' | 'VALIDAR' | 'CONCILIAR' | 'CONVERTIR' | 'ELIMINAR' | 'EXPLICAR'
 
@@ -12,11 +12,14 @@ export interface NavItem {
   mobileTab?: 'inicio' | 'validar' | 'conciliar' | 'explicar'
   /** No aparece en menús (p. ej. detalle de documento). */
   hidden?: boolean
+  /** Si se define, solo lo ven los usuarios con ese rol en userCompanyAccess. */
+  requiredRole?: 'GROUP_CONTROLLER'
 }
 
 /** Única fuente de la navegación (abierto a extensión: agregar un módulo = agregar una entrada). */
 export const NAV_ITEMS: NavItem[] = [
   { path: '/', label: 'Presupuesto consolidado', icon: LayoutGrid, group: 'INICIO', mobileTab: 'inicio' },
+  { path: '/usuarios', label: 'Usuarios', icon: Users, group: 'INICIO', requiredRole: 'GROUP_CONTROLLER' },
   { path: '/validacion', label: 'Carga y validación', icon: Upload, group: 'VALIDAR', mobileTab: 'validar' },
   { path: '/conciliacion', label: 'Conciliación', icon: Link2, group: 'CONCILIAR', mobileTab: 'conciliar' },
   { path: '/cuenta-corriente', label: 'Cuenta corriente', icon: Grid3x3, group: 'CONCILIAR' },
@@ -36,7 +39,8 @@ export const STEP_GROUPS: { group: StepGroup; label: string; step?: number }[] =
   { group: 'EXPLICAR', label: 'Explicar', step: 5 },
 ]
 
-export const visibleItems = (group?: StepGroup) => NAV_ITEMS.filter(i => !i.hidden && (!group || i.group === group))
+export const visibleItems = (group?: StepGroup, roles?: readonly string[]) =>
+  NAV_ITEMS.filter(i => !i.hidden && (!group || i.group === group) && (!i.requiredRole || (roles?.includes(i.requiredRole) ?? false)))
 
 /** Grupo activo según la ruta, para resaltar el paso en riel y barra inferior. */
 export function groupForPath(pathname: string): StepGroup {

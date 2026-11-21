@@ -1,0 +1,26 @@
+.userCell { display: flex; flex-direction: column; gap: 2px; }
+.userEmail { font-weight: 600; color: var(--q-navy); }
+.userId { font-size: 11px; color: var(--q-gray-text); }
+.groupScope { font-size: 12.5px; color: var(--q-gray-text); font-style: italic; }
+.rowActions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.asideText { font-size: 13px; color: var(--q-side-text); margin: 0 0 12px; line-height: 1.45; }
+.form { display: flex; flex-direction: column; gap: 14px; }
+.formGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.label { font-size: 12px; font-weight: 700; color: var(--q-navy); text-transform: uppercase; letter-spacing: 0.06em; }
+.labelOnDark { font-size: 12px; font-weight: 700; color: var(--q-blue-light); text-transform: uppercase; letter-spacing: 0.06em; }
+.field input,
+.field select {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--q-line);
+  background: var(--q-white);
+  color: var(--q-navy);
+  font-size: 13.5px;
+}
+.field input:disabled {
+  background: var(--q-cream);
+  color: var(--q-gray-text);
+}
+.actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
