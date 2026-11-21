@@ -65,3 +65,9 @@ Nunca poner DATABASE_URL, SUPABASE_SECRET_KEY o service_role en VITE_*.
 - Preflight desde https://hackathon-build-pitch-bts.vercel.app: 204 y origen permitido.
 - La prueba completa con sesión de usuario y mutaciones reales debe realizarse
   después del despliegue, con credenciales introducidas por el usuario.
+
+## Backlog de contratos
+
+La especificación detallada para completar el backend está en
+[backend-required-apis.md](backend-required-apis.md): prioridades, requests,
+responses, permisos, concurrencia y criterios para el próximo despliegue.
