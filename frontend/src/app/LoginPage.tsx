@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import { Check } from 'lucide-react'
+import { Link, Navigate, useLocation } from 'react-router-dom'
+import { ArrowRight, Check } from 'lucide-react'
 import { useAuth } from '@/shared/auth'
 import { Button, Callout, FullState } from '@/shared/ui'
 import s from './LoginPage.module.css'
@@ -39,6 +39,27 @@ export function LoginPage() {
           <ul className={s.chips}>
             {['Una sola llave', 'Sin doble conteo', 'Cada diferencia con su causa'].map(t => <li key={t}><Check size={13} aria-hidden />{t}</li>)}
           </ul>
+          <div style={{ marginTop: 20 }}>
+            <Link
+              to="/landing"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 16px',
+                borderRadius: 8,
+                background: 'rgba(255, 255, 255, 0.14)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: 13,
+                textDecoration: 'none',
+              }}
+            >
+              Ver Landing Page y Arquitectura de QUADRA
+              <ArrowRight size={15} aria-hidden />
+            </Link>
+          </div>
         </div>
       </section>
       <section className={s.formSide}>

@@ -17,7 +17,11 @@ export class HttpReconciliationRepository implements ReconciliationRepository {
       (!filter.period || pair.key.includes(filter.period)) &&
       (!filter.type || pair.type === filter.type),
     )
-    const counts = pairCounts(data.reconciliation)
+    const filteredRows = data.reconciliation.filter((_, idx) =>
+      (!filter.period || allPairs[idx].key.includes(filter.period)) &&
+      (!filter.type || allPairs[idx].type === filter.type),
+    )
+    const counts = pairCounts(filteredRows)
     const snap = run.parameterSnapshot ?? {}
     const tolUsd = numberOf(snap.TOLERANCIA_FX_USD ?? snap.TOLERANCIA_USD ?? 50)
     const tolPct = numberOf(snap.TOLERANCIA_FX_PCT ?? snap.TOLERANCIA_PCT ?? 0.02)
@@ -25,7 +29,7 @@ export class HttpReconciliationRepository implements ReconciliationRepository {
       totals: counts,
       tolerance: { usd: Number.isFinite(tolUsd) ? tolUsd : 50, pct: Number.isFinite(tolPct) ? tolPct : 0.02 },
       pairs,
-      byResult: [...new Set(allPairs.map(pair => pair.result))].map(result => ({ result, count: allPairs.filter(pair => pair.result === result).length })),
+      byResult: [...new Set(pairs.map(pair => pair.result))].map(result => ({ result, count: pairs.filter(pair => pair.result === result).length })),
       typeFilterAvailable: true,
     }
   }
