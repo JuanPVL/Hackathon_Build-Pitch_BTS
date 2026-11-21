@@ -90,6 +90,14 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ CORS_ORIGIN: '*' })).toThrow(/no admite/);
   });
 
+  it("rechaza cualquier CORS_ORIGIN que contenga '*', no solo el valor exacto '*'", () => {
+    expect(() => loadConfig({ CORS_ORIGIN: 'https://*.vercel.app' })).toThrow(/no admite/);
+    expect(() => loadConfig({ CORS_ORIGIN: 'http://localhost:5173,https://*.vercel.app' })).toThrow(/no admite/);
+    expect(() =>
+      loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: 'https://hackathon-build-pitch-bts.vercel.app,https://*.vercel.app' }),
+    ).toThrow(/En producción CORS_ORIGIN|no admite/);
+  });
+
   it('en producción arranca con una allowlist exacta; PORT inválido falla', () => {
     expect(loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: 'https://front.dominio' }).corsOrigins).toEqual(['https://front.dominio']);
     expect(() => loadConfig({ PORT: 'abc' })).toThrow(/PORT/);

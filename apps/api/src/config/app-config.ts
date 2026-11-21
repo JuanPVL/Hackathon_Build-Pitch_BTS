@@ -60,8 +60,9 @@ const CORS_EXAMPLE = 'http://localhost:5173,https://front.dominio';
 
 /**
  * CORS_ORIGIN: lista de orígenes exactos separados por coma, sin "/" final ni comodines.
- * En producción (NODE_ENV=production) vacío o '*' impiden el arranque.
+ * En producción (NODE_ENV=production) vacío o cualquier valor que contenga '*' impiden el arranque.
  * En desarrollo, si está vacío se permiten los orígenes localhost comunes.
+ * Se rechaza también un origen como 'https://*.vercel.app', no solo el valor '*'.
  */
 export function parseCorsOrigins(env: NodeJS.ProcessEnv): string[] {
   const isProduction = (env.NODE_ENV ?? '').trim() === 'production';
@@ -70,13 +71,14 @@ export function parseCorsOrigins(env: NodeJS.ProcessEnv): string[] {
     .split(',')
     .map((o) => o.trim().replace(/\/+$/, ''))
     .filter(Boolean);
+  const hasWildcard = parts.some((o) => o.includes('*'));
 
-  if (isProduction && (parts.length === 0 || parts.includes('*'))) {
+  if (isProduction && (parts.length === 0 || hasWildcard)) {
     throw new Error(
       `En producción CORS_ORIGIN es obligatorio y debe ser una lista de orígenes exactos separados por coma (por ejemplo ${CORS_EXAMPLE}). No se admite vacío ni '*'.`,
     );
   }
-  if (parts.includes('*')) {
+  if (hasWildcard) {
     throw new Error(
       `CORS_ORIGIN no admite '*': usa orígenes exactos separados por coma (por ejemplo ${CORS_EXAMPLE}).`,
     );
