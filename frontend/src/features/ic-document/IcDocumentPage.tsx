@@ -1,3 +1,5 @@
+import { BackendDocument } from '@/features/backend/BackendDocument'
+import { ApiError } from '@/shared/api/httpClient'
 import { Link, useParams } from 'react-router-dom'
 import { Chip, PageHeader, QueryState, Stack } from '@/shared/ui'
 import { ResultChip } from '@/entities/ic'
@@ -39,6 +41,8 @@ function DocumentView({ doc }: { doc: IcDocumentDetail }) {
 export default function IcDocumentPage() {
   const { key } = useParams<{ key: string }>()
   const query = useIcDocument(key)
+
+  if (query.error instanceof ApiError && query.error.status === 501 && key) return <BackendDocument documentKey={key} />
 
   if (query.data) return <DocumentView doc={query.data} />
 

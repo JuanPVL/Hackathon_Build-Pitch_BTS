@@ -2,7 +2,7 @@ import { Check, CircleAlert, Info } from 'lucide-react'
 import { Callout, Card, CardHeader, Chip, ResponsiveTable } from '@/shared/ui'
 import type { Column } from '@/shared/ui'
 import { formatAmount, formatMoney, formatSigned } from '@/shared/format/number'
-import type { EliminationEntry, EliminationReport } from '../domain/types'
+import type { EliminationEntry, EliminationReport, LedgerEntry } from '../domain/types'
 import { entryKey, totalLegs, verifyFxIsolated } from '../domain/eliminations'
 import type { EliminationView } from '../domain/eliminations'
 import s from './EntriesCard.module.css'
@@ -80,6 +80,7 @@ function EntryMobileCard({ row, ctx }: { row: Row; ctx: Ctx }) {
 
 /** Asientos de eliminación. "Después" muestra la diferencia de cada par; "Antes" muestra las patas que se sumarían. */
 export function EntriesCard({ report, view }: Ctx) {
+  if (report.ledger) return <LedgerCard rows={report.ledger} />
   const ctx: Ctx = { report, view }
   const rows: Row[] = [...report.entries.map((entry): Row => ({ kind: 'entry', entry })), { kind: 'total' }]
   const fx = verifyFxIsolated(report.entries, report.fxIsolated)
@@ -112,4 +113,22 @@ export function EntriesCard({ report, view }: Ctx) {
       <p className={s.footnote}>La eliminación se calcula sobre la pata emisora y se verifica contra la receptora. La diferencia nunca se fuerza a cero: va a su cuenta.</p>
     </Card>
   )
+}
+
+/** Ledger sin reinterpretar los signos o convertirlo en patas emisora/receptora. */
+function LedgerCard({ rows }: { rows: LedgerEntry[] }) {
+  const columns: Column<LedgerEntry>[] = [
+    { key: 'code', header: 'Asiento / regla', render: row => <span>{row.code} · {row.rule}</span> },
+    { key: 'account', header: 'Cuenta', render: row => <span>{row.account} · {row.accountName}</span> },
+    { key: 'document', header: 'Documento / empresa', render: row => <span>{row.document ?? '—'} · {row.company ?? 'Grupo'}</span> },
+    { key: 'effect', header: 'Efecto USD', numeric: true, render: row => formatSigned(row.effectUsd, 2) },
+    { key: 'source', header: 'Referencia', render: row => row.source ?? '—' },
+  ]
+  return <Card className={s.wrap}>
+    <CardHeader title="Asientos de eliminación · USD" aside={`${rows.length} líneas contables`} />
+    <ResponsiveTable caption="Efecto de cada asiento sobre las cuentas del grupo" columns={columns} rows={rows}
+      rowKey={row => row.id}
+      renderCard={row => <article className={s.card}><strong>{row.code} · {row.rule}</strong><p>{row.account} · {row.accountName}</p><p>{row.document ?? 'Sin documento'} · {row.company ?? 'Grupo'}</p><strong>{formatSigned(row.effectUsd, 2)} USD</strong><p>{row.source}</p></article>} />
+    <p className={s.footnote}>Efectos firmados devueltos por el backend. Las patas originales del documento no forman parte de este reporte.</p>
+  </Card>
 }

@@ -36,13 +36,13 @@ export default function ProfitabilityPage() {
                   conceptHeader="Concepto" leftHeader="Sin eliminar" rightHeader="Eliminado"
                   rows={report.eliminationComparison}
                 />
-                <ComparisonCard
+                {report.unvalidatedComparison.length > 0 && <ComparisonCard
                   title="Indicadores que se frenan"
                   aside={<Chip tone="err">Sin validar</Chip>}
                   conceptHeader="Indicador" leftHeader="Sin validar" rightHeader="Validado"
                   rows={report.unvalidatedComparison}
                   leftNegative
-                />
+                />}
               </Stack>
             </Split>
             <Callout tone="info" icon={Info}>

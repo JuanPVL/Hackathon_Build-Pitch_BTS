@@ -5,11 +5,12 @@ export type { IcType, ReconciliationResult }
 
 export interface IcPair {
   key: IcDocumentKey
-  type: IcType
-  issuer: CompanyCode
-  receiver: CompanyCode
+  statement?: string
+  type: IcType | null
+  issuer: CompanyCode | null
+  receiver: CompanyCode | null
   /** Monto pactado en la moneda de la factura. */
-  agreed: Money
+  agreed: Money | null
   issuerUsd: number
   receiverUsd: number
   differenceUsd: number
@@ -20,6 +21,7 @@ export interface IcPair {
 export interface ReconciliationReport {
   totals: { documents: number; reconciled: number; exact: number; fx: number; pending: number }
   tolerance: { usd: number; pct: number }
+  typeFilterAvailable?: boolean
   pairs: IcPair[]
   /** Conteo por tipo de resultado ("cada diferencia tiene nombre"). */
   byResult: { result: ReconciliationResult; count: number }[]

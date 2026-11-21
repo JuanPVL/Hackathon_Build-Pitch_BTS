@@ -75,13 +75,13 @@ describe('ValidationPage', () => {
     expect(await screen.findByText('Fallo del servidor')).toBeInTheDocument()
   })
 
-  it('Re-validar vuelve a consultar y "Subir archivos" está deshabilitado', async () => {
+  it('Actualizar vuelve a consultar y "Subir archivos" está deshabilitado', async () => {
     const repo = fakeRepo()
     renderWithProviders(<ValidationPage />, { repositories: { validation: repo } })
     await screen.findByRole('table')
     expect(screen.getByRole('button', { name: 'Subir archivos' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Subir archivos' })).toHaveAttribute('title', 'Próximamente')
-    await userEvent.click(screen.getByRole('button', { name: 'Re-validar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Actualizar' }))
     await waitFor(() => expect(repo.getReport).toHaveBeenCalledTimes(2))
   })
 

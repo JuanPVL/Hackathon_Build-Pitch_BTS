@@ -13,7 +13,7 @@ export function orderedResultCounts(byResult: { result: ReconciliationResult; co
 
 /** "GT1 → MX1" */
 export function routeLabel(pair: Pick<IcPair, 'issuer' | 'receiver'>): string {
-  return `${pair.issuer} → ${pair.receiver}`
+  return `${pair.issuer ?? '—'} → ${pair.receiver ?? '—'}`
 }
 
 /** Diferencia USD con dos decimales y signo; el cero se muestra "0.00". */
@@ -26,6 +26,7 @@ export function differenceLabel(value: number): string {
  * a partir de 1 se asume porcentaje (pendiente de confirmar con el backend).
  */
 export function toleranceLabel(tolerance: { usd: number; pct: number }): string {
+  if (!Number.isFinite(tolerance.usd) || !Number.isFinite(tolerance.pct)) return 'No disponible en la corrida'
   const pct = tolerance.pct < 1 ? tolerance.pct * 100 : tolerance.pct
   const pctText = Number.isInteger(pct) ? String(pct) : pct.toFixed(2)
   return `USD ${tolerance.usd} o ${pctText} %`

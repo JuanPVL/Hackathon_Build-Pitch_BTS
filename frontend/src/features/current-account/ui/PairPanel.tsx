@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { X } from 'lucide-react'
 import { ButtonLink, Card, Eyebrow, MirrorPair, QueryState } from '@/shared/ui'
 import type { QueryLike } from '@/shared/ui'
@@ -12,6 +12,9 @@ import type { PairDetail } from '../domain/types'
 import s from './PairPanel.module.css'
 
 function PairContent({ detail }: { detail: PairDetail }) {
+  const [params] = useSearchParams()
+  const esc = params.get('esc')
+  const docPath = (key: string) => documentPath(key) + (esc ? '?esc=' + encodeURIComponent(esc) : '')
   const mirror = pairMirror(detail)
   const doc = mirror.firstDocument
   const n = detail.documents.length
@@ -36,7 +39,7 @@ function PairContent({ detail }: { detail: PairDetail }) {
             }}
           />
         </div>
-      ) : <p className={s.description}>Este par todavía no tiene documentos.</p>}
+      ) : <p className={s.description}>El importe pactado y la moneda original no están disponibles en la API.</p>}
 
       <div className={s.fx}>
         <div>
@@ -49,16 +52,16 @@ function PairContent({ detail }: { detail: PairDetail }) {
       <h3 className={s.docsTitle}>{n} {n === 1 ? 'documento' : 'documentos'} del par</h3>
       <ul className={s.docs}>
         {detail.documents.map(d => (
-          <li key={d.key}>
-            <Link className={s.docLink} to={documentPath(d.key)} aria-label={`Ver documento ${d.key}`}>
+          <li key={d.key + (d.statement ?? '')}>
+            <Link className={s.docLink} to={docPath(d.key)} aria-label={`Ver documento ${d.key}`}>
               <span className={s.docKey}>{d.key}</span>
-              <span className={s.docAmount}>{formatMoney(d.agreed.amount, d.agreed.currency)}</span>
+              <span className={s.docAmount}>{d.agreed ? formatMoney(d.agreed.amount, d.agreed.currency) : Number.isFinite(d.reportedUsd) ? formatMoney(d.reportedUsd!, 'USD') + ' reportado' : 'Pactado no disponible'}</span>
               <ResultChip result={d.result} />
             </Link>
           </li>
         ))}
       </ul>
-      {doc && <ButtonLink variant="onDark" block to={documentPath(doc.key)}>Ver documento y linaje</ButtonLink>}
+      {doc && <ButtonLink variant="onDark" block to={docPath(doc.key)}>Ver documento y linaje</ButtonLink>}
     </>
   )
 }

@@ -7,6 +7,6 @@ import { useValidationReport } from '../hooks/useValidationReport'
 export function PublicationStatus() {
   const { data, isPending, isError } = useValidationReport()
   if (isPending || isError || !data) return <Chip tone="neutral" icon={CircleAlert}>Estado no disponible</Chip>
-  if (data.publishable) return <Chip tone="ok" icon={CircleCheck}>0 hallazgos · linaje cuadra</Chip>
+  if (data.publishable) return <Chip tone="ok" icon={CircleCheck}>Cargas aprobadas · sin bloqueantes</Chip>
   return <Chip tone="err" icon={CircleAlert}>{pluralFindings(data.findings.length)} · no se publica</Chip>
 }

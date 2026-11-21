@@ -20,7 +20,7 @@ export interface AccountLine {
   aggregate: number
   elimination: number
   consolidated: number
-  isIntercompany: boolean
+  isIntercompany?: boolean
 }
 
 /** Respuesta de GET /scenarios/{scenarioId}/consolidation (propuesta). */

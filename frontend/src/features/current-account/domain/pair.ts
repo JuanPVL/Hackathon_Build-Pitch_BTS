@@ -44,7 +44,7 @@ export function pairMirror(detail: PairDetail): PairMirror {
   const creditorUsd = Math.abs(companyIsCreditor ? detail.balanceUsd : detail.mirrorBalanceUsd)
   const debtorUsd = Math.abs(companyIsCreditor ? detail.mirrorBalanceUsd : detail.balanceUsd)
   const firstDocument = detail.documents[0]
-  return { creditor, debtor, creditorUsd, debtorUsd, firstDocument, firstDocumentAmount: firstDocument ? agreedLabel(firstDocument.agreed) : undefined }
+  return { creditor, debtor, creditorUsd, debtorUsd, firstDocument, firstDocumentAmount: firstDocument?.agreed ? agreedLabel(firstDocument.agreed) : undefined }
 }
 
 export function documentPath(key: IcDocumentKey): string {

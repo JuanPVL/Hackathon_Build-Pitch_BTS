@@ -1,3 +1,4 @@
+import { LoadBrowser } from '@/features/backend/LoadBrowser'
 import { useMemo, useState } from 'react'
 import { ArrowDownWideNarrow, RefreshCw, Upload } from 'lucide-react'
 import { Button, Callout, Card, CardHeader, Chip, PageHeader, QueryState, Split, Stack } from '@/shared/ui'
@@ -25,13 +26,13 @@ export default function ValidationPage() {
         subtitle="Nada entra al número del grupo sin pasar el validador. Los hallazgos se ordenan por impacto en USD, no por fila."
         actions={
           <>
-            <Button icon={RefreshCw} onClick={() => query.refetch()} disabled={query.isFetching}>Re-validar</Button>
+            <Button icon={RefreshCw} onClick={() => query.refetch()} disabled={query.isFetching}>Actualizar</Button>
             <Button variant="primary" icon={Upload} disabled title="Próximamente">Subir archivos</Button>
           </>
         }
       />
       <QueryState query={query} emptyTitle="Sin validación disponible" emptyText="El servicio todavía no expone el reporte de validación de este escenario.">
-        {report => <ValidationContent report={report} />}
+        {report => <><LoadBrowser /><ValidationContent report={report} /></>}
       </QueryState>
     </Stack>
   )
@@ -59,7 +60,7 @@ function ValidationContent({ report }: { report: ValidationReport }) {
     : accept.isError ? <CorrectionFeedback status="error" findingRule={feedbackRule} message={accept.error.message} /> : null
 
   const detail = (compact: boolean) => selected && (
-    <FindingDetail key={selected.id} finding={selected} pending={accept.isPending} onAccept={acceptSelected} compact={compact} />
+    <FindingDetail key={selected.id} finding={selected} pending={accept.isPending} onAccept={acceptSelected} compact={compact} canAccept={report.canAcceptCorrection} />
   )
 
   const more = hidden > 0 && (
@@ -79,7 +80,7 @@ function ValidationContent({ report }: { report: ValidationReport }) {
       <LoadCards loads={report.loads} mobile={mobile} />
       {feedback}
       {ranked.length === 0 ? (
-        <Callout tone="ok" title="Sin hallazgos.">El validador no encontró diferencias: la carga puede publicarse.</Callout>
+        <Callout tone="ok" title="Sin hallazgos.">No hay hallazgos registrados. La publicación depende del estado de aprobación de las cargas.</Callout>
       ) : mobile ? (
         <section className={s.mobileSection} aria-labelledby="hallazgos-titulo">
           <div className={s.mobileHead}>

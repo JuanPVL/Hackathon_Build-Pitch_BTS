@@ -57,12 +57,12 @@ export function resultInfo(result: ReconciliationResult): ResultInfo {
 }
 
 /** "GTQ 65,000" */
-export function agreedLabel(money: Money): string {
-  return formatMoney(money.amount, money.currency)
+export function agreedLabel(money: Money | null): string {
+  return money ? formatMoney(money.amount, money.currency) : 'No disponible'
 }
 
 const TYPE_LABELS: Record<IcType, string> = { VENTA: 'Venta', GESTION: 'Gestión', PRESTAMO: 'Préstamo', INTERES: 'Intereses' }
 
-export function icTypeLabel(type: IcType): string {
-  return TYPE_LABELS[type]
+export function icTypeLabel(type: IcType | null): string {
+  return type ? TYPE_LABELS[type] : 'No disponible'
 }

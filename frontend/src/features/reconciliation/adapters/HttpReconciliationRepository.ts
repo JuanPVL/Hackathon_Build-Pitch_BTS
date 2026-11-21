@@ -1,13 +1,26 @@
 import type { HttpClient } from '@/shared/api/httpClient'
+import { Backend, numberOf } from '@/shared/api/backend'
 import type { ScenarioQuery } from '@/entities'
 import type { ReconciliationReport, ReconciliationFilter } from '../domain/types'
 import type { ReconciliationRepository } from '../ports/ReconciliationRepository'
+import { mapPair, pairCounts } from './mapping'
 
-/** Adaptador HTTP contra NestJS. Rutas = propuesta en docs/api-contract.md (pendiente de confirmar). */
 export class HttpReconciliationRepository implements ReconciliationRepository {
-  constructor(private readonly http: HttpClient) {}
+  private readonly backend: Backend
+  constructor(http: HttpClient) { this.backend = new Backend(http) }
 
-  getReport(query: ScenarioQuery, filter: ReconciliationFilter, signal?: AbortSignal): Promise<ReconciliationReport> {
-    return this.http.get<ReconciliationReport>(`/scenarios/${encodeURIComponent(query.scenarioId)}/ic/reconciliation`, { query: { type: filter.type, period: filter.period }, signal })
+  async getReport(query: ScenarioQuery, filter: ReconciliationFilter, signal?: AbortSignal): Promise<ReconciliationReport> {
+    const run = await this.backend.latestRun(query.scenarioId, signal)
+    const data = await this.backend.reconciliation(run.runId, signal)
+    const allPairs = data.reconciliation.map(mapPair)
+    const pairs = allPairs.filter(pair => (!filter.period || pair.key.includes(filter.period)))
+    const counts = pairCounts(data.reconciliation)
+    return {
+      totals: counts,
+      tolerance: { usd: numberOf(run.parameterSnapshot?.TOLERANCIA_FX_USD), pct: numberOf(run.parameterSnapshot?.TOLERANCIA_FX_PCT) },
+      pairs,
+      byResult: [...new Set(allPairs.map(pair => pair.result))].map(result => ({ result, count: allPairs.filter(pair => pair.result === result).length })),
+      typeFilterAvailable: false,
+    }
   }
 }
