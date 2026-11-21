@@ -9,6 +9,7 @@ import { IcDocumentsController } from './ic-documents/ic-documents.controller';
 import { LoadsController } from './loads/loads.controller';
 import { MeController } from './me/me.controller';
 import { RunsController } from './runs/runs.controller';
+import { ConsolidationController } from './scenarios/consolidation.controller';
 import { ScenariosController } from './scenarios/scenarios.controller';
 
 @Module({})
@@ -22,7 +23,7 @@ export class AppModule {
         HealthController,
         MeController,
         CompaniesController,
-        LoadsController, ScenariosController,
+        LoadsController, ScenariosController, ConsolidationController,
         RunsController,
         BridgesController,
         IcDocumentsController,

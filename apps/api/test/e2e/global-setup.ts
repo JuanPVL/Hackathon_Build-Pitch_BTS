@@ -5,7 +5,7 @@ import { testDatabaseUrl } from '../support/env';
 import { IC_DOCUMENTS, SCENARIO, USERS } from '../support/fixtures';
 
 /**
- * Recrea la base LOCAL de pruebas (stubs de Supabase + 01..05, sin 06) y carga fixtures con el
+ * Recrea la base LOCAL de pruebas (stubs de Supabase + 01..05 + motor 07, sin 06) y carga fixtures con el
  * cliente migrador: usuarios en auth.users + "userCompanyAccess", hallazgos, documentos IC y
  * una corrida con un saldo consolidado para que "vGroupKpi" devuelva filas.
  */
@@ -47,6 +47,9 @@ export default async function globalSetup(): Promise<void> {
         await sql`update "icDocument" set "statusCode" = 'PENDIENTE_ACEPTACION' where "icDocumentId" = ${id}`;
       }
     }
+
+    // Motor (QB-13/14): las cargas V2 no tienen hallazgos; se aprueban como hace el seed 06 (paso 4).
+    await sql`update "dataLoad" set "statusCode" = 'APROBADA' where "scenarioId" = 'PPTO_V2'`;
 
     const [run] = await sql<{ runId: string }[]>`
       insert into "consolidationRun" ("scenarioId", "parameterSnapshot") values (${SCENARIO}, '{"WACC": 0.1}'::jsonb) returning "runId"`;
