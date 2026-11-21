@@ -33,6 +33,7 @@ export function loadStatusLabel(status: LoadStatus | null): string {
     RECIBIDA: 'Recibida',
     CUARENTENA: 'Cuarentena',
     PENDIENTE_APROBACION: 'Por aprobar',
+    VALIDADA: 'Validada',
     APROBADA: 'Aprobada',
     REEMPLAZADA: 'Reemplazada',
   }[status]
@@ -41,7 +42,7 @@ export function loadStatusLabel(status: LoadStatus | null): string {
 export type LoadStatusTone = 'ok' | 'err' | 'warn' | 'info' | 'neutral'
 export function loadStatusTone(status: LoadStatus | null): LoadStatusTone {
   if (status === null) return 'neutral'
-  return ({ RECIBIDA: 'info', CUARENTENA: 'err', PENDIENTE_APROBACION: 'warn', APROBADA: 'ok', REEMPLAZADA: 'neutral' } as const)[status]
+  return ({ RECIBIDA: 'info', CUARENTENA: 'err', PENDIENTE_APROBACION: 'warn', VALIDADA: 'info', APROBADA: 'ok', REEMPLAZADA: 'neutral' } as const)[status]
 }
 
 /** Primeros `limit` elementos y cuántos quedan fuera. Con `expanded` se muestran todos. */

@@ -12,15 +12,18 @@ export class HttpReconciliationRepository implements ReconciliationRepository {
   async getReport(query: ScenarioQuery, filter: ReconciliationFilter, signal?: AbortSignal): Promise<ReconciliationReport> {
     const run = await this.backend.latestRun(query.scenarioId, signal)
     const data = await this.backend.reconciliation(run.runId, signal)
-    const allPairs = data.reconciliation.map(mapPair)
-    const pairs = allPairs.filter(pair => (!filter.period || pair.key.includes(filter.period)))
+    const allPairs = data.reconciliation.map(row => mapPair(row))
+    const pairs = allPairs.filter(pair =>
+      (!filter.period || pair.key.includes(filter.period)) &&
+      (!filter.type || pair.type === filter.type),
+    )
     const counts = pairCounts(data.reconciliation)
     return {
       totals: counts,
       tolerance: { usd: numberOf(run.parameterSnapshot?.TOLERANCIA_FX_USD), pct: numberOf(run.parameterSnapshot?.TOLERANCIA_FX_PCT) },
       pairs,
       byResult: [...new Set(allPairs.map(pair => pair.result))].map(result => ({ result, count: allPairs.filter(pair => pair.result === result).length })),
-      typeFilterAvailable: false,
+      typeFilterAvailable: true,
     }
   }
 }

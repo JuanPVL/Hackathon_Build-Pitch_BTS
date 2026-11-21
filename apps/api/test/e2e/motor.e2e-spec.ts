@@ -242,4 +242,14 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
     }
     await get('controller', '/api/runs/00000000-0000-4000-8000-0000000000ff/consolidated', 404);
   });
+
+  it('QA-H18: GET /api/runs/:id para una corrida de referencia sin consolidationRunLoad devuelve las 12 cargas del escenario', async () => {
+    const [v1Run] = await asOwner(
+      (sql) => sql<{ runId: string }[]>`select "runId" from "consolidationRun" where "scenarioId" = 'PPTO_V1' limit 1`,
+    );
+    const res = await get('controller', `/api/runs/${v1Run.runId}`, 200);
+    expect(res.body.run.scenarioId).toBe('PPTO_V1');
+    expect(res.body.loads.length).toBeGreaterThanOrEqual(12);
+    expect(res.body.loads.every((l: { scenarioId?: string }) => !l.scenarioId || l.scenarioId === 'PPTO_V1')).toBe(true);
+  });
 });

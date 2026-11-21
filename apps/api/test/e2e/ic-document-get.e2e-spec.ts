@@ -8,7 +8,7 @@ import { asOwner } from '../support/claims-sql';
 import { USERS, type UserKey } from '../support/fixtures';
 import { startTestJwks, type TestJwks } from '../support/tokens';
 
-const DOC = 'T-GT1-MX1-ACCEPT';
+const DOC = 'T-GT1-MX1-GET';
 const VERSIONS = 'T-GT1-MX1-VERSIONS';
 
 describe('GET /ic-documents/:icDocumentId (P0-1)', () => {
@@ -28,9 +28,10 @@ describe('GET /ic-documents/:icDocumentId (P0-1)', () => {
       insert into "icDocument" ("icDocumentId", "version", "scenarioId", "icDocumentTypeCode", "issuerCompanyId",
                                 "receiverCompanyId", "transactionCurrencyCode", "transactionAmount", "periodCode")
       values
+        (${DOC}, 1, 'PPTO_V1', 'SERVICIO', 'GT1', 'MX1', 'USD', 1000, '2025-01'),
         (${VERSIONS}, 1, 'PPTO_V1', 'SERVICIO', 'GT1', 'MX1', 'USD', 1000, '2025-01'),
         (${VERSIONS}, 2, 'PPTO_V1', 'SERVICIO', 'GT1', 'MX1', 'USD', 2500, '2025-01')`);
-    await asOwner((sql) => sql`update "icDocument" set "statusCode" = 'EMITIDA' where "icDocumentId" = ${VERSIONS}`);
+    await asOwner((sql) => sql`update "icDocument" set "statusCode" = 'EMITIDA' where "icDocumentId" in (${DOC}, ${VERSIONS})`);
   });
   afterAll(async () => {
     await app.close();

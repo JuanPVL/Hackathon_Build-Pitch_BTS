@@ -15,6 +15,7 @@ export class ApiError extends Error {
 export interface HttpClient {
   get<T>(path: string, options?: RequestOptions): Promise<T>
   post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T>
+  patch?<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T>
 }
 
 export interface RequestOptions {
@@ -78,5 +79,6 @@ export function createHttpClient({ baseUrl, getAccessToken, timeoutMs = 30000, f
   return {
     get: (path, options) => request('GET', path, undefined, options),
     post: (path, body, options) => request('POST', path, body, options),
+    patch: (path, body, options) => request('PATCH', path, body, options),
   }
 }

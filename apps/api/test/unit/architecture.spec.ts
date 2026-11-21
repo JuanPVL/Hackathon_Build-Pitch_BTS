@@ -22,11 +22,19 @@ describe('Separación de clientes de base', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('el código del API no lee la secret key ni la service_role key de Supabase', () => {
-    const offenders = tsFiles(srcDir)
-      .filter((f) => /SUPABASE_SECRET_KEY|SERVICE_ROLE_KEY|service_role_key/i.test(readFileSync(f, 'utf8')))
+  it('el código del API no lee la service_role key y solo lee SUPABASE_SECRET_KEY en app-config (y el servicio admin)', () => {
+    const serviceRoleOffenders = tsFiles(srcDir)
+      .filter((f) => /SERVICE_ROLE_KEY|service_role_key/i.test(readFileSync(f, 'utf8')))
       .map((f) => relative(srcDir, f));
-    expect(offenders).toEqual([]);
+    expect(serviceRoleOffenders).toEqual([]);
+
+    const secretKeyOffenders = tsFiles(srcDir)
+      .filter((f) => !f.endsWith(join('config', 'app-config.ts')))
+      .filter((f) => !f.endsWith(join('admin', 'supabase-admin.service.ts')))
+      .filter((f) => !f.endsWith(join('admin', 'admin-users.controller.ts')))
+      .filter((f) => /SUPABASE_SECRET_KEY/i.test(readFileSync(f, 'utf8')))
+      .map((f) => relative(srcDir, f));
+    expect(secretKeyOffenders).toEqual([]);
   });
 
   it('el módulo de base de Nest solo provee el cliente de usuario', () => {

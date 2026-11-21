@@ -5,6 +5,7 @@ import type { CompanyCode, ScenarioQuery } from '@/entities'
 import type { BalanceMatrix, MatrixCell, MatrixView, PairDetail } from '../domain/types'
 import type { CurrentAccountRepository } from '../ports/CurrentAccountRepository'
 import { pairCounts, reconciliationResult } from '@/features/reconciliation/adapters/mapping'
+import { inferAgreedFromKey } from '@/features/ic-document/adapters/HttpIcDocumentRepository'
 
 function cellStatus(rows: ReconciliationDto[], value: number): MatrixCell['status'] {
   if (!rows.length) return value === 0 ? 'SIN_SALDO' : 'DIFERENCIA'
@@ -49,7 +50,16 @@ export class HttpCurrentAccountRepository implements CurrentAccountRepository {
       company, counterparty, balanceUsd, mirrorBalanceUsd,
       description: 'Saldos reportados por las empresas y conciliación de la corrida seleccionada.',
       fxDifferenceUsd: rows.filter(row => row.financialStatementCode === 'BALANCE' && row.statusCode === 'CONCILIADO_FX').reduce((sum, row) => sum + numberOf(row.differenceUsd), 0),
-      documents: rows.map(row => ({ key: row.icDocumentId, statement: row.financialStatementCode, agreed: null, reportedUsd: numberOf(row.issuerUsd), result: reconciliationResult(row.statusCode) })),
+      documents: rows.map(row => {
+        const reportedUsd = numberOf(row.issuerUsd)
+        return {
+          key: row.icDocumentId,
+          statement: row.financialStatementCode,
+          agreed: inferAgreedFromKey(row.icDocumentId, row.issuerCompanyId, reportedUsd),
+          reportedUsd,
+          result: reconciliationResult(row.statusCode),
+        }
+      }),
     }
   }
 }

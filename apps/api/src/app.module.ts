@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { AdminUsersController } from './admin/admin-users.controller';
+import { SupabaseAdminService } from './admin/supabase-admin.service';
 import { AuthModule } from './auth/auth.module';
 import { BridgesController } from './bridges/bridges.controller';
 import { CompaniesController } from './companies/companies.controller';
@@ -23,13 +25,19 @@ export class AppModule {
         HealthController,
         MeController,
         CompaniesController,
-        LoadsController, ScenariosController, ConsolidationController,
+        LoadsController,
+        ScenariosController,
+        ConsolidationController,
         RunsController,
         BridgesController,
         IcDocumentsController,
+        AdminUsersController,
       ],
-      providers: [{ provide: APP_CONFIG, useValue: config }],
-      exports: [APP_CONFIG],
+      providers: [
+        { provide: APP_CONFIG, useValue: config },
+        SupabaseAdminService,
+      ],
+      exports: [APP_CONFIG, SupabaseAdminService],
     };
   }
 }

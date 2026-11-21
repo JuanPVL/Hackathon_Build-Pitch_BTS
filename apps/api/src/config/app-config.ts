@@ -13,6 +13,10 @@ export interface AppConfig {
   databaseUrl?: string;
   /** Opcional (QB-19). Si falta, el API arranca igual; la narración del bridge queda deshabilitada. */
   anthropicApiKey?: string;
+  /** URL base del proyecto Supabase (p. ej. https://<ref>.supabase.co). */
+  supabaseUrl?: string;
+  /** Secret key de Supabase (solo backend, nunca front) para Admin API de Auth. */
+  supabaseSecretKey?: string;
   auth: AuthConfig;
 }
 
@@ -24,8 +28,9 @@ function read(env: NodeJS.ProcessEnv, name: string): string | undefined {
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
-  const supabaseUrl = read(env, 'SUPABASE_URL');
-  const issuer = supabaseUrl ? `${supabaseUrl.replace(/\/$/, '')}/auth/v1` : undefined;
+  const supabaseUrlRaw = read(env, 'SUPABASE_URL');
+  const supabaseUrl = supabaseUrlRaw ? supabaseUrlRaw.replace(/\/+$/, '') : undefined;
+  const issuer = supabaseUrl ? `${supabaseUrl}/auth/v1` : undefined;
   const jwksUrl = read(env, 'SUPABASE_JWKS_URL');
   const auth: AuthConfig = jwksUrl ? { mode: 'jwks', jwksUrl, issuer } : { mode: 'unconfigured' };
 
@@ -40,6 +45,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     corsOrigins,
     databaseUrl: read(env, 'DATABASE_URL'),
     anthropicApiKey: read(env, 'ANTHROPIC_API_KEY'),
+    supabaseUrl,
+    supabaseSecretKey: read(env, 'SUPABASE_SECRET_KEY'),
     auth,
   };
 }

@@ -17,7 +17,7 @@ export interface ScenarioQuery {
   currency: CurrencyCode
 }
 
-export type LoadStatus = 'RECIBIDA' | 'CUARENTENA' | 'PENDIENTE_APROBACION' | 'APROBADA' | 'REEMPLAZADA'
+export type LoadStatus = 'RECIBIDA' | 'CUARENTENA' | 'PENDIENTE_APROBACION' | 'VALIDADA' | 'APROBADA' | 'REEMPLAZADA'
 
 export const COMPANIES: readonly Company[] = [
   { code: 'GT1', name: 'Alfa Guatemala', country: 'GT', currency: 'GTQ' },
