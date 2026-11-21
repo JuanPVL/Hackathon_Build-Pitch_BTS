@@ -10,3 +10,9 @@ node_modules/
 dist/
 coverage/
 *.log
+
+# Credenciales y SQL emitido de usuarios demo (QB-04). Nunca versionar.
+**/.demo-users.json
+**/.demo-users.json.tmp
+**/.demo-user-company-access.sql
+**/.demo-user-company-access.sql.tmp
