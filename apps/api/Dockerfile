@@ -8,6 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src
+COPY certs ./certs
 RUN npm run build && npm prune --omit=dev
 
 FROM node:20-slim AS runtime
@@ -17,6 +18,7 @@ WORKDIR /app
 COPY --from=build --chown=node:node /app/package.json ./
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/certs ./certs
 USER node
 EXPOSE 8080
 # main.ts escucha en process.env.PORT (por defecto 8080) y 0.0.0.0.
