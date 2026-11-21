@@ -1,0 +1,24 @@
+.login { min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); background: var(--q-cream); }
+.story {
+  background: var(--q-navy); color: var(--q-cream); padding: 56px; display: flex; flex-direction: column; gap: 48px; justify-content: center;
+  background-image: linear-gradient(#7fa6e60f 1px, transparent 1px), linear-gradient(90deg, #7fa6e60f 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.storyText { display: flex; flex-direction: column; gap: 20px; max-width: 560px; }
+.storyText h1 { color: var(--q-cream); font-size: 52px; line-height: 1.05; }
+.storyText h1 span { color: var(--q-orange); }
+.storyText p { color: var(--q-gray-blue); font-size: 16px; line-height: 1.55; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.18em; color: var(--q-orange) !important; font-size: 12px !important; }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid #7fa6e666; font-size: 13px; color: var(--q-cream); }
+.chips svg { color: var(--q-orange); }
+.formSide { display: grid; place-items: center; padding: 32px 24px; }
+.card { width: 100%; max-width: 420px; background: var(--q-white); border-radius: var(--q-radius-xl); padding: 32px; display: flex; flex-direction: column; gap: 14px; }
+.card h2 { font-size: 28px; }
+.formEyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.18em; color: var(--q-orange-text); }
+.muted { color: var(--q-gray-text); }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.field input { min-height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--q-gray-blue); background: var(--q-white); font-size: 15px; font-weight: 400; }
+.field input:focus-visible { border-color: var(--q-blue); }
+@media (max-width: 1023px) { .login { grid-template-columns: 1fr; } .story { padding: 32px 24px; gap: 24px; } .storyText h1 { font-size: 34px; } }
+@media (max-width: 767px) { .story { padding: 24px 16px; } .storyText p, .chips { display: none; } .storyText h1 { font-size: 28px; } .card { padding: 24px 20px; } }

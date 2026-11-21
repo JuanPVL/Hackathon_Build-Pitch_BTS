@@ -4,7 +4,9 @@
     "module": "ESNext", "skipLibCheck": true, "moduleResolution": "bundler",
     "allowImportingTsExtensions": true, "resolveJsonModule": true, "isolatedModules": true,
     "verbatimModuleSyntax": true, "noEmit": true, "jsx": "react-jsx", "strict": true,
-    "noUnusedLocals": true, "noUnusedParameters": true
+    "noUnusedLocals": true, "noUnusedParameters": true,
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src", "vite.config.ts"]
 }

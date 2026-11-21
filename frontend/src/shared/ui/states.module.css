@@ -1,0 +1,13 @@
+.full { min-height: 100dvh; display: grid; place-items: center; padding: 24px; background: var(--q-cream); }
+.fullCard { max-width: 520px; width: 100%; background: var(--q-white); border-radius: var(--q-radius-xl); padding: 32px; display: flex; flex-direction: column; gap: 14px; }
+.fullCard h1 { font-size: 26px; }
+.fullCard p { color: var(--q-gray-text); }
+
+.message { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 48px 24px; border-radius: var(--q-radius-xl); background: var(--q-white); }
+.message h2 { font-size: 20px; }
+.message p { color: var(--q-gray-text); max-width: 52ch; }
+.icon { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: var(--q-bg-light); color: var(--q-navy); }
+.error .icon { background: var(--q-err-bg); color: var(--q-err); }
+.forbidden .icon, .offline .icon { background: var(--q-warn-bg); color: var(--q-orange-text); }
+.loading .icon { animation: spin 1.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
