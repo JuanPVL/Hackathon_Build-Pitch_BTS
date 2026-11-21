@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { ArrowLeftRight, ChartColumn, CircleDollarSign, CircleMinus, FileText, Grid3x3, LayoutGrid, Link2, Upload, Users } from 'lucide-react'
+import { ArrowLeftRight, ChartColumn, CircleDollarSign, CircleMinus, FileText, Grid3x3, History, LayoutGrid, Link2, TriangleAlert, Upload, Users } from 'lucide-react'
 
 export type StepGroup = 'INICIO' | 'VALIDAR' | 'CONCILIAR' | 'CONVERTIR' | 'ELIMINAR' | 'EXPLICAR'
 
@@ -19,8 +19,10 @@ export interface NavItem {
 /** Única fuente de la navegación (abierto a extensión: agregar un módulo = agregar una entrada). */
 export const NAV_ITEMS: NavItem[] = [
   { path: '/', label: 'Presupuesto consolidado', icon: LayoutGrid, group: 'INICIO', mobileTab: 'inicio' },
+  { path: '/corridas', label: 'Corridas', icon: History, group: 'INICIO' },
   { path: '/usuarios', label: 'Usuarios', icon: Users, group: 'INICIO', requiredRole: 'GROUP_CONTROLLER' },
   { path: '/validacion', label: 'Carga y validación', icon: Upload, group: 'VALIDAR', mobileTab: 'validar' },
+  { path: '/hallazgos', label: 'Hallazgos del grupo', icon: TriangleAlert, group: 'VALIDAR' },
   { path: '/conciliacion', label: 'Conciliación', icon: Link2, group: 'CONCILIAR', mobileTab: 'conciliar' },
   { path: '/cuenta-corriente', label: 'Cuenta corriente', icon: Grid3x3, group: 'CONCILIAR' },
   { path: '/documentos', label: 'Documento y linaje', icon: FileText, group: 'CONCILIAR', hidden: true },

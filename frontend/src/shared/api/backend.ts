@@ -73,6 +73,34 @@ export interface CreateAdminUserInput {
 export interface UpdateAdminUserAccessInput {
   roleCode?: AccessRoleCode; companyId?: CompanyCode | null; isActive?: boolean
 }
+export interface ScenarioRateRowDto {
+  currencyCode: CurrencyCode; rateTypeCode: 'PRESUPUESTO' | 'PROMEDIO' | 'CIERRE' | 'HISTORICA' | string
+  periodCode: string; usdPerUnit: Decimal
+}
+export interface ScenarioRatesResponseDto {
+  scenarioId: string; periodCode: string | null; ratesHash: string | null; historicalSnapshot: boolean
+  rows: ScenarioRateRowDto[]
+  conversionRules: { scope: string; rateTypeCode: string }[]
+  alerts: { severityCode: string; ruleCode: string | null; message: string; periodCode: string | null; currencyCode: string | null }[]
+}
+export interface IcDocumentReceivableDto {
+  companyId: CompanyCode; partnerCompanyId: CompanyCode; currencyCode: CurrencyCode; amount: Decimal; balance: Decimal
+}
+export interface IcDocumentPayableDto extends IcDocumentReceivableDto {
+  acceptedBy: string | null; acceptedAt: string | null
+}
+export interface IcDocumentSourceRefDto {
+  loadId: string; lineId: string; rowNumber: number; fileName: string
+}
+export interface IcDocumentDto {
+  icDocumentId: string; version: number; isCurrent: boolean; scenarioId: string
+  statusCode: string; statusReason: string | null; icDocumentTypeCode: string
+  issuerCompanyId: CompanyCode; receiverCompanyId: CompanyCode
+  transactionCurrencyCode: CurrencyCode; transactionAmount: Decimal; periodCode: string
+  receivable: IcDocumentReceivableDto | null; payable: IcDocumentPayableDto | null
+  permissions: { canAccept: boolean; canDispute: boolean }
+  sourceRefs: IcDocumentSourceRefDto[]
+}
 export interface DocumentActionDto { icDocumentId: string; version: number; statusCode: string; statusReason: string | null }
 
 /** Contrato de las operaciones publicadas en /api/openapi.json. Sin acceso directo a tablas. */
@@ -83,6 +111,12 @@ export class Backend {
   companies(signal?: AbortSignal) { return this.http.get<CompanyDto[]>('/companies', { signal }) }
   loads(scenarioId: string, signal?: AbortSignal) { return this.http.get<LoadDto[]>('/loads', { query: { scenarioId }, signal }) }
   load(id: string, signal?: AbortSignal) { return this.http.get<LoadDetailDto>(`/loads/${encodeURIComponent(id)}`, { signal }) }
+  rates(scenarioId: string, periodCode?: string, signal?: AbortSignal) {
+    return this.http.get<ScenarioRatesResponseDto>(`/scenarios/${encodeURIComponent(scenarioId)}/rates`, { query: periodCode ? { periodCode } : undefined, signal })
+  }
+  icDocument(id: string, query?: { scenarioId?: string; version?: number }, signal?: AbortSignal) {
+    return this.http.get<IcDocumentDto>(`/ic-documents/${encodeURIComponent(id)}`, { query, signal })
+  }
   uploadLoad(form: FormData) { return this.http.post<LoadDto & { rowCount: number; fileHash: string | null }>('/loads/upload', form) }
   validateLoad(id: string) { return this.http.post<{ loadId: string; statusCode: LoadStatus; findingsCount: number; findings: FindingDto[] }>(`/loads/${encodeURIComponent(id)}/validate`) }
   approveLoad(id: string, justification?: string) { return this.http.post<LoadDto>(`/loads/${encodeURIComponent(id)}/approve`, justification ? { justification } : {}) }

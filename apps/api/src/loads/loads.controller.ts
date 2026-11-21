@@ -26,6 +26,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { and, asc, desc, eq, sql, type SQL } from 'drizzle-orm';
@@ -59,6 +60,12 @@ export class LoadsController {
   constructor(private readonly db: UserDb) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Listar cargas visibles para el usuario (RLS)',
+    description: 'Filtra opcionalmente por scenarioId y/o companyId. El recorte por empresa lo aplica RLS.',
+  })
+  @ApiQuery({ name: 'scenarioId', required: false, type: String, description: 'Filtro opcional por escenario (p. ej. PPTO_V1, PPTO_V2).' })
+  @ApiQuery({ name: 'companyId', required: false, type: String, description: 'Filtro opcional por empresa (p. ej. GT1, MX1).' })
   list(
     @CurrentUser() user: VerifiedUser,
     @Query('scenarioId') scenarioIdRaw?: string,

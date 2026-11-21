@@ -8,6 +8,7 @@ import { PublicationStatus } from '@/features/validation'
 import { LoginPage } from './LoginPage'
 
 // Cada módulo se carga por separado (code splitting por ruta).
+const RunsPage = lazy(() => import('@/features/backend/RunsPage'))
 const RunPage = lazy(() => import('@/features/backend/RunPage'))
 const LoadPage = lazy(() => import('@/features/backend/LoadPage'))
 const ConsolidationPage = lazy(() => import('@/features/consolidation/ConsolidationPage'))
@@ -32,9 +33,11 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute><BackendAccess><AppShell status={<PublicationStatus />} /></BackendAccess></ProtectedRoute>}>
         <Route index element={<ConsolidationPage />} />
         <Route path="usuarios" element={<UsersPage />} />
+        <Route path="corridas" element={<RunsPage />} />
         <Route path="corridas/:runId" element={<RunPage />} />
         <Route path="cargas/:loadId" element={<LoadPage />} />
         <Route path="validacion" element={<ValidationPage />} />
+        <Route path="hallazgos" element={<ValidationPage />} />
         <Route path="conciliacion" element={<ReconciliationPage />} />
         <Route path="cuenta-corriente" element={<CurrentAccountPage />} />
         <Route path="documentos/:key" element={<IcDocumentPage />} />

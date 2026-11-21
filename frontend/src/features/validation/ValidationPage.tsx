@@ -32,7 +32,7 @@ export default function ValidationPage() {
         }
       />
       <QueryState query={query} emptyTitle="Sin validación disponible" emptyText="El servicio todavía no expone el reporte de validación de este escenario.">
-        {report => <><LoadBrowser /><ValidationContent report={report} /></>}
+        {report => <><LoadBrowser showUploader /><ValidationContent report={report} /></>}
       </QueryState>
     </Stack>
   )

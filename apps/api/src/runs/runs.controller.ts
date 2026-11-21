@@ -29,24 +29,50 @@ export class RunsController {
     return this.db.run(user, (tx) => tx.select().from(consolidationRun).orderBy(desc(consolidationRun.executedAt)));
   }
 
-  /** QB-14: cabecera de la corrida (parámetros congelados, hash de tasas, lineageOk) y cargas incluidas. */
+  /** QB-14 / QA-H18: cabecera de la corrida y cargas incluidas (o las cargas vigentes del escenario si la corrida de referencia V1 no tiene consolidationRunLoad). */
   @RequirePermission('readAll')
   @Get(':runId')
   get(@CurrentUser() user: VerifiedUser, @Param('runId', new ParseUUIDPipe()) runId: string) {
     return this.forRun(user, runId, async (tx, run) => {
-      const loads = await tx
+      let loads = await tx
         .select({
           loadId: dataLoad.loadId,
           companyId: dataLoad.companyId,
+          scenarioId: dataLoad.scenarioId,
           financialStatementCode: dataLoad.financialStatementCode,
           version: dataLoad.version,
           fileName: dataLoad.fileName,
           statusCode: dataLoad.statusCode,
+          statusReason: dataLoad.statusReason,
         })
         .from(consolidationRunLoad)
         .innerJoin(dataLoad, eq(dataLoad.loadId, consolidationRunLoad.loadId))
         .where(eq(consolidationRunLoad.runId, runId))
         .orderBy(asc(dataLoad.companyId), asc(dataLoad.financialStatementCode));
+
+      if (loads.length === 0) {
+        const scenarioLoads = await tx
+          .select({
+            loadId: dataLoad.loadId,
+            companyId: dataLoad.companyId,
+            scenarioId: dataLoad.scenarioId,
+            financialStatementCode: dataLoad.financialStatementCode,
+            version: dataLoad.version,
+            fileName: dataLoad.fileName,
+            statusCode: dataLoad.statusCode,
+            statusReason: dataLoad.statusReason,
+          })
+          .from(dataLoad)
+          .where(eq(dataLoad.scenarioId, run.scenarioId))
+          .orderBy(asc(dataLoad.companyId), asc(dataLoad.financialStatementCode), desc(dataLoad.version));
+
+        const latestByKey = new Map<string, (typeof scenarioLoads)[number]>();
+        for (const l of scenarioLoads) {
+          const key = `${l.companyId}|${l.financialStatementCode}`;
+          if (!latestByKey.has(key)) latestByKey.set(key, l);
+        }
+        loads = [...latestByKey.values()];
+      }
       return { run, loads };
     });
   }
