@@ -77,16 +77,16 @@ Errores de las funciones SQL: `insufficient_privilege` → 403, `check_violation
 
 ## Motor de consolidación (QB-13 / QB-14)
 
-Funciones SQL en `hackathon-consolidacion/supabase/07_motor_conciliar_consolidar.sql` (`fnRunLineUsd`,
-`fnConciliar`, `fnConsolidar`, security invoker). **No está aplicado a la base en vivo**: aplicarlo es
-decisión de Aroldo. Las pruebas locales lo cargan después de 01–05.
+Funciones SQL en `hackathon-consolidacion/supabase/07_motor_conciliar_consolidar.sql`
+(`fnRunLineUsd`, `fnConciliar`, `fnConsolidar`, security invoker), con el parche QA-H3 en
+`08_redondeo_al_final.sql` (CREATE OR REPLACE de esas funciones y de `vLineUsd`). El 08 **no está
+aplicado a la base en vivo**: aplicarlo es decisión de Aroldo. Las pruebas locales cargan 07 y 08 después de 01–05.
 
 - Cada consolidación crea una corrida nueva e inmutable; nunca borra ni modifica corridas previas
   (las del seed 06 incluidas: `test/local-db/check-coexistence-06.sh` lo comprueba en una base local aparte).
-- Redondeo: cada línea se convierte y redondea a centavos (`round(amount * rate, 2)`, igual que `vLineUsd`);
-  agregados, eliminaciones, CTA y linaje usan esos centavos, así Σ linaje = consolidado al centavo. El oráculo
-  Python no redondea: la diferencia por cuenta contra `resultados_referencia/v2_*` es ≤ 0.17 USD. Los estados
-  de conciliación se deciden con el USD sin redondear, como el oráculo.
+- Redondeo (QA-H3, tolerancia oficial vs oráculo: 0.01 USD): se convierte y se suma en USD crudo
+  (`amount * rate`, sin redondear cada línea). Se redondea a centavos solo al final, por cuenta o
+  total que se reporta. Los estados de conciliación se deciden con el USD sin redondear, como el oráculo.
 - `fnConciliar` no tiene endpoint propio (PENDIENTE DECISIÓN AROLDO): corre dentro de `fnConsolidar`.
 
 ## Pruebas

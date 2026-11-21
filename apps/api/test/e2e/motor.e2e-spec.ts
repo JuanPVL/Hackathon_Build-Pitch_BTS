@@ -11,7 +11,7 @@ import { USERS, type UserKey } from '../support/fixtures';
 import { num, readOracleCsv } from '../support/oracle';
 import { startTestJwks, type TestJwks } from '../support/tokens';
 
-const TOL_USD = 1;
+const TOL_USD = 0.01; // tolerancia oficial (QA-H3)
 
 describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
   let app: NestExpressApplication;
@@ -78,8 +78,8 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
     for (const o of oracle) {
       const r = byKey.get(`${o.doc_ic_id}|${o.estado_financiero}`) as Record<string, string>;
       expect(r).toMatchObject({ statusCode: o.estado, issuerCompanyId: o.emisor, receiverCompanyId: o.receptor, lineRefs: o.lineas });
-      expect(Math.abs(num(r.issuerUsd) - num(o.usd_emisor))).toBeLessThan(TOL_USD);
-      expect(Math.abs(num(r.receiverUsd) - num(o.usd_receptor))).toBeLessThan(TOL_USD);
+      expect(Math.abs(num(r.issuerUsd) - num(o.usd_emisor))).toBeLessThanOrEqual(TOL_USD);
+      expect(Math.abs(num(r.receiverUsd) - num(o.usd_receptor))).toBeLessThanOrEqual(TOL_USD);
     }
   });
 
@@ -91,7 +91,7 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
       for (const o of readOracleCsv(file)) {
         for (const [partner, v] of Object.entries(o)) {
           if (partner === 'empresa') continue;
-          expect(Math.abs((got.get(`${o.empresa}|${partner}`) ?? 0) - num(v))).toBeLessThan(TOL_USD);
+          expect(Math.abs((got.get(`${o.empresa}|${partner}`) ?? 0) - num(v))).toBeLessThanOrEqual(TOL_USD);
         }
       }
     };
@@ -106,10 +106,10 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
     expect([...got.keys()].sort()).toEqual(oracle.map((o) => o.cuenta_grupo).sort());
     for (const o of oracle) {
       const a = got.get(o.cuenta_grupo) as Record<string, string>;
-      expect(Math.abs(num(a.aggregatedUsd) - num(o.agregado))).toBeLessThan(TOL_USD);
-      expect(Math.abs(num(a.eliminationsUsd) - num(o.eliminaciones))).toBeLessThan(TOL_USD);
-      expect(Math.abs(num(a.translationAdjustmentUsd) - num(o.cta_conversion))).toBeLessThan(TOL_USD);
-      expect(Math.abs(num(a.consolidatedUsd) - num(o.consolidado))).toBeLessThan(TOL_USD);
+      expect(Math.abs(num(a.aggregatedUsd) - num(o.agregado))).toBeLessThanOrEqual(TOL_USD);
+      expect(Math.abs(num(a.eliminationsUsd) - num(o.eliminaciones))).toBeLessThanOrEqual(TOL_USD);
+      expect(Math.abs(num(a.translationAdjustmentUsd) - num(o.cta_conversion))).toBeLessThanOrEqual(TOL_USD);
+      expect(Math.abs(num(a.consolidatedUsd) - num(o.consolidado))).toBeLessThanOrEqual(TOL_USD);
     }
   });
 
@@ -124,7 +124,7 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
     for (const o of oracle) {
       const e = got.get(`${o.elim_id}|${o.regla}|${o.empresa}|${o.cuenta_grupo}`) as Record<string, string>;
       expect(e).toBeDefined();
-      expect(Math.abs(num(e.effectUsd) - num(o.efecto_usd))).toBeLessThan(TOL_USD);
+      expect(Math.abs(num(e.effectUsd) - num(o.efecto_usd))).toBeLessThanOrEqual(TOL_USD);
     }
   });
 
@@ -155,8 +155,8 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
     for (const [vista, basis] of [['consolidado (con eliminaciones)', 'CONSOLIDADO'], ['agregado (sin eliminar)', 'AGREGADO']]) {
       const o = oracle.find((r) => r.vista === vista)!;
       const k = res.body.group.find((g: { basisCode: string }) => g.basisCode === basis);
-      expect(Math.abs(num(k.salesUsd) - num(o.ventas_usd))).toBeLessThan(TOL_USD);
-      expect(Math.abs(num(k.ebitUsd) - num(o.ebit_usd))).toBeLessThan(TOL_USD);
+      expect(Math.abs(num(k.salesUsd) - num(o.ventas_usd))).toBeLessThanOrEqual(TOL_USD);
+      expect(Math.abs(num(k.ebitUsd) - num(o.ebit_usd))).toBeLessThanOrEqual(TOL_USD);
     }
   });
 
