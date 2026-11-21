@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Param, ParseUUIDPipe } from '@nestjs/common';
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { RequirePermission } from '../auth/decorators';
 import type { VerifiedUser } from '../auth/jwt-verifier';
@@ -13,8 +13,6 @@ import {
   icReconciliation,
   vCompanyKpi,
   vGroupKpi,
-  vIcBalanceMatrix,
-  vIcBilledMatrix,
 } from '../db/schema/schema';
 import { UserDb, type UserTx } from '../db/user-db';
 
@@ -108,23 +106,28 @@ export class RunsController {
   }
 
   /**
-   * QB-13: matrices IC del escenario de la corrida ("vIcBilledMatrix" facturado P&L, "vIcBalanceMatrix"
-   * saldos). Las vistas leen las cargas consolidables del escenario (no una foto de la corrida).
+   * QA-H4 / QB-13: matrices IC de ESTA corrida ("vIcBilledMatrixByRun" facturado P&L,
+   * "vIcBalanceMatrixByRun" saldos). Foto de la corrida (sus cargas o, si no tiene,
+   * la conciliación guardada), no las cargas APROBADA actuales del escenario.
    */
   @RequirePermission('readAll')
   @Get(':runId/ic-matrix')
   icMatrix(@CurrentUser() user: VerifiedUser, @Param('runId', new ParseUUIDPipe()) runId: string) {
     return this.forRun(user, runId, async (tx, run) => {
-      const billed = await tx
-        .select()
-        .from(vIcBilledMatrix)
-        .where(eq(vIcBilledMatrix.scenarioId, run.scenarioId))
-        .orderBy(asc(vIcBilledMatrix.issuerCompanyId), asc(vIcBilledMatrix.receiverCompanyId));
-      const balances = await tx
-        .select()
-        .from(vIcBalanceMatrix)
-        .where(eq(vIcBalanceMatrix.scenarioId, run.scenarioId))
-        .orderBy(asc(vIcBalanceMatrix.companyId), asc(vIcBalanceMatrix.partnerCompanyId));
+      const billed = await tx.execute<{
+        runId: string; issuerCompanyId: string; receiverCompanyId: string; billedUsd: string;
+      }>(sql`
+        select "runId", "issuerCompanyId", "receiverCompanyId", "billedUsd"
+          from "vIcBilledMatrixByRun"
+         where "runId" = ${runId}
+         order by "issuerCompanyId", "receiverCompanyId"`);
+      const balances = await tx.execute<{
+        runId: string; companyId: string; partnerCompanyId: string; balanceUsd: string;
+      }>(sql`
+        select "runId", "companyId", "partnerCompanyId", "balanceUsd"
+          from "vIcBalanceMatrixByRun"
+         where "runId" = ${runId}
+         order by "companyId", "partnerCompanyId"`);
       return { run: { runId: run.runId, scenarioId: run.scenarioId }, billed, balances };
     });
   }

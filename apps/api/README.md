@@ -66,7 +66,7 @@ están en [DEPLOY.md](DEPLOY.md). En esta rama no se despliega nada.
 | `GET /api/runs/:runId/consolidated` | `{ run, accounts }` agregado + eliminaciones + CTA = consolidado | `readAll` |
 | `GET /api/runs/:runId/eliminations` | `{ run, eliminations }` E1–E4 y E7 | `readAll` |
 | `GET /api/runs/:runId/reconciliation` | QB-13: `{ run, summary, reconciliation }` por documento IC | `readAll` |
-| `GET /api/runs/:runId/ic-matrix` | QB-13: `{ billed: "vIcBilledMatrix", balances: "vIcBalanceMatrix" }` del escenario de la corrida | `readAll` |
+| `GET /api/runs/:runId/ic-matrix` | QA-H4: `{ billed, balances }` de ESTA corrida (`vIcBilledMatrixByRun` / `vIcBalanceMatrixByRun`), no de las cargas APROBADA actuales | `readAll` |
 | `GET /api/bridges` | Bridges V1→V2 | `readAll` |
 | `GET /api/bridges/:bridgeId` | Bridge con `lines` (Δ ventas/EBIT) y `eva` (Δ EVA) | `readAll` |
 | `GET /api/bridges/:bridgeId/check` | `"vVarianceBridgeCheck"` (cuadre ±1 USD) | `readAll` |
@@ -79,8 +79,9 @@ Errores de las funciones SQL: `insufficient_privilege` → 403, `check_violation
 
 Funciones SQL en `hackathon-consolidacion/supabase/07_motor_conciliar_consolidar.sql`
 (`fnRunLineUsd`, `fnConciliar`, `fnConsolidar`, security invoker), con el parche QA-H3 en
-`08_redondeo_al_final.sql` (CREATE OR REPLACE de esas funciones y de `vLineUsd`). El 08 **no está
-aplicado a la base en vivo**: aplicarlo es decisión de Aroldo. Las pruebas locales cargan 07 y 08 después de 01–05.
+`08_redondeo_al_final.sql` (CREATE OR REPLACE de esas funciones y de `vLineUsd`) y
+`09_ic_matrix_por_corrida.sql` (matrices IC por corrida, QA-H4). El 08 y el 09 **no están
+aplicados a la base en vivo**: aplicarlo es decisión de Aroldo. Las pruebas locales cargan 07–09 después de 01–05.
 
 - Cada consolidación crea una corrida nueva e inmutable; nunca borra ni modifica corridas previas
   (las del seed 06 incluidas: `test/local-db/check-coexistence-06.sh` lo comprueba en una base local aparte).
