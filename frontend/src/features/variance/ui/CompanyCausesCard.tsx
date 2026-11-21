@@ -11,7 +11,7 @@ export function CompanyCausesCard({ rows }: { rows: CompanyEffect[] }) {
   return (
     <Card>
       <CardHeader title="Top causas por empresa" />
-      {top.length === 0 && <p>El backend no devuelve un desglose por empresa para esta métrica.</p>}
+      {top.length === 0 && <p style={{ fontSize: 13, color: 'var(--q-muted)' }}>Sin variaciones materiales registradas por empresa entre estas dos versiones.</p>}
       <ul className={s.list}>
         {top.map(r => {
           const down = directionOf(r.value) === 'down'
