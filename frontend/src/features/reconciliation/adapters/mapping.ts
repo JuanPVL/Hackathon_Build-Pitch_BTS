@@ -30,7 +30,6 @@ export function pairCounts(rows: ReconciliationDto[]) {
     documents: rows.length, exact, fx, reconciled: exact + fx,
     pending: rows.length - exact - fx,
     orphan: results.filter(r => r === 'SIN_CONTRAPARTE').length,
-    // No hay estado de disputa de documentos en esta respuesta.
-    disputed: Number.NaN,
+    disputed: results.filter(r => r === 'DIFERENCIA_MONTO' || r === 'DIFERENCIA_CORTE' || r === 'FX_FUERA_TOLERANCIA').length,
   }
 }

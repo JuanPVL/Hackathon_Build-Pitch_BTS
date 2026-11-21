@@ -70,9 +70,39 @@ export function PairsTable({ report }: { report: ReconciliationReport }) {
     return true
   })
 
+  const totalIssuerUsd = visiblePairs.reduce((sum, p) => sum + (Number.isFinite(p.issuerUsd) ? p.issuerUsd : 0), 0)
+  const totalReceiverUsd = visiblePairs.reduce((sum, p) => sum + (Number.isFinite(p.receiverUsd) ? p.receiverUsd : 0), 0)
+  const totalDiffUsd = visiblePairs.reduce((sum, p) => sum + (Number.isFinite(p.differenceUsd) ? p.differenceUsd : 0), 0)
+  const activeTypes = [...new Set(visiblePairs.map(p => icTypeLabel(p.type)))].join(', ') || 'Ninguno'
+
   return (
     <Card>
       <CardHeader title="Pares CxC ↔ CxP espejo" aside={`${visiblePairs.length} de ${report.totals.documents}`} />
+      <div
+        style={{
+          marginBottom: 12,
+          padding: '10px 14px',
+          borderRadius: 10,
+          background: 'var(--q-navy, #0F2341)',
+          color: '#fff',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 12,
+          fontSize: 12.5,
+        }}
+      >
+        <div>
+          <strong style={{ color: '#93C5FD' }}>Filtro activo ({activeTypes}):</strong>{' '}
+          <span>{visiblePairs.length} operaciones mostradas</span>
+        </div>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <span>Emisor total: <strong>{formatMoney(totalIssuerUsd, 'USD', 2)}</strong></span>
+          <span>Receptor total: <strong>{formatMoney(totalReceiverUsd, 'USD', 2)}</strong></span>
+          <span>Diferencia neta FX: <strong style={{ color: '#FCD34D' }}>{formatMoney(totalDiffUsd, 'USD', 2)}</strong></span>
+        </div>
+      </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {([

@@ -1,13 +1,20 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { filterToIcType, parseTypeFilter } from '../domain/filters'
 import type { TypeFilterValue } from '../domain/filters'
 
-/** El filtro por tipo vive en la URL (`?tipo=VENTA`) para poder compartir la vista. */
+/** El filtro por tipo vive en estado local reactivo y se sincroniza con la URL (`?tipo=VENTA`). */
 export function useTypeFilter() {
   const [params, setParams] = useSearchParams()
-  const value = parseTypeFilter(params.get('tipo'))
+  const urlValue = parseTypeFilter(params.get('tipo'))
+  const [value, setLocalValue] = useState<TypeFilterValue>(urlValue)
+
+  useEffect(() => {
+    setLocalValue(urlValue)
+  }, [urlValue])
+
   const setValue = useCallback((next: TypeFilterValue) => {
+    setLocalValue(next)
     setParams(prev => {
       const p = new URLSearchParams(prev)
       if (next === 'TODAS') p.delete('tipo'); else p.set('tipo', next)

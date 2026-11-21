@@ -18,31 +18,86 @@ function between(row: ReconciliationDto, company: CompanyCode, counterparty: Com
 }
 export class HttpCurrentAccountRepository implements CurrentAccountRepository {
   private readonly backend: Backend
+  private readonly bundleCache = new Map<string, Promise<{
+    matrix: Awaited<ReturnType<Backend['matrix']>>
+    reconciliation: Awaited<ReturnType<Backend['reconciliation']>>
+    companies: Awaited<ReturnType<Backend['companies']>>
+  }>>()
+
   constructor(http: HttpClient) { this.backend = new Backend(http) }
 
+  private fetchBundle(scenarioId: string, signal?: AbortSignal) {
+    const cached = this.bundleCache.get(scenarioId)
+    if (cached) return cached
+    const promise = (async () => {
+      const run = await this.backend.latestRun(scenarioId, signal)
+      const [matrix, reconciliation, companies] = await Promise.all([
+        this.backend.matrix(run.runId, signal),
+        this.backend.reconciliation(run.runId, signal),
+        this.backend.companies(signal),
+      ])
+      return { matrix, reconciliation, companies }
+    })()
+    promise.catch(() => this.bundleCache.delete(scenarioId))
+    this.bundleCache.set(scenarioId, promise)
+    return promise
+  }
+
   async getMatrix(query: ScenarioQuery, view: MatrixView, signal?: AbortSignal): Promise<BalanceMatrix> {
-    const run = await this.backend.latestRun(query.scenarioId, signal)
-    const [matrix, reconciliation, companies] = await Promise.all([
-      this.backend.matrix(run.runId, signal), this.backend.reconciliation(run.runId, signal), this.backend.companies(signal),
-    ])
-    const source = view === 'saldo'
-      ? matrix.balances.map(row => ({ company: row.companyId, counterparty: row.partnerCompanyId, balanceUsd: numberOf(row.balanceUsd) }))
-      : matrix.billed.map(row => ({
+    const { matrix, reconciliation, companies } = await this.fetchBundle(query.scenarioId, signal)
+    const allRec = reconciliation.reconciliation
+    const pygRows = allRec.filter(r => r.financialStatementCode === 'PYG')
+    const balRows = allRec.filter(r => r.financialStatementCode === 'BALANCE')
+    const hasSplitStatements = pygRows.length > 0 && balRows.length > 0
+
+    let source: { company: CompanyCode; counterparty: CompanyCode; balanceUsd: number }[]
+    if (view === 'saldo') {
+      source = matrix.balances.map(row => ({
+        company: row.companyId,
+        counterparty: row.partnerCompanyId,
+        balanceUsd: numberOf(row.balanceUsd),
+      }))
+    } else if (view === 'recibido' && hasSplitStatements) {
+      // Agrupa el monto realmente registrado por la empresa receptora (compradora) en P&L (signo negativo = compra/gasto IC recibido).
+      const byPair = new Map<string, { company: CompanyCode; counterparty: CompanyCode; balanceUsd: number }>()
+      for (const row of pygRows) {
+        if (!row.receiverCompanyId || !row.issuerCompanyId) continue
+        const key = `${row.receiverCompanyId}|${row.issuerCompanyId}`
+        const current = byPair.get(key) ?? {
+          company: row.receiverCompanyId,
+          counterparty: row.issuerCompanyId,
+          balanceUsd: 0,
+        }
+        current.balanceUsd -= Math.abs(numberOf(row.receiverUsd))
+        byPair.set(key, current)
+      }
+      source = [...byPair.values()].map(c => ({ ...c, balanceUsd: Math.round(c.balanceUsd * 100) / 100 }))
+    } else {
+      source = matrix.billed.map(row => ({
         company: view === 'recibido' ? row.receiverCompanyId : row.issuerCompanyId,
         counterparty: view === 'recibido' ? row.issuerCompanyId : row.receiverCompanyId,
         balanceUsd: numberOf(row.billedUsd),
       }))
+    }
+
+    const relevantRec = hasSplitStatements
+      ? (view === 'saldo' ? balRows : pygRows)
+      : allRec
+
     return {
-      view, companies: companies.map(company => company.companyId),
-      cells: source.map(cell => ({ ...cell, status: cellStatus(reconciliation.reconciliation.filter(row => between(row, cell.company, cell.counterparty)), cell.balanceUsd) })),
-      totals: pairCounts(reconciliation.reconciliation),
+      view,
+      companies: companies.map(company => company.companyId),
+      cells: source.map(cell => ({
+        ...cell,
+        status: cellStatus(relevantRec.filter(row => between(row, cell.company, cell.counterparty)), cell.balanceUsd),
+      })),
+      totals: pairCounts(relevantRec),
       receivedIsBilledTranspose: view === 'recibido',
     }
   }
 
   async getPair(query: ScenarioQuery, company: CompanyCode, counterparty: CompanyCode, signal?: AbortSignal): Promise<PairDetail> {
-    const run = await this.backend.latestRun(query.scenarioId, signal)
-    const [matrix, reconciliation] = await Promise.all([this.backend.matrix(run.runId, signal), this.backend.reconciliation(run.runId, signal)])
+    const { matrix, reconciliation } = await this.fetchBundle(query.scenarioId, signal)
     const rows = reconciliation.reconciliation.filter(row => between(row, company, counterparty))
     const balanceUsd = numberOf(matrix.balances.find(row => row.companyId === company && row.partnerCompanyId === counterparty)?.balanceUsd ?? 0)
     const mirrorBalanceUsd = numberOf(matrix.balances.find(row => row.companyId === counterparty && row.partnerCompanyId === company)?.balanceUsd ?? 0)
