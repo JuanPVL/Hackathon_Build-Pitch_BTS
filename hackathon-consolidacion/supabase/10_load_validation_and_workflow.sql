@@ -11,7 +11,7 @@
 --   2. Función "fnValidarCarga"(pLoadId uuid) (SECURITY INVOKER, RLS activo):
 --      ejecuta las reglas de validación sobre la carga en versión vigente,
 --      reemplaza sus hallazgos activos en "validationFinding" y actualiza
---      "dataLoad"."statusCode" a VALIDADA (0 errores) o CUARENTENA (con hallazgos).
+--      "dataLoad"."statusCode" a VALIDADA (sin hallazgos bloqueantes) o CUARENTENA (con bloqueantes).
 -- =====================================================================
 begin;
 
@@ -450,8 +450,9 @@ begin
     from "validationFinding"
    where "loadId" = pLoadId;
 
-  -- Si no hay errores pasa a VALIDADA; si los hay, a CUARENTENA
-  vNextStatus := case when vTotal = 0 then 'VALIDADA' else 'CUARENTENA' end;
+  -- Sin hallazgos bloqueantes pasa a VALIDADA (las advertencias no bloquean: el controller las aprueba con
+  -- justificación, que el trigger exige); con bloqueantes, a CUARENTENA.
+  vNextStatus := case when coalesce(vBlocking, 0) = 0 then 'VALIDADA' else 'CUARENTENA' end;
 
   if vLoad."statusCode" is distinct from vNextStatus then
     update "dataLoad"
@@ -473,16 +474,16 @@ comment on function "fnValidarCarga"(uuid) is 'P0-4: validates a single dataLoad
 grant execute on function "fnValidarCarga"(uuid) to authenticated, service_role;
 revoke execute on function "fnValidarCarga"(uuid) from anon, public;
 
--- 3. Permiso de aprobación en "dataLoad": permite a GROUP_CONTROLLER (writeAll) y a COMPANY_ACCOUNTANT
---    (canWriteCompany sobre su empresa) aprobar una carga VALIDADA; la máquina de estados (trgDataLoadStatus)
---    y el trigger trgDataLoadWorkflow impiden aprobar cargas con hallazgos bloqueantes o en otro estado.
+-- 3. Permiso de aprobación en "dataLoad": subir y validar lo hace quien escribe en la empresa
+--    (canWriteCompany); APROBAR es exclusivo de quien tiene approveLoads (GROUP_CONTROLLER): separación de
+--    funciones, quien sube un archivo no lo aprueba. La máquina de estados (trgDataLoadStatus) y el trigger
+--    trgDataLoadWorkflow impiden aprobar con hallazgos bloqueantes o en otro estado, y exigen justificación
+--    para aprobar con advertencias.
 drop policy if exists "pUpdate" on "dataLoad";
 create policy "pUpdate" on "dataLoad" for update to authenticated
   using (authz."canWriteCompany"("companyId"))
   with check (authz."canWriteCompany"("companyId")
-              and ("statusCode" <> 'APROBADA'
-                   or authz."hasPermission"('approveLoads')
-                   or authz."canWriteCompany"("companyId")));
+              and ("statusCode" <> 'APROBADA' or authz."hasPermission"('approveLoads')));
 
 -- 4. En entornos locales sin GoTrue, permite sincronizar el usuario recién creado en auth.users
 --    y consultar los correos de auth.users cuando quien ejecuta la transacción tiene masterData.

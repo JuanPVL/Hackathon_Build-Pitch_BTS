@@ -81,6 +81,7 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
 
   const grants = access.data?.grants ?? []
   const canWriteAll = Boolean(access.data?.permissions.writeAll)
+  const canApproveLoads = Boolean(access.data?.permissions.approveLoads)
   const canWriteCompany = (comp: string) =>
     canWriteAll || grants.some(g => g.companyId === comp && g.roleCode === 'COMPANY_ACCOUNTANT')
 
@@ -155,7 +156,7 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
               {rows.map((load) => {
                 const writable = canWriteCompany(load.companyId)
                 const canValidate = writable && load.statusCode !== 'APROBADA' && load.statusCode !== 'REEMPLAZADA'
-                const canApprove = writable && load.statusCode === 'VALIDADA'
+                const canApprove = canApproveLoads && load.statusCode === 'VALIDADA' // solo el controller aprueba (approveLoads)
                 return (
                   <li
                     key={load.loadId}

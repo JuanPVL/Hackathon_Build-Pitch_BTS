@@ -237,7 +237,7 @@ export class LoadsController {
     summary: 'Ejecutar validación sobre una carga (P0-4)',
     description:
       'Ejecuta la función SQL fnValidarCarga sobre la carga indicada. ' +
-      'Si no hay hallazgos la carga pasa a VALIDADA; si hay errores o advertencias pasa a CUARENTENA y persiste los hallazgos en validationFinding.',
+      'Sin hallazgos bloqueantes la carga pasa a VALIDADA (las advertencias se aprueban con justificación); con bloqueantes pasa a CUARENTENA. Los hallazgos se persisten en validationFinding.',
   })
   @ApiOkResponse({ type: ValidateLoadResponseDto })
   @ApiForbiddenResponse({ description: 'Sin permiso de escritura sobre la empresa de la carga.' })
@@ -306,7 +306,7 @@ export class LoadsController {
   })
   @ApiBody({ type: ApproveLoadBodyDto, required: false })
   @ApiOkResponse({ type: ApproveLoadResponseDto })
-  @ApiForbiddenResponse({ description: 'Sin permiso sobre la empresa de la carga.' })
+  @ApiForbiddenResponse({ description: 'Sin permiso sobre la empresa de la carga o sin el permiso approveLoads (solo GROUP_CONTROLLER aprueba).' })
   @ApiNotFoundResponse({ description: 'Carga no encontrada o no visible por RLS.' })
   @ApiConflictResponse({ description: 'Transición de estado inválida (la carga no está en estado VALIDADA).' })
   async approve(
@@ -324,6 +324,14 @@ export class LoadsController {
         );
         if (!canWrite) {
           throw new ForbiddenException(`Sin permiso sobre la empresa ${load.companyId}`);
+        }
+
+        // Separación de funciones: quien sube/valida una carga no la aprueba; solo approveLoads (GROUP_CONTROLLER).
+        const [{ canApprove }] = await tx.execute<{ canApprove: boolean }>(
+          sql`select authz."hasPermission"('approveLoads') as "canApprove"`,
+        );
+        if (!canApprove) {
+          throw new ForbiddenException('Aprobar cargas requiere el permiso approveLoads (GROUP_CONTROLLER)');
         }
 
         if (load.statusCode !== 'VALIDADA') {

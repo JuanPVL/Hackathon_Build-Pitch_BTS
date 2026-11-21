@@ -198,7 +198,7 @@ describe('Flujo de cargas CSV: upload → validate → approve (P0-3, P0-4, P0-5
     it('no permite aprobar una carga en estado RECIBIDA sin validar antes (409)', async () => {
       await request(app.getHttpServer())
         .post(`/api/loads/${v2LoadId}/approve`)
-        .set('Authorization', `Bearer ${await token('gt1Accountant')}`)
+        .set('Authorization', `Bearer ${await token('controller')}`)
         .expect(409);
     });
 
@@ -266,10 +266,21 @@ describe('Flujo de cargas CSV: upload → validate → approve (P0-3, P0-4, P0-5
         .set('Authorization', `Bearer ${await token('gt1Viewer')}`)
         .expect(403);
 
-      // Aprobar desde VALIDADA → APROBADA
-      const appRes = await request(app.getHttpServer())
+      // Separación de funciones: el contador que sube/valida su carga NO puede aprobarla (403)
+      await request(app.getHttpServer())
         .post(`/api/loads/${v3LoadId}/approve`)
         .set('Authorization', `Bearer ${await token('gt1Accountant')}`)
+        .send({ justification: 'Intento de autoaprobación' })
+        .expect(403);
+      const [stillValidated] = await asOwner(
+        (sql) => sql<{ statusCode: string }[]>`select "statusCode" from "dataLoad" where "loadId" = ${v3LoadId}`,
+      );
+      expect(stillValidated.statusCode).toBe('VALIDADA');
+
+      // Aprobar desde VALIDADA → APROBADA solo lo hace el GROUP_CONTROLLER
+      const appRes = await request(app.getHttpServer())
+        .post(`/api/loads/${v3LoadId}/approve`)
+        .set('Authorization', `Bearer ${await token('controller')}`)
         .send({ justification: 'Balance cuadrado verificado' })
         .expect(200);
 
@@ -280,14 +291,14 @@ describe('Flujo de cargas CSV: upload → validate → approve (P0-3, P0-4, P0-5
         financialStatementCode: 'BALANCE',
         version: 3,
         statusCode: 'APROBADA',
-        approvedBy: USERS.gt1Accountant.id,
+        approvedBy: USERS.controller.id,
       });
       expect(appRes.body.approvedAt).toEqual(expect.any(String));
 
       // Aprobar dos veces una carga ya APROBADA → 409
       await request(app.getHttpServer())
         .post(`/api/loads/${v3LoadId}/approve`)
-        .set('Authorization', `Bearer ${await token('gt1Accountant')}`)
+        .set('Authorization', `Bearer ${await token('controller')}`)
         .expect(409);
 
       // Auditoría registra el userId real del JWT (nunca null ni otro usuario)
@@ -302,7 +313,7 @@ describe('Flujo de cargas CSV: upload → validate → approve (P0-3, P0-4, P0-5
            limit 1`,
       );
       expect(auditRow).toEqual({
-        userId: USERS.gt1Accountant.id,
+        userId: USERS.controller.id,
       });
     });
   });
