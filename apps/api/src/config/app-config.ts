@@ -11,6 +11,8 @@ export interface AppConfig {
   /** Allowlist de orígenes exactos (sin comodines). */
   corsOrigins: string[];
   databaseUrl?: string;
+  /** Opcional (QB-19). Si falta, el API arranca igual; la narración del bridge queda deshabilitada. */
+  anthropicApiKey?: string;
   auth: AuthConfig;
 }
 
@@ -33,7 +35,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 
   const corsOrigins = parseCorsOrigins(env);
 
-  return { port, corsOrigins, databaseUrl: read(env, 'DATABASE_URL'), auth };
+  return {
+    port,
+    corsOrigins,
+    databaseUrl: read(env, 'DATABASE_URL'),
+    anthropicApiKey: read(env, 'ANTHROPIC_API_KEY'),
+    auth,
+  };
 }
 
 /** Orígenes localhost habituales del front (Vite, preview y puertos de demo) cuando CORS_ORIGIN está vacío en desarrollo. */

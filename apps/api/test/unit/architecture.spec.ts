@@ -36,10 +36,12 @@ describe('Separación de clientes de base', () => {
 
   it('el cliente de usuario fija claims y SET LOCAL ROLE authenticated antes del trabajo', () => {
     const source = readFileSync(join(srcDir, 'db', 'user-db.ts'), 'utf8');
+    const sub = source.indexOf("set_config('request.jwt.claim.sub'");
     const claims = source.indexOf("set_config('request.jwt.claims'");
     const role = source.indexOf('set local role authenticated');
     const work = source.indexOf('return work(tx)');
-    expect(claims).toBeGreaterThan(0);
+    expect(sub).toBeGreaterThan(0);
+    expect(claims).toBeGreaterThan(sub);
     expect(role).toBeGreaterThan(claims);
     expect(work).toBeGreaterThan(role);
   });

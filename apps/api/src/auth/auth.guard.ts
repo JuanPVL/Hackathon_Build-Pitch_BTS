@@ -36,6 +36,7 @@ export class AuthGuard implements CanActivate {
     if (this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, targets)) return true;
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    if (isOpenApiPath(request.originalUrl ?? request.url)) return true;
     const token = bearerToken(request.headers.authorization);
     if (!token) throw new UnauthorizedException('Falta el token Bearer');
     try {
@@ -54,6 +55,11 @@ export class AuthGuard implements CanActivate {
     request.access = access;
     return true;
   }
+}
+
+function isOpenApiPath(url: string | undefined): boolean {
+  const path = (url ?? '').split('?')[0];
+  return path === '/api/openapi.json' || path === '/api/docs' || path.startsWith('/api/docs/');
 }
 
 function bearerToken(header: string | undefined): string | undefined {
