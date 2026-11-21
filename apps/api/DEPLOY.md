@@ -27,38 +27,52 @@ gcloud secrets versions add SUPABASE_SECRET_KEY --data-file=- --project <PROJECT
 gcloud secrets versions add ANTHROPIC_API_KEY   --data-file=- --project <PROJECT_ID>
 ```
 
-`DATABASE_URL` es el session pooler de Supabase o la conexión directa (puerto **5432**). Si se usa el pooler
-en modo transacción (puerto 6543), el API apaga solo los prepared statements.
+`DATABASE_URL` es el session pooler de Supabase (IPv4, `aws-1-us-west-2.pooler.supabase.com`, puerto **5432**,
+usuario `postgres.<ref>`). Si se usa el pooler en modo transacción (puerto 6543), el API apaga solo los
+prepared statements. El cliente valida TLS con la CA oficial de Supabase `apps/api/certs/prod-ca-2021.crt`
+(PR #8); no se desactiva `rejectUnauthorized`.
 
-La cuenta de servicio de Cloud Run necesita leer los secretos. Por defecto es la de Compute:
-`<PROJECT_NUMBER>-compute@developer.gserviceaccount.com`.
+El runtime de Cloud Run usa la cuenta de servicio dedicada **`quadra-api-run`**, no la de Compute.
+El script `apps/api/scripts/deploy-cloudrun.sh` la crea si no existe y le otorga `roles/secretmanager.secretAccessor`
+solo sobre cada secreto que inyecta (`DATABASE_URL` y `SUPABASE_SECRET_KEY`; `ANTHROPIC_API_KEY` es opcional).
 
 ```bash
-PROJECT_NUMBER=$(gcloud projects describe <PROJECT_ID> --format='value(projectNumber)')
-for s in DATABASE_URL SUPABASE_SECRET_KEY ANTHROPIC_API_KEY; do
+SA_EMAIL="quadra-api-run@<PROJECT_ID>.iam.gserviceaccount.com"
+gcloud iam service-accounts create quadra-api-run \
+  --display-name="Quadra API Cloud Run" --project <PROJECT_ID>
+for s in DATABASE_URL SUPABASE_SECRET_KEY; do
   gcloud secrets add-iam-policy-binding "$s" --project <PROJECT_ID> \
-    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --member="serviceAccount:${SA_EMAIL}" \
     --role=roles/secretmanager.secretAccessor
 done
 ```
 
 ## 3. Deploy
 
+Lo habitual es el script idempotente `apps/api/scripts/deploy-cloudrun.sh`, con
+`CLOUDSDK_CONFIG=<repo>/.local/gcloud` (nunca el proyecto `saf-world`).
 `--source apps/api` construye con el `Dockerfile` de `apps/api` en Cloud Build y publica en Artifact Registry.
 
+`CORS_ORIGIN` vigente: `https://hackathon-build-pitch-bts.vercel.app,http://localhost:5173`
+(sin "/" final, sin `*` ni `*.vercel.app`).
+
 ```bash
+SA_EMAIL="quadra-api-run@<PROJECT_ID>.iam.gserviceaccount.com"
 gcloud run deploy quadra-api \
   --source apps/api \
   --region <REGION> \
   --project <PROJECT_ID> \
+  --service-account "$SA_EMAIL" \
   --allow-unauthenticated \
-  --set-env-vars '^;^SUPABASE_URL=https://<project-ref>.supabase.co;SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json;SUPABASE_PUBLISHABLE_KEY=<publishable-key>;CORS_ORIGIN=https://<front-prod>,https://<front-preview>' \
-  --set-secrets DATABASE_URL=DATABASE_URL:latest,SUPABASE_SECRET_KEY=SUPABASE_SECRET_KEY:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest
+  --set-env-vars '^;^SUPABASE_URL=https://<project-ref>.supabase.co;SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json;SUPABASE_PUBLISHABLE_KEY=<publishable-key>;CORS_ORIGIN=https://hackathon-build-pitch-bts.vercel.app,http://localhost:5173' \
+  --set-secrets DATABASE_URL=DATABASE_URL:<version>,SUPABASE_SECRET_KEY=SUPABASE_SECRET_KEY:<version>
 ```
+
+Usa una versión habilitada verificada de cada secreto (no asumas `:1` ni dejes de comprobarla). `ANTHROPIC_API_KEY` solo se añade a `--set-secrets` si hace falta; el API arranca sin ella.
 
 - `--allow-unauthenticated` solo abre el servicio a nivel de Cloud Run para que el navegador llegue. La
   autorización real la hace el API: cada ruta de negocio exige un JWT de Supabase verificado contra el JWKS, y
-  Postgres aplica RLS con ese usuario. Solo `/api/health` es público.
+  Postgres aplica RLS con ese usuario. Son públicos `/api/health`, `/api/docs` y `/api/openapi.json`.
 - `PORT` lo inyecta Cloud Run (8080); el contenedor escucha en `0.0.0.0:$PORT`.
 - `CORS_ORIGIN` es una lista de orígenes exactos separados por coma (sin `*`). Cloud Run pone
   `NODE_ENV=production`: si la variable falta, está vacía o contiene `*`, el contenedor no arranca. Como
@@ -70,7 +84,9 @@ gcloud run deploy quadra-api \
 ```bash
 URL=$(gcloud run services describe quadra-api --region <REGION> --project <PROJECT_ID> --format='value(status.url)')
 curl -s "$URL/api/health"                 # {"status":"ok","service":"quadra-api"}
-curl -s -o /dev/null -w '%{http_code}\n' "$URL/api/loads"   # 401 sin token
+curl -s -o /dev/null -w '%{http_code}\n' "$URL/api/docs"           # 200, Swagger UI
+curl -s -o /dev/null -w '%{http_code}\n' "$URL/api/openapi.json"   # 200
+curl -s -o /dev/null -w '%{http_code}\n' "$URL/api/loads"          # 401 sin token
 ```
 
 En el front: `VITE_API_URL=$URL/api`.
