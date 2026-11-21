@@ -1,0 +1,43 @@
+{
+  "name": "@quadra/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "API de Quadra (Nest.js + Drizzle + Supabase Auth). Invoca las funciones SQL del motor; no las reimplementa.",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "start:dev": "tsc -p tsconfig.build.json && node dist/main.js",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand --selectProjects unit",
+    "test:e2e": "jest --runInBand --selectProjects e2e",
+    "db:local": "bash test/local-db/setup-local-db.sh",
+    "db:pull": "drizzle-kit pull --config drizzle.config.ts && node scripts/post-pull.mjs",
+    "seed:demo-users": "node scripts/seed-demo-users.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.2.11",
+    "@nestjs/core": "^11.2.11",
+    "@nestjs/platform-express": "^11.2.11",
+    "@nestjs/swagger": "^11.4.8",
+    "drizzle-orm": "^0.45.4",
+    "jose": "^5.10.0",
+    "postgres": "^3.4.9",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.2.11",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.6",
+    "@types/supertest": "^7.2.1",
+    "drizzle-kit": "^0.31.11",
+    "jest": "^30.5.2",
+    "supertest": "^7.3.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "~5.9"
+  }
+}
