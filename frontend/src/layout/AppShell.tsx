@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '@/shared/auth'
 import { StateMessage } from '@/shared/ui'
-import { BottomNav, Rail, Sidebar } from './Navigation'
+import { BottomNav, Rail, Sidebar } from './NavBars'
 import { MobileBar, TopBar } from './TopBar'
 import s from './AppShell.module.css'
 
