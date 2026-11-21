@@ -18,6 +18,15 @@ describe('OpenAPI', () => {
       const health = (spec.body.paths['/api/health'] ?? spec.body.paths['/health']).get;
       expect(health.security).toEqual([]);
 
+      const paths = spec.body.paths;
+      const docPath = paths['/api/ic-documents/{icDocumentId}'] ?? paths['/ic-documents/{icDocumentId}'];
+      const ratesPath = paths['/api/scenarios/{scenarioId}/rates'] ?? paths['/scenarios/{scenarioId}/rates'];
+      expect(docPath?.get).toBeDefined();
+      expect(ratesPath?.get).toBeDefined();
+      const schemas = spec.body.components?.schemas ?? {};
+      expect(schemas.IcDocumentResponseDto).toBeDefined();
+      expect(schemas.ScenarioRatesResponseDto).toBeDefined();
+
       const ui = await request(server).get('/api/docs').redirects(1).expect(200);
       expect(ui.text).toMatch(/swagger/i);
     } finally {
