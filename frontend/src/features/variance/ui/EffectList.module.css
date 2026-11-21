@@ -1,0 +1,9 @@
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--q-space-4); }
+.item { display: flex; flex-direction: column; gap: 6px; }
+.line { display: flex; justify-content: space-between; align-items: baseline; gap: var(--q-space-3); }
+.name { display: inline-flex; align-items: center; gap: 6px; color: var(--q-navy); font-size: 15px; min-width: 0; }
+.name svg { flex: none; align-self: center; }
+.value { font-family: var(--q-font-head); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.up { color: var(--q-blue); }
+.down { color: var(--q-orange-text); }
+.companies { font-size: 12px; color: var(--q-gray-text); }

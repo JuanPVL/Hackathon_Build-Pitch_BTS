@@ -1,0 +1,30 @@
+.panel { display: flex; flex-direction: column; gap: var(--q-space-4); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: var(--q-space-3); }
+.close { width: var(--q-touch); height: var(--q-touch); margin: -10px -10px -10px 0; display: grid; place-items: center; border: 0; border-radius: 10px; background: transparent; color: var(--q-gray-blue); }
+.close:hover { background: var(--q-navy-2); color: var(--q-cream); }
+.title { font-size: 34px; color: var(--q-cream); letter-spacing: -0.01em; }
+.names { margin-top: -10px; color: var(--q-gray-blue); font-size: 13px; }
+.description { color: var(--q-gray-blue); font-size: 14px; line-height: 1.5; }
+.stateBox { background: var(--q-cream); border-radius: var(--q-radius-lg); }
+
+
+.fx { display: flex; align-items: center; justify-content: space-between; gap: var(--q-space-4); padding: var(--q-space-4) 0; border-top: 1px solid #7fa6e633; border-bottom: 1px solid #7fa6e633; }
+.fx > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fxLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--q-gray-blue); }
+.fxText { font-size: 12.5px; color: var(--q-gray-blue); }
+.fxValue { flex: none; font-family: var(--q-font-head); font-size: 24px; color: var(--q-blue-light); font-variant-numeric: tabular-nums; }
+
+.docsTitle { font-family: var(--q-font-body); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--q-gray-blue); }
+.docs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.docLink {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--q-space-3);
+  min-height: var(--q-touch); padding: 6px 14px; border-radius: 10px; background: var(--q-navy-2); color: var(--q-cream); text-decoration: none;
+}
+.docLink:hover { background: #24396a; text-decoration: none; }
+.docKey { font-family: var(--q-font-mono); font-weight: 700; font-size: 12px; overflow-wrap: anywhere; }
+.docAmount { font-family: var(--q-font-head); font-weight: 700; font-size: 13px; color: var(--q-blue-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 767px) {
+  .title { font-size: 26px; }
+  .docLink { grid-template-columns: minmax(0, 1fr) auto; }
+  .docLink > :last-child { grid-column: 1 / -1; justify-self: start; }
+}

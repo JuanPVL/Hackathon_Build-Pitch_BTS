@@ -1,0 +1,26 @@
+.scroll { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+.table { width: 100%; min-width: 560px; border-collapse: separate; border-spacing: 6px; table-layout: fixed; }
+.table th { font-size: 12px; font-weight: 700; color: var(--q-navy); }
+.corner { width: 74px; text-align: left; font-size: 11px !important; letter-spacing: 0.1em; text-transform: uppercase; color: var(--q-gray-text) !important; }
+.colHead { text-align: center; padding-bottom: 4px; }
+.rowHead { text-align: left; padding-right: 4px; }
+.table abbr { text-decoration: none; cursor: help; }
+
+.cellTd, .diag, .empty { padding: 0; height: 56px; }
+.diag, .empty { text-align: center; border-radius: 10px; color: var(--q-gray-blue); }
+.diag { background: var(--q-bg-light); }
+.empty { background: var(--q-cream); }
+
+.cell {
+  width: 100%; height: 100%; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 4px 2px; border-radius: 10px; border: 2px solid transparent; background: var(--q-cream);
+  transition: background var(--q-dur) var(--q-ease), border-color var(--q-dur) var(--q-ease);
+}
+.cell:hover { border-color: var(--q-gray-blue); }
+.cell[aria-pressed='true'] { background: var(--q-white); border-color: var(--q-blue); }
+.amount { font-family: var(--q-font-head); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
+.pos { color: var(--q-blue); }
+.neg { color: var(--q-navy); }
+
+.note { display: flex; gap: 8px; align-items: flex-start; margin: var(--q-space-4) 0 0; font-size: 13px; color: var(--q-gray-text); }
+.note svg { flex: none; margin-top: 2px; }

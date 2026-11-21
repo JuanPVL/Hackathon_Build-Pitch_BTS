@@ -1,0 +1,20 @@
+.body { display: flex; flex-direction: column; gap: var(--q-space-4); }
+.scope { font-size: 13px; color: var(--q-gray-blue); }
+.scope strong { color: var(--q-cream); }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--q-space-3); }
+.value { background: var(--q-navy-2); border-radius: var(--q-radius); padding: var(--q-space-3) var(--q-space-4); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.valueLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--q-gray-blue); }
+.valueText { font-family: var(--q-font-head); font-weight: 700; font-size: 24px; color: var(--q-orange); overflow-wrap: anywhere; }
+.value + .value .valueText { color: var(--q-blue-light); }
+.impact { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--q-navy-2); padding-top: var(--q-space-4); }
+.impactValue { font-family: var(--q-font-head); font-weight: 700; font-size: 28px; color: var(--q-blue-light); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.suggestion { display: flex; gap: 10px; align-items: flex-start; background: var(--q-navy-2); border: 1px solid var(--q-navy-2); border-radius: var(--q-radius); padding: var(--q-space-3) var(--q-space-4); font-size: 13.5px; line-height: 1.45; color: var(--q-cream); }
+.suggestion svg { flex: none; margin-top: 2px; color: var(--q-orange); }
+.form { display: flex; flex-direction: column; gap: var(--q-space-2); }
+.formLabel { font-size: 13px; font-weight: 600; color: var(--q-cream); }
+.textarea { width: 100%; resize: vertical; min-height: 88px; border-radius: var(--q-radius); border: 1.5px solid var(--q-blue-light); background: var(--q-navy-deep); color: var(--q-cream); padding: var(--q-space-3); font: inherit; font-size: 14px; }
+.textarea:focus-visible { outline: 3px solid var(--q-orange); outline-offset: 2px; }
+.textarea[aria-invalid='true'] { border-color: var(--q-orange); }
+.error { font-size: 13px; font-weight: 600; color: var(--q-orange); }
+.formActions { display: flex; gap: var(--q-space-3); flex-wrap: wrap; }
+@media (max-width: 767px) { .valueText { font-size: 20px; } .impactValue { font-size: 24px; } .formActions > * { flex: 1; } }

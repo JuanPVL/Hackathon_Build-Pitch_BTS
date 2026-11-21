@@ -1,0 +1,89 @@
+/* ---------- Equation: Agregado − Eliminaciones = Consolidado (elemento distintivo) ---------- */
+.equation { display: flex; align-items: stretch; gap: 12px; }
+.term { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 14px; background: #ffffff0d; border: 1px solid #7fa6e633; }
+.term.result { background: var(--q-cream); border-color: transparent; }
+.termLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--q-gray-blue); }
+.term.result .termLabel, .term.result .termCaption { color: var(--q-gray-text); }
+.termValue { font-family: var(--q-font-head); font-weight: 700; font-size: 40px; line-height: 1.05; font-variant-numeric: tabular-nums; color: var(--q-cream); white-space: nowrap; }
+.termValue.orange { color: var(--q-orange); }
+.term.result .termValue { color: var(--q-blue); }
+.termCaption { font-size: 12px; color: var(--q-gray-blue); }
+.operator { align-self: center; color: var(--q-orange); flex: none; }
+@media (max-width: 1279px) { .termValue { font-size: 30px; } }
+/* Tableta y móvil: la ecuación se lee en filas (término a la izquierda, cifra a la derecha). */
+@media (max-width: 1023px) {
+  .equation { flex-direction: column; gap: 10px; }
+  .term { flex-direction: row; align-items: center; justify-content: space-between; padding: 0; background: none; border: 0; gap: 10px; }
+  .term.result { padding-top: 12px; border-top: 1px solid #7fa6e640; border-radius: 0; background: none; }
+  .term.result .termLabel { color: var(--q-gray-blue); }
+  .term.result .termValue { color: var(--q-blue-light); font-size: 34px; }
+  .termValue { font-size: 26px; }
+  .termCaption { display: none; }
+  .operator { display: none; }
+  .termLabel::before { content: attr(data-op); color: var(--q-orange); margin-right: 8px; }
+}
+@media (max-width: 767px) {
+  .term.result .termValue { font-size: 28px; }
+  .termValue { font-size: 20px; }
+}
+
+/* ---------- MirrorPair: dos patas + llave ---------- */
+.mirror { display: flex; align-items: center; gap: 20px; padding: 28px; border-radius: var(--q-radius-xl); background: var(--q-navy); }
+.leg { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 20px 22px; border-radius: 14px; background: var(--q-cream); }
+.legLabel { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--q-gray-text); }
+.legTitle { font-family: var(--q-font-head); font-weight: 700; font-size: 20px; color: var(--q-navy); }
+.legSub { font-size: 13px; color: var(--q-gray-text); }
+.legValue { font-family: var(--q-font-head); font-weight: 700; font-size: 32px; color: var(--q-blue); font-variant-numeric: tabular-nums; }
+.legNote { font-size: 12.5px; color: var(--q-gray-text); }
+.link { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: none; }
+.linkLine { width: 2px; height: 28px; background: var(--q-blue-light); opacity: 0.6; }
+.mirror.compact { flex-direction: column; align-items: stretch; gap: 10px; padding: 0; background: transparent; }
+.compact .link { flex-direction: row; justify-content: center; flex-wrap: wrap; }
+.compact .linkLine { display: none; }
+.compact .leg { padding: 16px 18px; }
+.compact .legTitle { font-size: 17px; }
+.compact .legValue { font-size: 26px; }
+@media (max-width: 1023px) {
+  .mirror { flex-direction: column; align-items: stretch; gap: 10px; padding: 16px; }
+  .link { flex-direction: row; justify-content: center; }
+  .linkLine { display: none; }
+  .legValue { font-size: 24px; }
+  .legTitle { font-size: 16px; }
+}
+
+/* ---------- Stepper ---------- */
+.stepper { display: flex; list-style: none; margin: 0; padding: 0; }
+.step { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; min-width: 0; }
+.dot { width: 30px; height: 30px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
+.done .dot { background: var(--q-navy); color: var(--q-orange); }
+.current .dot { background: var(--q-orange); color: var(--q-navy); }
+.pending .dot { background: var(--q-white); border: 1.5px solid var(--q-gray-blue); color: var(--q-gray-text); }
+.stepLabel { font-size: 13px; font-weight: 500; }
+.current .stepLabel { font-weight: 700; }
+.pending .stepLabel { color: var(--q-gray-text); }
+.stepDetail { font-size: 12px; color: var(--q-gray-text); }
+@media (max-width: 767px) {
+  .stepper { flex-direction: column; gap: 0; }
+  .step { flex-direction: row; align-items: flex-start; text-align: left; gap: 12px; padding-bottom: 14px; position: relative; }
+  .step:not(:last-child)::after { content: ''; position: absolute; left: 14px; top: 32px; bottom: 2px; width: 2px; background: var(--q-line); }
+  .stepText { display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+}
+
+/* ---------- Pipeline (cinta "Cierre del grupo") ---------- */
+.pipeline { display: flex; align-items: center; gap: 0; padding: 16px 20px; border-radius: var(--q-radius-lg); background: var(--q-white); list-style: none; margin: 0; }
+.pipeStep { flex: 1 1 0; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pipeText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pipeTitle { font-family: var(--q-font-head); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.pipeCaption { font-size: 12px; color: var(--q-gray-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pipeLine { flex: 1 1 auto; height: 2px; min-width: 12px; background: var(--q-orange); opacity: 0.5; margin-right: 12px; }
+.pipeDot { width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center; background: var(--q-navy); color: var(--q-orange); flex: none; }
+.pipeDot.open { background: var(--q-white); border: 1.5px solid var(--q-gray-blue); color: var(--q-gray-text); }
+@media (max-width: 1279px) { .pipeCaption { display: none; } }
+@media (max-width: 1023px) { .pipeLine { display: none; } .pipeStep { justify-content: center; } }
+@media (max-width: 767px) {
+  .pipeline { padding: 14px; }
+  .pipeStep { flex-direction: column; gap: 6px; }
+  .pipeTitle { font-family: var(--q-font-body); font-size: 11px; font-weight: 600; color: var(--q-gray-text); }
+  .pipeLine { display: none; }
+  .pipeDot { width: 28px; height: 28px; }
+}

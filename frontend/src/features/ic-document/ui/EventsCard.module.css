@@ -1,0 +1,4 @@
+.muted { color: var(--q-gray-text); }
+.date { color: var(--q-gray-text); font-size: 12px; }
+.card { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: var(--q-radius); background: var(--q-cream); }
+.cardTop { display: flex; justify-content: space-between; gap: var(--q-space-3); flex-wrap: wrap; }

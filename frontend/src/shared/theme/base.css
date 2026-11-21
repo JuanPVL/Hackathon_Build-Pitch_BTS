@@ -1,0 +1,32 @@
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--q-font-body);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--q-navy);
+  background: var(--q-cream);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--q-font-head); font-weight: 700; margin: 0; line-height: 1.15; color: var(--q-navy); }
+p { margin: 0; }
+a { color: var(--q-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--q-blue-light); outline-offset: 2px; border-radius: 4px; }
+img, svg { display: block; }
+
+/* Cifras alineadas en tablas y montos */
+.q-num { font-family: var(--q-font-head); font-weight: 700; font-variant-numeric: tabular-nums; }
+.q-mono { font-family: var(--q-font-mono); }
+.q-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

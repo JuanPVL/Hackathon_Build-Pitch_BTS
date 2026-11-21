@@ -1,0 +1,16 @@
+.figure { margin: 0; }
+.chart { list-style: none; margin: 0; padding: 28px 0 0; display: flex; gap: var(--q-space-3); align-items: stretch; }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--q-space-2); }
+.plot { position: relative; height: 280px; border-bottom: 1px solid var(--q-line); }
+.bar { position: absolute; left: 6%; right: 6%; border-radius: 4px 4px 0 0; }
+.bar.total { background: var(--q-navy); }
+.bar.up { background: var(--q-blue); }
+.bar.down { background: var(--q-orange); }
+.value { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: var(--q-font-head); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.value.total { color: var(--q-navy); background: none; }
+.value.up { color: var(--q-blue); background: none; }
+.value.down { color: var(--q-orange-text); background: none; }
+.cat { text-align: center; font-size: 13px; color: var(--q-gray-text); overflow-wrap: anywhere; }
+.col:first-child .cat, .col:last-child .cat { color: var(--q-navy); font-weight: 700; }
+.note { font-size: 12px; color: var(--q-gray-text); margin-top: var(--q-space-3); }
+@media (max-width: 1023px) { .plot { height: 220px; } .chart { gap: var(--q-space-2); } .value { font-size: 12.5px; } .cat { font-size: 12px; } }

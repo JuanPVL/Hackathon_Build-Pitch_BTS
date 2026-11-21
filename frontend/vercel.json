@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/((?!assets/|favicon.svg|quadra.svg).*)", "destination": "/index.html" }
+    { "source": "/((?!assets/|brand/|favicon.svg|quadra.svg).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

@@ -1,0 +1,9 @@
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--q-gray-text); padding: 6px 4px; }
+.table tbody th { font-size: 14px; letter-spacing: 0; text-transform: none; font-weight: 500; color: var(--q-navy); }
+.table td, .table tbody th { padding: 12px 4px; border-top: 1px solid var(--q-line); }
+.num { text-align: right !important; font-family: var(--q-font-head); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+thead .num { font-family: var(--q-font-body); }
+.muted { color: var(--q-gray-text); }
+.good { color: var(--q-blue); }
+.bad { color: var(--q-err); }

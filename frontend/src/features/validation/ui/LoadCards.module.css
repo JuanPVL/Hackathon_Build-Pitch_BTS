@@ -1,0 +1,17 @@
+.grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--q-space-3); grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (min-width: 1280px) { .grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+
+.card { background: var(--q-white); border-radius: var(--q-radius-lg); padding: var(--q-space-4); display: flex; flex-direction: column; gap: var(--q-space-2); min-width: 0; }
+.cardHead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--q-space-2); }
+.owner { font-size: 20px; }
+.currency { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--q-gray-text); }
+.line { display: flex; align-items: center; gap: var(--q-space-2); flex-wrap: wrap; }
+.lineLabel { font-size: 12px; color: var(--q-gray-text); min-width: 34px; }
+.count { font-size: 12.5px; font-weight: 600; color: var(--q-orange-text); margin-top: 2px; }
+.countOk { font-size: 12.5px; font-weight: 600; color: var(--q-ok); margin-top: 2px; }
+
+.list { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: 56px auto 1fr; align-items: center; gap: var(--q-space-3); min-height: var(--q-touch); border-top: 1px solid var(--q-line); }
+.row:first-child { border-top: 0; }
+.rowOwner { font-family: var(--q-font-head); font-weight: 700; font-size: 15px; }
+.row .count, .row .countOk { text-align: right; margin: 0; }

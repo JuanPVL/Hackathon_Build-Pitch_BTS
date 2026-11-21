@@ -1,0 +1,62 @@
+/* QUADRA · tokens de diseño. Fuente: docs/design-system.md (kit de marca QUADRA).
+   Proporción 60/30/10: navy, crema y acento (naranja = check/etiquetas, azul = cifras). */
+:root {
+  /* Marca */
+  --q-navy: #13203c;
+  --q-navy-2: #1b2b4d;
+  --q-navy-deep: #0b1530;
+  --q-cream: #f6f4ef;
+  --q-white: #ffffff;
+  --q-bg-light: #e8edf4;
+  --q-orange: #f0905a;       /* solo gráfico o texto sobre navy (6.80:1) */
+  --q-orange-text: #b4511f;  /* etiquetas y negativos sobre claro (pendiente validar con marca) */
+  --q-blue: #1f5fbf;         /* cifras sobre claro (5.54:1) */
+  --q-blue-light: #7fa6e6;   /* cifras sobre navy (6.54:1) */
+  --q-gray-blue: #becadc;    /* texto secundario sobre navy */
+  --q-gray-text: #5a6680;    /* texto secundario sobre claro (5.24:1) */
+  --q-side-text: #c9d3e3;
+  --q-line: #dde3ec;
+
+  /* Estado */
+  --q-ok: #1e7a4c;
+  --q-ok-bg: #e3f2ea;
+  --q-err: #b42318;
+  --q-err-bg: #fbe6e4;
+  --q-warn-bg: #fcebdd;
+
+  /* Tipografía */
+  --q-font-head: 'Space Grotesk', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --q-font-body: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --q-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Espaciado y forma */
+  --q-space-1: 4px;
+  --q-space-2: 8px;
+  --q-space-3: 12px;
+  --q-space-4: 16px;
+  --q-space-5: 20px;
+  --q-space-6: 24px;
+  --q-space-8: 32px;
+  --q-space-10: 40px;
+  --q-radius-sm: 8px;
+  --q-radius: 12px;
+  --q-radius-lg: 16px;
+  --q-radius-xl: 20px;
+  --q-radius-pill: 999px;
+
+  /* Layout */
+  --q-sidebar-w: 248px;
+  --q-rail-w: 80px;
+  --q-topbar-h: 72px;
+  --q-bottomnav-h: 72px;
+  --q-touch: 44px;
+  --q-page-pad: 40px;
+
+  /* Movimiento */
+  --q-ease: cubic-bezier(0.2, 0, 0, 1);
+  --q-dur: 180ms;
+}
+
+@media (max-width: 1023px) { :root { --q-page-pad: 24px; --q-topbar-h: 64px; } }
+@media (max-width: 767px) { :root { --q-page-pad: 16px; } }
+@media (prefers-reduced-motion: reduce) { :root { --q-dur: 0ms; } }

@@ -1,0 +1,73 @@
+.shell { display: flex; min-height: 100dvh; background: var(--q-cream); }
+.main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.content { flex: 1; padding: 36px var(--q-page-pad) 48px; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.skip { position: absolute; left: -999px; top: 8px; z-index: 50; background: var(--q-navy); color: var(--q-cream); padding: 10px 14px; border-radius: 8px; }
+.skip:focus { left: 8px; }
+
+/* ---------- Sidebar (≥ 1024) ---------- */
+.sidebar { width: var(--q-sidebar-w); flex: none; background: var(--q-navy); color: var(--q-side-text); display: flex; flex-direction: column; gap: 4px; padding: 24px 16px; position: sticky; top: 0; height: 100dvh; overflow-y: auto; }
+.logo { width: 141px; height: 32px; margin: 0 0 20px 4px; }
+.groupLabel { display: flex; align-items: center; gap: 8px; padding: 14px 10px 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: var(--q-orange); text-transform: uppercase; }
+.stepDot { width: 20px; height: 20px; border-radius: 999px; background: var(--q-orange); color: var(--q-navy); display: grid; place-items: center; flex: none; }
+.navLink { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 12px; border-radius: 10px; color: var(--q-side-text); font-weight: 500; border-left: 3px solid transparent; }
+.navLink:hover { background: #ffffff0f; text-decoration: none; }
+.navLink svg { color: var(--q-gray-blue); flex: none; }
+.navLink.active { background: var(--q-navy-2); border-left-color: var(--q-orange); color: var(--q-cream); font-weight: 600; }
+.navLink.active svg { color: var(--q-orange); }
+.sideFooter { margin-top: auto; display: flex; flex-direction: column; gap: 4px; padding: 14px; border-radius: 12px; background: var(--q-navy-2); }
+.sideFooterK { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--q-blue-light); }
+.sideFooterV { font-size: 13px; color: var(--q-side-text); }
+
+/* ---------- Rail (768–1023) ---------- */
+.rail { width: var(--q-rail-w); flex: none; background: var(--q-navy); display: none; flex-direction: column; align-items: center; gap: 6px; padding: 20px 0; position: sticky; top: 0; height: 100dvh; }
+.railLogo { width: 36px; height: 33px; margin-bottom: 16px; }
+.railLink { width: 64px; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 12px; color: var(--q-side-text); font-size: 11px; font-weight: 600; }
+.railLink svg { color: var(--q-gray-blue); }
+.railLink:hover { text-decoration: none; background: #ffffff0f; }
+.railLink.active { background: var(--q-navy-2); color: var(--q-cream); }
+.railLink.active svg { color: var(--q-orange); }
+
+/* ---------- TopBar ---------- */
+.topbar { position: sticky; top: 0; z-index: 10; min-height: var(--q-topbar-h); display: flex; align-items: center; gap: 12px; padding: 0 var(--q-page-pad); background: var(--q-white); border-bottom: 1px solid var(--q-line); }
+.ctx { display: flex; flex-direction: column; gap: 1px; padding: 6px 12px; border: 1px solid var(--q-line); border-radius: 10px; min-height: var(--q-touch); justify-content: center; }
+.ctxK { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--q-gray-text); text-transform: uppercase; }
+.ctxV { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.ctx select { border: 0; background: transparent; font-size: 13px; font-weight: 600; padding: 0; cursor: pointer; }
+.flex { flex: 1; }
+.user { display: flex; align-items: center; gap: 10px; }
+.userText { display: flex; flex-direction: column; line-height: 1.25; }
+.userName { font-size: 13px; font-weight: 600; }
+.userRole { font-size: 12px; color: var(--q-gray-text); }
+.avatar { width: 40px; height: 40px; border-radius: 999px; background: var(--q-blue); color: var(--q-white); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; border: 0; }
+.iconBtn { width: var(--q-touch); height: var(--q-touch); display: grid; place-items: center; border-radius: 10px; border: 0; background: transparent; color: var(--q-navy); }
+.iconBtn:hover { background: var(--q-cream); }
+.devBanner { padding: 8px var(--q-page-pad); background: var(--q-warn-bg); color: var(--q-orange-text); font-size: 12.5px; font-weight: 600; }
+
+/* ---------- Mobile app bar & bottom nav (< 768) ---------- */
+.mobileBar { display: none; position: sticky; top: 0; z-index: 10; flex-direction: column; gap: 12px; padding: 12px 16px 14px; background: var(--q-navy); }
+.mobileRow { display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+.mobileLogo { width: 110px; height: 25px; }
+.mobileCtx { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mobileSelect { min-height: 36px; padding: 0 12px; border-radius: 999px; background: var(--q-navy-2); color: var(--q-cream); border: 0; font-size: 13px; font-weight: 600; }
+.bottomNav { display: none; position: sticky; bottom: 0; z-index: 10; background: var(--q-white); border-top: 1px solid var(--q-line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+.tab { flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--q-gray-text); font-size: 11px; font-weight: 600; border: 0; background: transparent; }
+.tab:hover { text-decoration: none; }
+.tab.active { color: var(--q-blue); font-weight: 700; }
+.sheet { position: fixed; inset: 0; z-index: 30; background: #0b153066; display: flex; align-items: flex-end; }
+.sheetPanel { width: 100%; background: var(--q-white); border-radius: 20px 20px 0 0; padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 4px; }
+.grabber { width: 40px; height: 4px; border-radius: 4px; background: var(--q-line); margin: 0 auto 10px; }
+.sheetLink { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 8px; border-radius: 10px; color: var(--q-navy); font-weight: 600; }
+.sheetLink svg { color: var(--q-blue); }
+
+@media (max-width: 1023px) {
+  .sidebar { display: none; }
+  .rail { display: flex; }
+  .userText { display: none; }
+  .content { padding-top: 28px; }
+}
+@media (max-width: 767px) {
+  .rail, .topbar { display: none; }
+  .mobileBar { display: flex; }
+  .bottomNav { display: flex; }
+  .content { padding: 20px 16px 24px; gap: 16px; }
+}
