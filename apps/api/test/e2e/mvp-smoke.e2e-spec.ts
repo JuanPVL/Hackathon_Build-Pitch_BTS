@@ -33,8 +33,9 @@ describe('Smoke MVP de lectura', () => {
 
   it('GET /api/runs y /api/runs/:runId/kpis (group + companies) para readAll; 403 para una empresa', async () => {
     const runs = (await get('controller', '/api/runs', 200)).body;
-    expect(runs.length).toBe(2);
-    const kpis = (await get('auditor', `/api/runs/${runs[1].runId}/kpis`, 200)).body;
+    // >= 2: las corridas fixture; el motor (motor.e2e-spec) puede haber creado más.
+    expect(runs.length).toBeGreaterThanOrEqual(2);
+    const kpis = (await get('auditor', `/api/runs/${runs[runs.length - 1].runId}/kpis`, 200)).body;
     expect(kpis).toHaveProperty('group');
     expect(kpis).toHaveProperty('companies');
     await get('gt1Accountant', '/api/runs', 403);

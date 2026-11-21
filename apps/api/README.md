@@ -61,6 +61,12 @@ están en [DEPLOY.md](DEPLOY.md). En esta rama no se despliega nada.
 | `GET /api/scenarios/:scenarioId/findings` | Hallazgos visibles (los de `"loadId"` null solo con `readAll`) | JWT + algún grant |
 | `GET /api/runs` | Corridas de consolidación | `readAll` |
 | `GET /api/runs/:runId/kpis` | `{ run, group: "vGroupKpi", companies: "vCompanyKpi" }` | `readAll` |
+| `POST /api/scenarios/:scenarioId/consolidate` | QB-14: `"fnConsolidar"` crea una corrida NUEVA (solo cargas APROBADA) → `{ run, reconciliation }`; 409 sin cargas aprobadas, 404 escenario inexistente | `writeAll` |
+| `GET /api/runs/:runId` | `{ run, loads }` (parámetros congelados, `ratesHash`, `lineageOk`, cargas incluidas) | `readAll` |
+| `GET /api/runs/:runId/consolidated` | `{ run, accounts }` agregado + eliminaciones + CTA = consolidado | `readAll` |
+| `GET /api/runs/:runId/eliminations` | `{ run, eliminations }` E1–E4 y E7 | `readAll` |
+| `GET /api/runs/:runId/reconciliation` | QB-13: `{ run, summary, reconciliation }` por documento IC | `readAll` |
+| `GET /api/runs/:runId/ic-matrix` | QB-13: `{ billed: "vIcBilledMatrix", balances: "vIcBalanceMatrix" }` del escenario de la corrida | `readAll` |
 | `GET /api/bridges` | Bridges V1→V2 | `readAll` |
 | `GET /api/bridges/:bridgeId` | Bridge con `lines` (Δ ventas/EBIT) y `eva` (Δ EVA) | `readAll` |
 | `GET /api/bridges/:bridgeId/check` | `"vVarianceBridgeCheck"` (cuadre ±1 USD) | `readAll` |
@@ -68,6 +74,20 @@ están en [DEPLOY.md](DEPLOY.md). En esta rama no se despliega nada.
 | `POST /api/ic-documents/:id/dispute` `{version, reason}` | `"fnDisputeIcDocument"` | Escritura sobre la empresa receptora |
 
 Errores de las funciones SQL: `insufficient_privilege` → 403, `check_violation` (estado ilegal) → 409.
+
+## Motor de consolidación (QB-13 / QB-14)
+
+Funciones SQL en `hackathon-consolidacion/supabase/07_motor_conciliar_consolidar.sql` (`fnRunLineUsd`,
+`fnConciliar`, `fnConsolidar`, security invoker). **No está aplicado a la base en vivo**: aplicarlo es
+decisión de Aroldo. Las pruebas locales lo cargan después de 01–05.
+
+- Cada consolidación crea una corrida nueva e inmutable; nunca borra ni modifica corridas previas
+  (las del seed 06 incluidas: `test/local-db/check-coexistence-06.sh` lo comprueba en una base local aparte).
+- Redondeo: cada línea se convierte y redondea a centavos (`round(amount * rate, 2)`, igual que `vLineUsd`);
+  agregados, eliminaciones, CTA y linaje usan esos centavos, así Σ linaje = consolidado al centavo. El oráculo
+  Python no redondea: la diferencia por cuenta contra `resultados_referencia/v2_*` es ≤ 0.17 USD. Los estados
+  de conciliación se deciden con el USD sin redondear, como el oráculo.
+- `fnConciliar` no tiene endpoint propio (PENDIENTE DECISIÓN AROLDO): corre dentro de `fnConsolidar`.
 
 ## Pruebas
 
