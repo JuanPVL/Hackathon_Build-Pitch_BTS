@@ -1,0 +1,4 @@
+.chips { display: flex; flex-wrap: wrap; gap: var(--q-space-2); margin-top: var(--q-space-2); }
+.bottom { display: grid; gap: var(--q-space-5); grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (max-width: 1023px) { .bottom { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) { .bottom { gap: var(--q-space-4); } }

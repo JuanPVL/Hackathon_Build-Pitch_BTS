@@ -1,0 +1,9 @@
+.list { list-style: none; margin: 0; padding: 0; }
+.item { display: flex; gap: var(--q-space-4); align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--q-line); }
+.item:last-child { border-bottom: 0; }
+.count { flex: none; width: 40px; font-family: var(--q-font-head); font-weight: 700; font-size: 28px; line-height: 1.1; color: var(--q-navy); font-variant-numeric: tabular-nums; }
+.zero { color: var(--q-gray-text); font-weight: 500; }
+.text { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; min-width: 0; }
+.desc { font-size: 13px; color: var(--q-gray-text); }
+.action { font-size: 13px; font-weight: 600; }
+@media (max-width: 767px) { .count { font-size: 24px; width: 36px; } }

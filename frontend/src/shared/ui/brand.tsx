@@ -32,7 +32,11 @@ export function Equation({ minuend, subtrahend, result }: { minuend: EquationTer
 /* ---------- MirrorPair ---------- */
 export interface Leg { label: string; title: string; subtitle: string; amount: string; note?: string }
 /** Las dos patas de un documento intercompany unidas por su llave. */
-export function MirrorPair({ issuer, receiver, documentKey, statusLabel = 'Conciliado' }: { issuer: Leg; receiver: Leg; documentKey: string; statusLabel?: string }) {
+export function MirrorPair({ issuer, receiver, documentKey, statusLabel = 'Conciliado', compact }: {
+  issuer: Leg; receiver: Leg; documentKey: string; statusLabel?: string
+  /** Apilado y sin fondo propio, para paneles angostos que ya son navy. */
+  compact?: boolean
+}) {
   const leg = (l: Leg) => (
     <article className={s.leg}>
       <span className={s.legLabel}>{l.label}</span>
@@ -43,7 +47,7 @@ export function MirrorPair({ issuer, receiver, documentKey, statusLabel = 'Conci
     </article>
   )
   return (
-    <div className={s.mirror}>
+    <div className={`${s.mirror} ${compact ? s.compact : ''}`}>
       {leg(issuer)}
       <div className={s.link}>
         <span className={s.linkLine} aria-hidden />

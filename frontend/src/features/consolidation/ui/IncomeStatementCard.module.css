@@ -1,0 +1,13 @@
+.account { font-weight: 700; color: var(--q-navy); font-variant-numeric: tabular-nums; }
+.plain { color: var(--q-navy); }
+.consolidated { display: inline-flex; align-items: center; gap: 4px; justify-content: flex-end; }
+.consolidated svg { color: var(--q-gray-text); flex: none; }
+
+.card { display: flex; flex-direction: column; gap: 2px; padding: 12px; border: 1px solid var(--q-line); border-radius: var(--q-radius); background: var(--q-white); min-height: var(--q-touch); }
+.card.ic { background: var(--q-bg-light); border-color: transparent; }
+.cardMain { display: flex; justify-content: space-between; align-items: baseline; gap: var(--q-space-3); }
+.cardName { color: var(--q-navy); font-size: 14px; min-width: 0; overflow-wrap: anywhere; }
+.ic .cardName { color: var(--q-gray-text); }
+.cardValue { font-family: var(--q-font-head); font-weight: 700; color: var(--q-blue); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ic .cardValue { color: var(--q-gray-text); }
+.note { font-size: 12.5px; font-weight: 600; }

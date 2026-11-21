@@ -1,0 +1,6 @@
+.rules { list-style: none; margin: 0 0 var(--q-space-4); padding: 0; }
+.rule { display: flex; align-items: center; justify-content: space-between; gap: var(--q-space-3); min-height: 44px; border-bottom: 1px solid var(--q-line); font-size: 14px; }
+.cta { display: flex; flex-direction: column; gap: 2px; background: var(--q-cream); border-radius: var(--q-radius); padding: var(--q-space-3) var(--q-space-4); font-size: 13px; color: var(--q-gray-text); }
+.cta strong { color: var(--q-navy); font-size: 14px; }
+.alerts { display: flex; flex-direction: column; gap: var(--q-space-3); }
+.band { margin-top: var(--q-space-4); font-size: 13px; color: var(--q-gray-text); }

@@ -1,5 +1,5 @@
 import type { CompanyCode, IcDocumentKey, Money } from '@/entities'
-import type { IcType, ReconciliationResult } from '@/features/reconciliation/domain/types'
+import type { IcType, ReconciliationResult } from '@/entities/ic'
 
 export type DocumentStatus = 'BORRADOR' | 'EMITIDA' | 'PENDIENTE_ACEPTACION' | 'ACEPTADA' | 'DISPUTADA' | 'CONCILIADA' | 'COMPENSADA' | 'ANULADA'
 

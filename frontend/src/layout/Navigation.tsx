@@ -59,15 +59,20 @@ export function BottomNav() {
   useEffect(() => setMoreOpen(false), [pathname])
   const tabs = NAV_ITEMS.filter(i => i.mobileTab)
   const extras = visibleItems().filter(i => !i.mobileTab)
-  const extraActive = extras.some(i => pathname.startsWith(i.path))
+  // La pestaña activa sigue al paso (p. ej. Cuenta corriente → Conciliar); "Más" solo si el paso no tiene pestaña.
+  const activeGroup = groupForPath(pathname)
+  const extraActive = !tabs.some(t => t.group === activeGroup)
   return (
     <>
       <nav className={s.bottomNav} aria-label="Navegación principal">
-        {tabs.map(t => (
-          <NavLink key={t.path} to={t.path} end={t.path === '/'} className={linkClass(s.tab)}>
-            <t.icon size={22} aria-hidden />{STEP_GROUPS.find(g => g.group === t.group)!.label}
-          </NavLink>
-        ))}
+        {tabs.map(t => {
+          const active = t.group === activeGroup
+          return (
+            <NavLink key={t.path} to={t.path} end={t.path === '/'} className={`${s.tab} ${active ? s.active : ''}`} aria-current={active ? 'page' : undefined}>
+              <t.icon size={22} aria-hidden />{STEP_GROUPS.find(g => g.group === t.group)!.label}
+            </NavLink>
+          )
+        })}
         <button type="button" className={`${s.tab} ${extraActive ? s.active : ''}`} aria-haspopup="dialog" aria-expanded={moreOpen} onClick={() => setMoreOpen(true)}>
           <Ellipsis size={22} aria-hidden />Más
         </button>

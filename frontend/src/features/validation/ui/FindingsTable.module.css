@@ -1,0 +1,23 @@
+.rank { color: var(--q-gray-text); font-size: 13px; }
+.rule { font-family: var(--q-font-head); }
+.scope { font-size: 13.5px; }
+.message { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.record { font-family: var(--q-font-mono); font-size: 11.5px; color: var(--q-gray-text); overflow-wrap: anywhere; }
+.impact { color: var(--q-blue); font-size: 15px; }
+
+.card { background: var(--q-white); border: 1px solid var(--q-line); border-radius: var(--q-radius-lg); overflow: hidden; }
+.cardSelected { background: var(--q-navy); border-color: var(--q-navy); color: var(--q-cream); }
+.cardButton { width: 100%; min-height: var(--q-touch); display: flex; flex-direction: column; align-items: stretch; gap: 8px; text-align: left; padding: var(--q-space-4); background: transparent; border: 0; color: inherit; font: inherit; }
+.cardTop { display: flex; align-items: center; gap: var(--q-space-2); flex-wrap: wrap; }
+.ruleTag { font-family: var(--q-font-mono); font-weight: 700; font-size: 12px; background: var(--q-bg-light); color: var(--q-navy); border-radius: 6px; padding: 3px 8px; }
+.cardSelected .ruleTag { background: var(--q-navy-2); color: var(--q-cream); }
+.cardScope { font-weight: 600; font-size: 14px; }
+.cardMessage { font-weight: 600; font-size: 15px; line-height: 1.4; }
+.cardRecord { font-family: var(--q-font-mono); font-size: 11.5px; color: var(--q-gray-text); overflow-wrap: anywhere; }
+.cardSelected .cardRecord { color: var(--q-gray-blue); }
+.cardImpactRow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--q-space-3); }
+.cardImpactLabel { font-size: 13px; color: var(--q-gray-text); }
+.cardSelected .cardImpactLabel { color: var(--q-gray-blue); }
+.cardImpact { font-family: var(--q-font-head); font-weight: 700; font-size: 22px; color: var(--q-blue); font-variant-numeric: tabular-nums; }
+.cardSelected .cardImpact { color: var(--q-blue-light); }
+.cardDetail { padding: 0 var(--q-space-4) var(--q-space-4); }

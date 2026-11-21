@@ -1,5 +1,5 @@
 import type { CompanyCode, IcDocumentKey, Money } from '@/entities'
-import type { ReconciliationResult } from '@/features/reconciliation/domain/types'
+import type { ReconciliationResult } from '@/entities/ic'
 
 export type MatrixView = 'saldo' | 'facturado' | 'recibido'
 

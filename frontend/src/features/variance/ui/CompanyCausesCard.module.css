@@ -1,0 +1,13 @@
+.list { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(80px, 1.4fr) auto; align-items: center; gap: var(--q-space-3); min-height: 48px; border-top: 1px solid var(--q-line); }
+.row:first-child { border-top: 0; }
+.company { background: var(--q-bg-light); color: var(--q-navy); border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; padding: 3px 0; }
+.label { color: var(--q-navy); font-size: 14px; min-width: 0; }
+.meter { min-width: 0; }
+.value { display: inline-flex; align-items: center; gap: 4px; font-family: var(--q-font-head); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; justify-content: flex-end; }
+.up { color: var(--q-blue); }
+.down { color: var(--q-orange-text); }
+@media (max-width: 767px) {
+  .row { grid-template-columns: 52px minmax(0, 1fr) auto; padding: 8px 0; row-gap: 6px; }
+  .meter { grid-column: 1 / -1; order: 5; }
+}

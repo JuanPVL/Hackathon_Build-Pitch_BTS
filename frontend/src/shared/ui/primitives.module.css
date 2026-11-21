@@ -86,7 +86,7 @@
 .segmented { display: inline-flex; padding: 4px; gap: 2px; border-radius: 10px; background: var(--q-white); border: 1px solid var(--q-line); max-width: 100%; overflow-x: auto; }
 .segment { min-height: 36px; padding: 0 14px; border: 0; border-radius: 7px; background: transparent; color: var(--q-gray-text); font-weight: 600; font-size: 13px; white-space: nowrap; }
 .segment[aria-pressed='true'] { background: var(--q-navy); color: var(--q-cream); }
-@media (max-width: 767px) { .segmented { display: flex; width: 100%; background: var(--q-bg-light); border: 0; } .segment { flex: 1; min-height: 40px; } .segment[aria-pressed='true'] { background: var(--q-white); color: var(--q-navy); } }
+@media (max-width: 767px) { .segmented { display: flex; flex-wrap: wrap; width: 100%; background: var(--q-bg-light); border: 0; overflow: visible; } .segment { flex: 1 1 auto; min-height: 40px; } .segment[aria-pressed='true'] { background: var(--q-white); color: var(--q-navy); } }
 
 /* ---------- BarMeter ---------- */
 .meter { height: 8px; border-radius: 4px; background: var(--q-cream); overflow: hidden; }

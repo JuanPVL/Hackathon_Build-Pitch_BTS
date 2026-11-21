@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { ChevronDown, LogOut, Search } from 'lucide-react'
+import { LogOut, Search } from 'lucide-react'
 import { useAuth } from '@/shared/auth'
 import { SCENARIOS, useScenarioContext } from '@/shared/hooks'
 import s from './AppShell.module.css'
@@ -9,7 +9,7 @@ function ScenarioSelect({ className }: { className?: string }) {
   const { scenario, setScenario } = useScenarioContext()
   return (
     <select className={className} aria-label="Versión del presupuesto" value={scenario.id} onChange={e => setScenario(e.target.value)}>
-      {SCENARIOS.map(o => <option key={o.id} value={o.id}>{o.short}</option>)}
+      {SCENARIOS.map(o => <option key={o.id} value={o.id}>{className ? `2027 · ${o.short} · USD` : o.short}</option>)}
     </select>
   )
 }
@@ -53,10 +53,9 @@ export function MobileBar({ status }: { status?: ReactNode }) {
         <span className={s.avatar} aria-hidden>{session?.user.email?.[0]?.toUpperCase() ?? 'Q'}</span>
       </div>
       <div className={s.mobileCtx}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span className="q-sr-only">Versión</span>
+        <label>
+          <span className="q-sr-only">Versión del presupuesto</span>
           <ScenarioSelect className={s.mobileSelect} />
-          <ChevronDown size={14} color="var(--q-gray-blue)" aria-hidden style={{ marginLeft: -26, pointerEvents: 'none' }} />
         </label>
         {status}
       </div>

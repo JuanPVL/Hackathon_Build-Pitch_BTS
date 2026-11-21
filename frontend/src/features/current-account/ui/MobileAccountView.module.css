@@ -1,0 +1,14 @@
+.picker { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.companyBtn { min-height: var(--q-touch); padding: 0; border-radius: 12px; border: 1px solid var(--q-line); background: var(--q-white); font-family: var(--q-font-head); font-weight: 700; font-size: 14px; color: var(--q-navy); }
+.companyBtn[aria-pressed='true'] { background: var(--q-navy); border-color: var(--q-navy); color: var(--q-cream); }
+
+.net { font-family: var(--q-font-head); font-weight: 700; font-size: 32px; line-height: 1.15; margin-top: 4px; color: var(--q-navy); font-variant-numeric: tabular-nums; }
+.caption { font-size: 13px; color: var(--q-gray-text); margin-top: 4px; }
+
+.partners { list-style: none; margin: 0; padding: 0; }
+.partners li + li { border-top: 1px solid var(--q-line); }
+.partner { width: 100%; min-height: 64px; display: flex; align-items: center; gap: var(--q-space-3); padding: 8px 0; border: 0; background: transparent; text-align: left; color: var(--q-navy); }
+.code { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px; background: var(--q-bg-light); font-family: var(--q-font-head); font-weight: 700; font-size: 13px; }
+.who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 15px; }
+.amount { font-family: var(--q-font-head); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; }
+.pos { color: var(--q-blue); }

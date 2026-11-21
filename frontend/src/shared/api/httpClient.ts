@@ -7,6 +7,8 @@ export class ApiError extends Error {
   get isNotFound() { return this.status === 404 }
   get isForbidden() { return this.status === 401 || this.status === 403 }
   get isNetwork() { return this.status === 0 }
+  /** El servidor o su proxy no está disponible (502/503/504). */
+  get isUnavailable() { return this.status === 502 || this.status === 503 || this.status === 504 }
 }
 
 /** Contrato que consumen los adaptadores de cada módulo (inversión de dependencias). */
@@ -46,13 +48,17 @@ export function createHttpClient({ baseUrl, getAccessToken, timeoutMs = 30000, f
     const token = await getAccessToken()
     if (token) headers.set('Authorization', `Bearer ${token}`)
 
+    // El timeout aplica siempre, también cuando el llamador (TanStack Query) pasa su propia señal.
+    const timeout = AbortSignal.timeout(timeoutMs)
+    const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout
+
     let response: Response
     try {
       response = await doFetch(`${baseUrl}${buildPath(path, options.query)}`, {
         method,
         headers,
         body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
-        signal: options.signal ?? AbortSignal.timeout(timeoutMs),
+        signal,
       })
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError' && options.signal?.aborted) throw error
@@ -64,8 +70,9 @@ export function createHttpClient({ baseUrl, getAccessToken, timeoutMs = 30000, f
       const message = Array.isArray(payload?.message) ? payload.message.join(', ') : payload?.message
       throw new ApiError(response.status, typeof message === 'string' ? message : `Error del servidor (${response.status})`)
     }
-    if (response.status === 204) return undefined as T
-    return response.json() as Promise<T>
+    // 204 o 200 sin cuerpo (p. ej. una acción que solo confirma) devuelven undefined.
+    const text = await response.text()
+    return (text ? JSON.parse(text) : undefined) as T
   }
 
   return {

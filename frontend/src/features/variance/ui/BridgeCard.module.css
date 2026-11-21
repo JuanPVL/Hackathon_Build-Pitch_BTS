@@ -1,0 +1,11 @@
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--q-space-3); margin-bottom: var(--q-space-4); }
+.eyebrowTitle { font: inherit; margin: 0; }
+.delta { font-family: var(--q-font-head); font-weight: 700; font-size: 44px; line-height: 1.1; margin: 6px 0 0; font-variant-numeric: tabular-nums; }
+.range { margin: 4px 0 0; color: var(--q-gray-text); font-size: 14px; }
+.chartOnly { display: block; }
+.listOnly { display: none; }
+@media (max-width: 767px) {
+  .delta { font-size: 34px; }
+  .chartOnly { display: none; }
+  .listOnly { display: block; }
+}

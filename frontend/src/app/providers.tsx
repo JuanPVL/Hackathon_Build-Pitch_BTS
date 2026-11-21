@@ -16,7 +16,7 @@ export function createQueryClient() {
         staleTime: 30_000,
         refetchOnWindowFocus: false,
         // No reintenta errores definitivos (sin permiso, no existe).
-        retry: (count, error) => !(error instanceof ApiError && (error.isForbidden || error.isNotFound)) && count < 1,
+        retry: (count, error) => !(error instanceof ApiError && (error.isForbidden || error.isNotFound || error.isUnavailable)) && count < 1,
       },
     },
   })

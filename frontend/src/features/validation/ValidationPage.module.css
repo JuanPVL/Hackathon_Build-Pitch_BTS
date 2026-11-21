@@ -1,0 +1,13 @@
+.chips { display: flex; gap: var(--q-space-2); flex-wrap: wrap; }
+.summaryRow { margin-bottom: var(--q-space-4); }
+.sort { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--q-gray-text); }
+.more { display: flex; margin: var(--q-space-3) auto 0; min-height: var(--q-touch); }
+
+.mobileSection { display: flex; flex-direction: column; gap: var(--q-space-3); }
+.mobileHead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--q-space-3); flex-wrap: wrap; }
+.mobileTitle { font-size: 18px; }
+.cards { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--q-space-3); }
+
+.detailEyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.18em; color: var(--q-orange); margin-bottom: var(--q-space-2); }
+.detailTitle { font-size: 24px; color: var(--q-cream); margin-bottom: var(--q-space-2); line-height: 1.25; }
+.detailRecord { display: block; font-family: var(--q-font-mono); font-size: 11.5px; color: var(--q-gray-blue); margin-bottom: var(--q-space-4); overflow-wrap: anywhere; }
