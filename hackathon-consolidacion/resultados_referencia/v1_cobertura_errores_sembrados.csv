@@ -1,0 +1,15 @@
+codigo,regla,empresa,detectado,hallazgos,impacto_usd,descripcion
+E01,V08,MXN,SÍ,1,285964669.73,Tasa MXN PRESUPUESTO de 2027-05 cargada invertida: 18.0 en vez de 0.0556
+E02,V09,US1,SÍ,1,59940000.0,"Gastos operativos de 2027-07 en x1000 (60,000,000 en vez de 60,000)"
+E03,V02,MX1,SÍ,2,906666.67,2 líneas de 2027-02 declaran moneda USD; MX1 presupuesta en MXN
+E04,V12,MX1,SÍ,2,58333.33,"MX1 no registró la compra IC-F1-2027-11 a GT1 (GTQ 65,000): venta IC sin contraparte"
+E05,V13,MX1,SÍ,1,50000.0,"Venta de junio a MX2 (MXN 900,000) registrada como venta a tercero (contraparte RFC de MX2)"
+E06,V03,MX2,SÍ,1,33333.34,Gasto operativo de 2027-09 en cuenta local GAS-OTR sin mapeo a cuenta de grupo
+E07,V04,US1,SÍ,1,300000.0,Ventas a terceros de 2027-04 duplicadas
+E08,V05,GT2,SÍ,1,128205.13,"GT2 no cargó el periodo 2027-03 (deja huérfanas IC-F2-2027-03, IC-F4-2027-03, IC-F5b-2027-03)"
+E09,V07,GT1,SÍ,1,500000.01,Ventas a terceros de 2027-08 con signo negativo
+E10,V06,GT1,SÍ,1,6410.26,"Inventario de cierre con GTQ 50,000 de más: Activo ≠ Pasivo + Patrimonio"
+E11,V11,US2,SÍ,1,5000.0,"US2 se factura a sí misma un servicio de gestión USD 5,000 (socio_ic = US2)"
+E12,V10,GT2,SÍ,1,5000.0,Venta IC de 2027-05 (doc IC-F2-2027-05) sin socio_ic
+E13,V14,US2/MX2,SÍ,1,53999.99,"Fee de gestión US2→MX2 de USD 12,000/mes = 8 % de ventas de MX2; la política TP-MGMT permite 2 %–5 %"
+E14,V18,GT2,SÍ,1,20000.0,"GT2 registra IC-F4-2027-12 (USD 20,000 de US1) en 2027-11: diferencia de corte"

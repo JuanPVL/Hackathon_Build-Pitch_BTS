@@ -1,0 +1,21 @@
+regla,severidad,empresa,registro,mensaje,encontrado,esperado,impacto_usd
+V14,A,US2→MX2,TP-MGMT,Fee de gestión US2→MX2 = 8.0% de ventas de MX2; política 2%–5%,8.0%,2%–5%,53999.99
+V18,A,GT2,presupuesto_GT2_V1.csv#fila87,"IC-F4-2027-12: emisor US1 lo registra en 2027-12, receptor GT2 en 2027-11 (corte)",2027-11,2027-12,20000.0
+V08,B,MXN,tasas 2027-05 PRESUPUESTO,Tasa MXN PRESUPUESTO 2027-05 fuera de banda (parece invertida: 1/x ≈ mediana),18.0,≈0.055556,285964669.73
+V09,B,US1,presupuesto_US1_V1.csv#fila46,"6000 2027-07 es 1,000x la mediana de la cuenta (¿miles vs unidades?)","60,000,000.00","≈60,000.00",59940000.0
+V02,B,MX1,presupuesto_MX1_V1.csv#fila13,Moneda declarada USD ≠ moneda funcional MXN,USD,MXN,850000.0
+V07,B,GT1,presupuesto_GT1_V1.csv#fila58,Monto negativo en 4.1.01 (Ventas a terceros),"-1,950,000.00",> 0,500000.01
+V04,B,US1,presupuesto_US1_V1.csv#fila86,Línea duplicada (4000 2027-04),,,300000.0
+V05,B,GT2,presupuesto_GT2,Periodo 2027-03 sin ninguna línea,falta 2027-03,12 periodos,128205.13
+V02,B,MX1,presupuesto_MX1_V1.csv#fila14,Moneda declarada USD ≠ moneda funcional MXN,USD,MXN,56666.67
+V12,B,MX2/MX1,presupuesto_MX2_V1.csv#fila30,IC-F3-2027-06: solo existe la pata del receptor (compra); falta el espejo en MX1,,,50000.0
+V13,B,MX1,presupuesto_MX1_V1.csv#fila52,Registrado en cuenta de terceros (VTA-NAC) pero la contraparte RFC-GMX020202 es MX2 (grupo),cuenta terceros,cuenta IC + socio_ic,50000.0
+V03,B,MX2,presupuesto_MX2_V1.csv#fila44,Cuenta local 'GAS-OTR' sin mapeo a cuenta de grupo,GAS-OTR,cuenta mapeada,33333.34
+V12,B,US1/GT2,presupuesto_US1_V1.csv#fila20,IC-F4-2027-03: solo existe la pata del emisor (venta); falta el espejo en GT2,,,20000.0
+V12,B,GT1/MX1,presupuesto_GT1_V1.csv#fila86,IC-F1-2027-11: solo existe la pata del emisor (venta); falta el espejo en MX1,,,8333.33
+V06,B,GT1,balance_GT1 2027-12,"Activo 32,565,000.00 ≠ Pasivo+Patrimonio 32,515,000.00","32,565,000.00","32,515,000.00",6410.26
+V10,B,GT2,presupuesto_GT2_V1.csv#fila30,Cuenta IC 4.1.02 sin socio_ic (doc IC-F2-2027-05),,,5000.0
+V11,B,US2,presupuesto_US2_V1.csv#fila98,Autofacturación: socio_ic = US2,,,5000.0
+V12,B,GT1/GT2,presupuesto_GT1_V1.csv#fila23,IC-F2-2027-03: solo existe la pata del receptor (compra); falta el espejo en GT2,,,5000.0
+V12,B,US2/US2,presupuesto_US2_V1.csv#fila98,IC-F5x-2027-01: solo existe la pata del emisor (venta); falta el espejo en US2,,,5000.0
+V12,B,US2/GT2,presupuesto_US2_V1.csv#fila20,IC-F5b-2027-03: solo existe la pata del emisor (venta); falta el espejo en GT2,,,3000.0

@@ -1,0 +1,12 @@
+empresa,escenario,periodo,cuenta_local,descripcion,moneda,monto,socio_ic,doc_ic_id,moneda_tx,monto_tx,contraparte_id_fiscal,volumen,precio
+GT1,PPTO_V1,2027-12,1.1.01,Efectivo,GTQ,3000000,,,,,,,
+GT1,PPTO_V1,2027-12,1.2.01,Cuentas por cobrar terceros,GTQ,1950000,,,,,,,
+GT1,PPTO_V1,2027-12,1.3.01,Inventario,GTQ,2550000,,,,,,,
+GT1,PPTO_V1,2027-12,1.5.01,Activo fijo neto,GTQ,25000000,,,,,,,
+GT1,PPTO_V1,2027-12,2.1.01,Cuentas por pagar terceros,GTQ,585000.0,,,,,,,
+GT1,PPTO_V1,2027-12,2.2.01,Deuda financiera largo plazo,GTQ,8000000,,,,,,,
+GT1,PPTO_V1,2027-12,1.2.02,Cuentas por cobrar IC,GTQ,65000,MX1,IC-F1-2027-12,GTQ,65000,,,
+GT1,PPTO_V1,2027-12,2.1.02,Cuentas por pagar IC,GTQ,39000,GT2,IC-F2-2027-12,GTQ,39000,,,
+GT1,PPTO_V1,2027-12,2.1.02,Cuentas por pagar IC,GTQ,58125.0,US2,IC-F5a-2027-12,USD,7500,,,
+GT1,PPTO_V1,2027-12,3.1.01,Capital social,GTQ,10000000,,,,,,,
+GT1,PPTO_V1,2027-12,3.2.01,Utilidades retenidas,GTQ,13832875.0,,,,,,,

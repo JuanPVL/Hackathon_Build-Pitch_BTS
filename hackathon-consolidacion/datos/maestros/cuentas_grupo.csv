@@ -1,0 +1,26 @@
+cuenta_grupo_id,nombre,tipo,rubro,es_ic,cuenta_contraparte_ic,corriente
+4100,Ventas a terceros,ING,VENTAS,0,,
+4200,Ventas intercompany,ING,VENTAS,1,5200,
+4300,Ingresos por servicios de gestión IC,ING,OTROS_ING_OP,1,6200,
+5100,Costo de ventas terceros,GAS,COSTO,0,,
+5200,Compras / costo intercompany,GAS,COSTO,1,4200,
+6100,Gastos operativos,GAS,GASTO_OP,0,,
+6200,Servicios de gestión IC (gasto),GAS,GASTO_OP,1,4300,
+7100,Gasto financiero terceros,GAS,FINANCIERO,0,,
+7200,Intereses IC (gasto),GAS,FINANCIERO,1,7300,
+7300,Intereses IC (ingreso),ING,FINANCIERO,1,7200,
+7900,Diferencia cambiaria IC (solo consolidación),GAS,FINANCIERO,0,,
+8100,Impuesto sobre la renta,GAS,ISR,0,,
+1100,Efectivo,ACT,EFECTIVO,0,,S
+1200,Cuentas por cobrar terceros,ACT,CTO,0,,S
+1250,Cuentas por cobrar IC,ACT,CTO,1,2150,S
+1300,Inventario,ACT,CTO,0,,S
+1500,Activo fijo neto,ACT,AF,0,,N
+1600,Préstamo IC por cobrar,ACT,PRESTAMO_IC,1,2250,N
+2100,Cuentas por pagar terceros,PAS,CTO,0,,S
+2150,Cuentas por pagar IC,PAS,CTO,1,1250,S
+2200,Deuda financiera largo plazo,PAS,DEUDA,0,,N
+2250,Préstamo IC por pagar,PAS,PRESTAMO_IC,1,1600,N
+3100,Capital social,PAT,PATRIMONIO,0,,
+3200,Utilidades retenidas,PAT,PATRIMONIO,0,,
+3900,Ajuste acumulado por conversión (CTA),PAT,PATRIMONIO,0,,
