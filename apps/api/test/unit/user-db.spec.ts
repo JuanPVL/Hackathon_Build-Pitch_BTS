@@ -18,7 +18,9 @@ describe('connectionOptions', () => {
       'postgresql://postgres.ref:secret@aws-1-us-west-2.pooler.supabase.com:5432/postgres',
     );
     expect(opts.max).toBe(5);
-    expect(opts.ssl).toEqual({ rejectUnauthorized: true });
+    expect(opts.ssl).toEqual(expect.objectContaining({ rejectUnauthorized: true }));
+    const ssl = opts.ssl as { rejectUnauthorized: boolean; ca?: string };
+    expect(ssl.ca).toMatch(/BEGIN CERTIFICATE/);
     expect(opts.prepare).not.toBe(false);
   });
 });
