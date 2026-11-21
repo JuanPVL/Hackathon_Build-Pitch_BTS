@@ -153,7 +153,7 @@ begin
     'severity','statusDomain','status','statusTransition','eliminationRule','lineageSourceType',
     'parameterDefinition','counterpartyType','period','validationRule','icDocumentType',
     'company','counterparty','groupAccount','accountMapping','scenario','parameter',
-    'transferPricingPolicy','groupExchangeRate','accessRole'] loop
+    'transferPricingPolicy','groupExchangeRate','varianceEffect','accessRole'] loop
     execute format('create policy "pRead" on %I for select to authenticated using (true)', vTable);
     execute format('create policy "pManage" on %I for all to authenticated
                       using (authz."hasPermission"(''masterData'')) with check (authz."hasPermission"(''masterData''))', vTable);
@@ -212,12 +212,13 @@ create policy "pRead" on "icPayable" for select to authenticated using (authz."c
 create policy "pUpdate" on "icPayable" for update to authenticated
   using (authz."canWriteCompany"("companyId")) with check (authz."canWriteCompany"("companyId"));
 
--- 4.5 Consolidation results: group level only.
+-- 4.5 Consolidation results and variance explainer: group level only.
 do $$
 declare vTable text;
 begin
   foreach vTable in array array['consolidationRun','consolidationRunLoad','icReconciliation',
-                                'elimination','consolidatedBalance','lineage'] loop
+                                'elimination','consolidatedBalance','lineage',
+                                'varianceBridge','varianceBridgeLine','varianceBridgeEva'] loop
     execute format('create policy "pRead" on %I for select to authenticated using (authz."hasPermission"(''readAll''))', vTable);
     execute format('create policy "pWrite" on %I for all to authenticated
                       using (authz."hasPermission"(''writeAll'')) with check (authz."hasPermission"(''writeAll''))', vTable);

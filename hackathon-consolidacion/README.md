@@ -20,6 +20,7 @@ hackathon-consolidacion/
 ├── docs/
 │   ├── consolidacion-intercompany.md  ← especificación funcional y técnica (el "qué" y el "por qué")
 │   ├── diccionario-datos.md           ← cada archivo y cada columna del dataset
+│   ├── guia-base-datos.md             ← qué hace cada tabla, cobertura del reto y brechas
 │   ├── diagrama-entidad-relacion.md   ← modelo de datos (Mermaid, generado del catálogo real)
 │   ├── diagrama-procesos.md           ← flujo de punta a punta, ciclo IC, corrida y máquinas de estado
 │   └── plan-iteraciones.md            ← iteraciones, criterios de aceptación y pruebas por iteración
@@ -45,7 +46,7 @@ hackathon-consolidacion/
     ├── 03_seed_loads_v1_with_errors.sql
     ├── 04_seed_loads_v2.sql
     ├── 05_security_rls.sql            ← roles, acceso por empresa, RLS
-    ├── 06_seed_demo_data.sql          ← llena las tablas vacías: hallazgos V1, documentos IC, corrida V2 de referencia
+    ├── 06_seed_demo_data.sql          ← demo: hallazgos V1, documentos IC, corridas V1 corregida y V2, bridge V1→V2
     ├── generar_seed_sql.py            ← genera 02, 03, 04 y 06 desde datos/ y resultados_referencia/
     └── _original_es/                  ← esquema y seeds originales (español), solo referencia
 ```
@@ -83,7 +84,7 @@ python motor_referencia.py     # requiere pandas
 1. Crear proyecto en Supabase.
 2. En el **SQL Editor**, ejecutar en orden: `01_schema.sql` → `02_seed_master_data.sql` → `03_seed_loads_v1_with_errors.sql` → `04_seed_loads_v2.sql` → `05_security_rls.sql` → `06_seed_demo_data.sql`.
    - `05` es opcional hasta tener login: después de 05 la anon key no ve nada y cada usuario necesita una fila en `"userCompanyAccess"` (plantilla comentada al final de `06`; los `userId` deben existir en Authentication > Users).
-   - `06` deja la base poblada para demo: aprueba V2, pone en `CUARENTENA` las cargas V1 con hallazgos, crea 121 documentos IC conciliados (con su CxC/CxP espejo) y una corrida V2 cargada con los resultados del oráculo. **Si el equipo va a construir el validador y el motor, no ejecuten `06`**: las cargas deben quedar en `RECIBIDA`.
+   - `06` deja la base poblada para demo: aprueba V2, pone en `CUARENTENA` las cargas V1 con hallazgos, corrige la tasa MXN invertida (E01, auditado), crea 121 documentos IC conciliados (con su CxC/CxP espejo), dos corridas con los resultados del oráculo (V1 corregida y V2) y el bridge V1→V2 del explicador. KPIs en `"vGroupKpi"` / `"vCompanyKpi"`, explicación en `"varianceBridgeLine"` / `"varianceBridgeEva"`, comprobación en `"vVarianceBridgeCheck"`. **Si el equipo va a construir el validador y el motor, no ejecuten `06`**: las cargas deben quedar en `RECIBIDA`.
    - Cada archivo es una sola transacción: si algo falla no queda nada a medias.
 3. Esquema en inglés, singular y camelCase: los identificadores van **entre comillas** (`"dataLoad"`, `"statusCode"`). Cada columna tiene `COMMENT` con su nombre anterior (`legacy: ...`); el esquema original en español quedó en `supabase/_original_es/`.
 4. Las cargas entran en estado `RECIBIDA`. El consolidado solo lee estados con `"status"."isConsolidable"` (`APROBADA`): **el validador es el que debe cambiar ese estado**. Las transiciones permitidas están en `"statusTransition"` y toda modificación queda en `audit."changeLog"`.

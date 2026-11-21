@@ -43,8 +43,8 @@ erDiagram
   groupExchangeRate }o--|| period : "periodCode"
   groupExchangeRate }o--|| rateType : "rateTypeCode"
   groupExchangeRate }o--|| scenario : "scenarioId"
-  icDocument }o--|| company : "receiverCompanyId"
   icDocument }o--|| company : "issuerCompanyId"
+  icDocument }o--|| company : "receiverCompanyId"
   icDocument }o--|| currency : "transactionCurrencyCode"
   icDocument }o--|| icDocumentType : "icDocumentTypeCode"
   icDocument }o--|| period : "periodCode"
@@ -52,12 +52,12 @@ erDiagram
   icDocument }o--|| status : "statusCode"
   icDocument }o--o| transferPricingPolicy : "icDocumentTypeCode,transferPricingPolicyId"
   icDocumentType }o--o| eliminationRule : "eliminationRuleCode"
-  icDocumentType }o--o| groupAccount : "issuerBsAccountId"
-  icDocumentType }o--o| groupAccount : "receiverBsAccountId"
   icDocumentType }o--o| groupAccount : "issuerPlAccountId"
+  icDocumentType }o--o| groupAccount : "receiverBsAccountId"
   icDocumentType }o--o| groupAccount : "receiverPlAccountId"
-  icPayable }o--|| company : "partnerCompanyId"
+  icDocumentType }o--o| groupAccount : "issuerBsAccountId"
   icPayable }o--|| company : "companyId"
+  icPayable }o--|| company : "partnerCompanyId"
   icPayable }o--|| currency : "currencyCode"
   icPayable |o--|| icDocument : "icDocumentId,version"
   icReceivable }o--|| company : "partnerCompanyId"
@@ -86,6 +86,15 @@ erDiagram
   validationFinding }o--|| severity : "severityCode"
   validationFinding }o--|| validationRule : "ruleCode"
   validationRule }o--|| severity : "severityCode"
+  varianceBridge }o--|| consolidationRun : "toRunId"
+  varianceBridge }o--|| consolidationRun : "fromRunId"
+  varianceBridgeEva }o--|| varianceBridge : "bridgeId"
+  varianceBridgeEva }o--|| varianceEffect : "effectCode,scopeCode"
+  varianceBridgeLine }o--|| company : "companyId"
+  varianceBridgeLine }o--|| groupAccount : "groupAccountId"
+  varianceBridgeLine }o--|| period : "periodCode"
+  varianceBridgeLine }o--|| varianceBridge : "bridgeId"
+  varianceBridgeLine }o--|| varianceEffect : "effectCode,scopeCode"
 ```
 
 ## 1. Catálogos y datos maestros
@@ -112,10 +121,10 @@ erDiagram
   groupExchangeRate }o--|| rateType : "rateTypeCode"
   groupExchangeRate }o--|| scenario : "scenarioId"
   icDocumentType }o--o| eliminationRule : "eliminationRuleCode"
-  icDocumentType }o--o| groupAccount : "issuerBsAccountId"
-  icDocumentType }o--o| groupAccount : "receiverBsAccountId"
   icDocumentType }o--o| groupAccount : "issuerPlAccountId"
+  icDocumentType }o--o| groupAccount : "receiverBsAccountId"
   icDocumentType }o--o| groupAccount : "receiverPlAccountId"
+  icDocumentType }o--o| groupAccount : "issuerBsAccountId"
   parameter }o--|| parameterDefinition : "parameterCode"
   parameter }o--|| scenario : "scenarioId"
   transferPricingPolicy }o--|| icDocumentType : "icDocumentTypeCode"
@@ -175,6 +184,7 @@ erDiagram
     text accountCategoryCode PK
     text name
     text kpiGroupCode "nullable"
+    bool isSales
     text description "nullable"
   }
   financialStatement {
@@ -379,19 +389,19 @@ erDiagram
   company }o--|| currency : "functionalCurrencyCode"
   counterparty |o--o| company : "taxId,companyId"
   groupAccount }o--o| groupAccount : "icCounterAccountId"
-  icDocument }o--|| company : "receiverCompanyId"
   icDocument }o--|| company : "issuerCompanyId"
+  icDocument }o--|| company : "receiverCompanyId"
   icDocument }o--|| currency : "transactionCurrencyCode"
   icDocument }o--|| icDocumentType : "icDocumentTypeCode"
   icDocument }o--|| period : "periodCode"
   icDocument }o--|| status : "statusCode"
   icDocument }o--o| transferPricingPolicy : "icDocumentTypeCode,transferPricingPolicyId"
-  icDocumentType }o--o| groupAccount : "issuerBsAccountId"
-  icDocumentType }o--o| groupAccount : "receiverBsAccountId"
   icDocumentType }o--o| groupAccount : "issuerPlAccountId"
+  icDocumentType }o--o| groupAccount : "receiverBsAccountId"
   icDocumentType }o--o| groupAccount : "receiverPlAccountId"
-  icPayable }o--|| company : "partnerCompanyId"
+  icDocumentType }o--o| groupAccount : "issuerBsAccountId"
   icPayable }o--|| company : "companyId"
+  icPayable }o--|| company : "partnerCompanyId"
   icPayable }o--|| currency : "currencyCode"
   icPayable |o--|| icDocument : "icDocumentId,version"
   icReceivable }o--|| company : "partnerCompanyId"
@@ -664,6 +674,90 @@ erDiagram
     bool isConsolidable
     bool allowsElimination
     bool blocksScenarioClose
+  }
+```
+
+## 4b. Explicador de desviaciones
+
+Un `varianceBridge` compara dos corridas inmutables. Cada línea dice qué cambió (`effectCode`), dónde (empresa, cuenta, periodo) y cuánto (ΔVentas, ΔEBIT). `scopeCode` es una columna constante que obliga a usar efectos LINE en las líneas y EVA en `varianceBridgeEva`.
+
+```mermaid
+erDiagram
+  groupAccount }o--o| groupAccount : "icCounterAccountId"
+  varianceBridge }o--|| consolidationRun : "toRunId"
+  varianceBridge }o--|| consolidationRun : "fromRunId"
+  varianceBridgeEva }o--|| varianceBridge : "bridgeId"
+  varianceBridgeEva }o--|| varianceEffect : "effectCode,scopeCode"
+  varianceBridgeLine }o--|| company : "companyId"
+  varianceBridgeLine }o--|| groupAccount : "groupAccountId"
+  varianceBridgeLine }o--|| period : "periodCode"
+  varianceBridgeLine }o--|| varianceBridge : "bridgeId"
+  varianceBridgeLine }o--|| varianceEffect : "effectCode,scopeCode"
+  consolidationRun {
+    uuid runId PK
+    text scenarioId FK
+    timestamptz executedAt
+    uuid executedBy "nullable"
+    jsonb parameterSnapshot "nullable"
+    text ratesHash "nullable"
+    bool lineageOk "nullable"
+    text notes "nullable"
+  }
+  varianceBridge {
+    uuid bridgeId PK
+    uuid fromRunId FK
+    uuid toRunId FK
+    text notes "nullable"
+  }
+  varianceBridgeLine {
+    bigint bridgeLineId PK
+    uuid bridgeId FK
+    text effectCode FK
+    text scopeCode FK
+    text companyId FK
+    text groupAccountId FK
+    text periodCode FK
+    numeric salesDeltaUsd
+    numeric ebitDeltaUsd
+    numeric icDetailUsd
+  }
+  varianceBridgeEva {
+    uuid bridgeId PK,FK
+    text effectCode PK,FK
+    text scopeCode FK
+    numeric evaDeltaUsd
+  }
+  varianceEffect {
+    text effectCode PK
+    text name
+    text scopeCode
+    int sortOrder
+    text description "nullable"
+  }
+  company {
+    text companyId PK
+    text name
+    text countryCode FK
+    text functionalCurrencyCode FK
+    text taxId UK
+    numeric incomeTaxRate
+  }
+  groupAccount {
+    text groupAccountId PK
+    text name
+    text accountTypeCode FK
+    text accountCategoryCode FK
+    bool isIntercompany
+    text icCounterAccountId FK "nullable"
+    bool isCurrent "nullable"
+    text rateTypeCode FK "nullable"
+  }
+  period {
+    text periodCode PK
+    int year
+    int month
+    date startDate
+    date endDate
   }
 ```
 

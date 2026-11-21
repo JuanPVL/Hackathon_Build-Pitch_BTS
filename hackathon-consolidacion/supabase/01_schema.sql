@@ -189,13 +189,30 @@ create table "accountCategory" (
   "accountCategoryCode" text primary key,
   "name"                text not null,
   "kpiGroupCode"        text check ("kpiGroupCode" in ('EBIT','WORKING_CAPITAL','FIXED_ASSET')),
+  "isSales"             boolean not null default false,
   "description"         text
 );
 comment on table  "accountCategory" is 'Reporting category of group accounts that feeds KPIs (legacy: cuenta_grupo.rubro).';
 comment on column "accountCategory"."accountCategoryCode" is 'VENTAS, COSTO, GASTO_OP, CTO, AF, …';
 comment on column "accountCategory"."name"                is 'Display name.';
 comment on column "accountCategory"."kpiGroupCode"        is 'KPI bucket: EBIT (operating P&L), WORKING_CAPITAL, FIXED_ASSET; null = not used by KPIs.';
+comment on column "accountCategory"."isSales"             is 'Counts as sales in KPIs (sales = Σ consolidated balance of these categories).';
 comment on column "accountCategory"."description"         is 'Free description.';
+
+create table "varianceEffect" (
+  "effectCode" text primary key,
+  "name"       text not null,
+  "scopeCode"  text not null check ("scopeCode" in ('LINE','EVA')),
+  "sortOrder"  int  not null default 0,
+  "description" text,
+  unique ("effectCode", "scopeCode")
+);
+comment on table  "varianceEffect" is 'Causes used by the variance explainer ("why did the number change").';
+comment on column "varianceEffect"."effectCode"  is 'VOLUMEN, PRECIO, TIPO_CAMBIO, COSTO_VENTAS, GASTO_OPERATIVO, IC_NEUTRAL (LINE) / EBIT_DESPUES_IMPUESTOS, TASA_IMPUESTO, WACC, CAPITAL_INVERTIDO (EVA).';
+comment on column "varianceEffect"."name"        is 'Label shown to the director (same wording as the reference engine).';
+comment on column "varianceEffect"."scopeCode"   is 'LINE = explains Δsales/ΔEBIT per company, account and period; EVA = explains ΔEVA of the group.';
+comment on column "varianceEffect"."sortOrder"   is 'Display order in the bridge.';
+comment on column "varianceEffect"."description" is 'How the effect is computed.';
 
 create table "severity" (
   "severityCode" text primary key,
@@ -819,6 +836,67 @@ comment on column "lineage"."rate"            is 'Rate applied (legacy: tasa).';
 comment on column "lineage"."contributionUsd" is 'USD contribution (legacy: aporte_usd).';
 
 -- ---------------------------------------------------------------------
+-- 5b. VARIANCE EXPLAINER (bridge between two runs: what changed, where and why)
+-- ---------------------------------------------------------------------
+create table "varianceBridge" (
+  "bridgeId"  uuid primary key default gen_random_uuid(),
+  "fromRunId" uuid not null references "consolidationRun" on delete cascade,
+  "toRunId"   uuid not null references "consolidationRun" on delete cascade,
+  "createdAt" timestamptz not null default now(),
+  "createdBy" uuid default audit."currentUserId"(),
+  "notes"     text,
+  unique ("fromRunId", "toRunId"),
+  check ("fromRunId" <> "toRunId")
+);
+comment on table  "varianceBridge" is 'Variance explanation between two consolidation runs (e.g. PPTO_V1 → PPTO_V2). Lines must add up to the KPI deltas (see vVarianceBridgeCheck).';
+comment on column "varianceBridge"."bridgeId"  is 'Surrogate key.';
+comment on column "varianceBridge"."fromRunId" is 'Base run (before).';
+comment on column "varianceBridge"."toRunId"   is 'Compared run (after).';
+comment on column "varianceBridge"."createdAt" is 'Creation timestamp.';
+comment on column "varianceBridge"."createdBy" is 'User that produced the bridge.';
+comment on column "varianceBridge"."notes"     is 'Free notes.';
+
+create table "varianceBridgeLine" (
+  "bridgeLineId"   bigint generated always as identity primary key,
+  "bridgeId"       uuid not null references "varianceBridge" on delete cascade,
+  "effectCode"     text not null,
+  "scopeCode"      text not null generated always as ('LINE') stored,
+  "companyId"      text not null references "company",
+  "groupAccountId" text not null references "groupAccount",
+  "periodCode"     text not null references "period",
+  "salesDeltaUsd"  numeric(20,2) not null default 0,
+  "ebitDeltaUsd"   numeric(20,2) not null default 0,
+  "icDetailUsd"    numeric(20,2) not null default 0,
+  foreign key ("effectCode", "scopeCode") references "varianceEffect" ("effectCode", "scopeCode")
+);
+create index on "varianceBridgeLine" ("bridgeId", "effectCode");
+comment on table  "varianceBridgeLine" is 'One cause of change per company × group account × period (legacy: bridge_v1_v2_detalle.csv). Σ = Δ consolidated sales / EBIT.';
+comment on column "varianceBridgeLine"."bridgeLineId"   is 'Surrogate key.';
+comment on column "varianceBridgeLine"."bridgeId"       is 'Bridge.';
+comment on column "varianceBridgeLine"."effectCode"     is 'Cause of the change (LINE effects only) (legacy: efecto).';
+comment on column "varianceBridgeLine"."scopeCode"      is 'Constant LINE; restricts effectCode to line-level effects.';
+comment on column "varianceBridgeLine"."companyId"      is 'Where: company (legacy: empresa).';
+comment on column "varianceBridgeLine"."groupAccountId" is 'Where: group account (legacy: cuenta).';
+comment on column "varianceBridgeLine"."periodCode"     is 'When: period (legacy: periodo).';
+comment on column "varianceBridgeLine"."salesDeltaUsd"  is 'Contribution to Δ consolidated sales in USD (legacy: ventas).';
+comment on column "varianceBridgeLine"."ebitDeltaUsd"   is 'Contribution to Δ consolidated EBIT in USD (legacy: ebit).';
+comment on column "varianceBridgeLine"."icDetailUsd"    is 'IC change that the elimination neutralizes, for information (legacy: detalle_ic_usd).';
+
+create table "varianceBridgeEva" (
+  "bridgeId"    uuid not null references "varianceBridge" on delete cascade,
+  "effectCode"  text not null,
+  "scopeCode"   text not null generated always as ('EVA') stored,
+  "evaDeltaUsd" numeric(20,2) not null,
+  primary key ("bridgeId", "effectCode"),
+  foreign key ("effectCode", "scopeCode") references "varianceEffect" ("effectCode", "scopeCode")
+);
+comment on table  "varianceBridgeEva" is 'Decomposition of Δ group EVA (legacy: bridge_v1_v2_eva.csv). Σ = ΔEVA.';
+comment on column "varianceBridgeEva"."bridgeId"    is 'Bridge.';
+comment on column "varianceBridgeEva"."effectCode"  is 'EVA effect (legacy: efecto).';
+comment on column "varianceBridgeEva"."scopeCode"   is 'Constant EVA; restricts effectCode to EVA effects.';
+comment on column "varianceBridgeEva"."evaDeltaUsd" is 'Contribution to ΔEVA in USD (legacy: eva).';
+
+-- ---------------------------------------------------------------------
 -- 6. BUSINESS RULE TRIGGERS
 -- ---------------------------------------------------------------------
 -- 6.1 Generic state machine. Arg 0 = domain code (generated columns are not visible in BEFORE triggers).
@@ -1158,6 +1236,12 @@ create trigger "trgConsolidatedBalanceImmutable" before update on "consolidatedB
   for each row execute function audit."fnRejectChange"('run results are immutable');
 create trigger "trgLineageImmutable" before update on "lineage"
   for each row execute function audit."fnRejectChange"('run results are immutable');
+create trigger "trgVarianceBridgeImmutable" before update on "varianceBridge"
+  for each row execute function audit."fnRejectChange"('a bridge is immutable: create a new one');
+create trigger "trgVarianceBridgeLineImmutable" before update on "varianceBridgeLine"
+  for each row execute function audit."fnRejectChange"('a bridge is immutable: create a new one');
+create trigger "trgVarianceBridgeEvaImmutable" before update on "varianceBridgeEva"
+  for each row execute function audit."fnRejectChange"('a bridge is immutable: create a new one');
 
 -- ---------------------------------------------------------------------
 -- 7. AUDIT WIRING (stamps + change log)
@@ -1171,9 +1255,9 @@ declare
     'severity','statusDomain','status','statusTransition','eliminationRule','lineageSourceType',
     'parameterDefinition','counterpartyType','period','validationRule','icDocumentType',
     'company','counterparty','groupAccount','accountMapping','scenario','parameter',
-    'transferPricingPolicy','groupExchangeRate'];
+    'transferPricingPolicy','groupExchangeRate','varianceEffect'];
   -- transactional tables: full change log
-  vTransactional text[] := array['dataLoad','icDocument','icReceivable','icPayable','consolidationRun'];
+  vTransactional text[] := array['dataLoad','icDocument','icReceivable','icPayable','consolidationRun','varianceBridge'];
 begin
   foreach vTable in array vMaster || array['icDocument'] loop
     execute format('alter table %I
@@ -1243,6 +1327,19 @@ insert into "accountCategory" ("accountCategoryCode", "name", "kpiGroupCode") va
   ('PRESTAMO_IC',  'IC loans',                  null),
   ('DEUDA',        'Financial debt',            null),
   ('PATRIMONIO',   'Equity',                    null);
+update "accountCategory" set "isSales" = true where "accountCategoryCode" = 'VENTAS';
+
+insert into "varianceEffect" ("effectCode", "name", "scopeCode", "sortOrder", "description") values
+  ('VOLUMEN',                'Volumen',                                     'LINE', 1, '(volume₂ − volume₁) × price₁ × rate₁ — third-party sales with volume and price'),
+  ('PRECIO',                 'Precio',                                      'LINE', 2, '(price₂ − price₁) × volume₂ × rate₁'),
+  ('TIPO_CAMBIO',            'Tipo de cambio',                              'LINE', 3, 'local amount₂ × (rate₂ − rate₁)'),
+  ('COSTO_VENTAS',           'Costo de ventas (operativo)',                 'LINE', 4, '(amount₂ − amount₁) × rate₁ on cost accounts'),
+  ('GASTO_OPERATIVO',        'Gasto operativo',                             'LINE', 5, '(amount₂ − amount₁) × rate₁ on operating expense accounts'),
+  ('IC_NEUTRAL',             'IC (neutral en consolidado)',                 'LINE', 6, 'Change in IC lines: moves the aggregate but the elimination cancels it (0 in consolidated)'),
+  ('EBIT_DESPUES_IMPUESTOS', 'EBIT operativo (después de impuestos)',       'EVA',  1, 'ΔEBIT × (1 − t₁)'),
+  ('TASA_IMPUESTO',          'Tasa de impuesto efectiva (mezcla de países)','EVA',  2, '−EBIT₂ × (t₂ − t₁)'),
+  ('WACC',                   'Parámetro WACC',                              'EVA',  3, '−(WACC₂ − WACC₁) × invested capital₂'),
+  ('CAPITAL_INVERTIDO',      'Capital invertido',                           'EVA',  4, '−WACC₁ × (invested capital₂ − invested capital₁)');
 
 insert into "severity" ("severityCode", "name", "isBlocking", "requiresReasonToApprove") values
   ('B', 'Blocking',    true,  true),
@@ -1507,26 +1604,107 @@ left join "counterparty" cp on cp."companyId" = l."icPartnerCode"
 left join "counterparty" tp on tp."taxId" = l."counterpartyTaxId";
 comment on view "vLineCounterparty" is 'Resolves icPartnerCode / counterpartyTaxId to the counterparty master and flags IC disguised as third party (V13), self-billing (V11) and unknown partners.';
 
--- KPIs computed from a run (never captured). Buckets come from accountCategory.kpiGroupCode.
-create view "vGroupKpi" with (security_invoker = true) as
-with b as (
-  select cb."runId",
-         sum(cb."consolidatedUsd" * t."kpiSign") filter (where ac."kpiGroupCode" = 'EBIT')            as "ebitUsd",
-         sum(cb."consolidatedUsd" * t."kpiSign") filter (where ac."kpiGroupCode" = 'WORKING_CAPITAL') as "workingCapitalUsd",
-         sum(cb."consolidatedUsd" * t."kpiSign") filter (where ac."kpiGroupCode" = 'FIXED_ASSET')     as "fixedAssetsUsd",
-         sum(cb."consolidatedUsd") filter (where g."accountTypeCode" = 'ACT')                         as "totalAssetsUsd",
-         sum(cb."consolidatedUsd") filter (where g."accountTypeCode" = 'PAS' and g."isCurrent")       as "currentLiabilitiesUsd"
+-- KPI inputs per run and basis: CONSOLIDADO (after eliminations), AGREGADO (before), EMPRESA (stand-alone,
+-- from the run's own load lines in lineage). Everything is derived from the run, never captured.
+create view "vKpiBalance" with (security_invoker = true) as
+select cb."runId", 'CONSOLIDADO'::text as "basisCode", null::text as "companyId", cb."groupAccountId", cb."consolidatedUsd" as "amountUsd"
   from "consolidatedBalance" cb
-  join "groupAccount" g     on g."groupAccountId" = cb."groupAccountId"
-  join "accountType" t      on t."accountTypeCode" = g."accountTypeCode"
-  join "accountCategory" ac on ac."accountCategoryCode" = g."accountCategoryCode"
-  group by cb."runId"
+union all
+select cb."runId", 'AGREGADO', null, cb."groupAccountId", cb."aggregatedUsd"
+  from "consolidatedBalance" cb
+union all
+select l."runId", 'EMPRESA', l."companyId", l."groupAccountId", sum(l."contributionUsd")
+  from "lineage" l
+ where l."sourceTypeCode" = 'LINEA_CARGA' and l."companyId" is not null
+ group by l."runId", l."companyId", l."groupAccountId";
+comment on view "vKpiBalance" is 'Balance per run × basis (CONSOLIDADO, AGREGADO, EMPRESA) × company × group account: the only input of the KPIs.';
+
+create view "vKpi" with (security_invoker = true) as
+with m as (
+  select b.*, t."kpiSign", t."accountTypeCode", ac."kpiGroupCode", ac."isSales", g."isCurrent"
+    from "vKpiBalance" b
+    join "groupAccount" g     on g."groupAccountId" = b."groupAccountId"
+    join "accountType" t      on t."accountTypeCode" = g."accountTypeCode"
+    join "accountCategory" ac on ac."accountCategoryCode" = g."accountCategoryCode"
+), k as (
+  select "runId", "basisCode", "companyId",
+         coalesce(sum("amountUsd") filter (where "isSales"), 0)                                   as "salesUsd",
+         coalesce(sum("amountUsd" * "kpiSign") filter (where "kpiGroupCode" = 'EBIT'), 0)            as "ebitUsd",
+         coalesce(sum("amountUsd" * "kpiSign") filter (where "kpiGroupCode" = 'WORKING_CAPITAL'), 0) as "workingCapitalUsd",
+         coalesce(sum("amountUsd" * "kpiSign") filter (where "kpiGroupCode" = 'FIXED_ASSET'), 0)     as "fixedAssetsUsd",
+         coalesce(sum("amountUsd") filter (where "accountTypeCode" = 'ACT'), 0)                       as "totalAssetsUsd",
+         coalesce(sum("amountUsd") filter (where "accountTypeCode" = 'PAS' and "isCurrent"), 0)       as "currentLiabilitiesUsd"
+    from m
+   group by "runId", "basisCode", "companyId"
+), groupTax as (   -- effective group rate: statutory rates weighted by POSITIVE stand-alone EBIT of each company
+  select k."runId",
+         sum(k."ebitUsd" * c."incomeTaxRate") / nullif(sum(k."ebitUsd"), 0) as "taxRate"
+    from k join "company" c on c."companyId" = k."companyId"
+   where k."basisCode" = 'EMPRESA' and k."ebitUsd" > 0
+   group by k."runId"
+), r as (
+  select k.*,
+         coalesce(c."incomeTaxRate", gt."taxRate")                      as "effectiveTaxRate",
+         (run."parameterSnapshot" ->> 'WACC')::numeric                  as "wacc",
+         k."workingCapitalUsd" + k."fixedAssetsUsd"                     as "investedCapitalUsd",
+         k."totalAssetsUsd" - k."currentLiabilitiesUsd"                 as "capitalEmployedUsd"
+    from k
+    join "consolidationRun" run on run."runId" = k."runId"
+    left join "company" c   on c."companyId" = k."companyId"
+    left join groupTax gt   on gt."runId" = k."runId"
 )
-select b.*,
-       "workingCapitalUsd" + "fixedAssetsUsd"                    as "investedCapitalUsd",
-       "totalAssetsUsd" - "currentLiabilitiesUsd"                as "capitalEmployedUsd",
-       "ebitUsd" / nullif("totalAssetsUsd" - "currentLiabilitiesUsd", 0) as "roce"
-from b;
-comment on view "vGroupKpi" is 'Auditable KPI base per run (legacy: v_kpi_grupo). ROIC/EVA: NOPAT = EBIT×(1−t), EVA = NOPAT − WACC×investedCapital.';
+select r.*,
+       r."ebitUsd" * (1 - r."effectiveTaxRate")                                          as "nopatUsd",
+       r."ebitUsd" * (1 - r."effectiveTaxRate") / nullif(r."investedCapitalUsd", 0)      as "roic",
+       r."ebitUsd" / nullif(r."capitalEmployedUsd", 0)                                   as "roce",
+       r."ebitUsd" * (1 - r."effectiveTaxRate") - r."wacc" * r."investedCapitalUsd"      as "evaUsd"
+  from r;
+comment on view "vKpi" is 'All KPIs per run and basis: sales, EBIT, effective tax, NOPAT, invested capital, capital employed, ROIC, ROCE, WACC (run snapshot), EVA.';
+
+create view "vGroupKpi" with (security_invoker = true) as
+select * from "vKpi" where "basisCode" in ('CONSOLIDADO', 'AGREGADO');
+comment on view "vGroupKpi" is 'Group KPIs per run: CONSOLIDADO (official) and AGREGADO (without eliminations, shows the double count) (legacy: v_kpi_grupo).';
+
+create view "vCompanyKpi" with (security_invoker = true) as
+select * from "vKpi" where "basisCode" = 'EMPRESA';
+comment on view "vCompanyKpi" is 'Stand-alone KPIs per company and run, with the company statutory tax rate.';
+
+-- Drill-down: from a consolidated figure to the file row that produced it.
+create view "vLineageDetail" with (security_invoker = true) as
+select l."runId", r."scenarioId", l."groupAccountId", g."name" as "groupAccountName",
+       l."sourceTypeCode", l."sourceId", l."companyId", c."name" as "companyName",
+       l."localAmount", l."currencyCode", l."rate", l."contributionUsd",
+       dl."periodCode", dl."localAccountCode", dl."description", dl."icPartnerCode", dl."icDocumentId",
+       d."loadId", d."fileName", d."version" as "loadVersion", d."statusCode" as "loadStatusCode",
+       d."uploadedBy", d."uploadedAt", d."approvedBy", d."approvedAt"
+  from "lineage" l
+  join "consolidationRun" r  on r."runId" = l."runId"
+  join "groupAccount" g      on g."groupAccountId" = l."groupAccountId"
+  left join "company" c      on c."companyId" = l."companyId"
+  left join "dataLoadLine" dl on l."sourceTypeCode" = 'LINEA_CARGA' and dl."lineId" = l."sourceId"
+  left join "dataLoad" d     on d."loadId" = dl."loadId";
+comment on view "vLineageDetail" is 'Each contribution to a consolidated figure with its source row, file, uploader and approver (director drill-down).';
+
+-- Variance explainer check: the bridge must add up to the KPI deltas between the two runs (±1 USD).
+create view "vVarianceBridgeCheck" with (security_invoker = true) as
+with l as (
+  select "bridgeId", sum("salesDeltaUsd") as "sales", sum("ebitDeltaUsd") as "ebit"
+    from "varianceBridgeLine" group by "bridgeId"
+), e as (
+  select "bridgeId", sum("evaDeltaUsd") as "eva" from "varianceBridgeEva" group by "bridgeId"
+)
+select b."bridgeId", b."fromRunId", b."toRunId",
+       coalesce(l."sales", 0)              as "bridgeSalesDeltaUsd", k2."salesUsd" - k1."salesUsd" as "kpiSalesDeltaUsd",
+       coalesce(l."ebit", 0)               as "bridgeEbitDeltaUsd",  k2."ebitUsd" - k1."ebitUsd"   as "kpiEbitDeltaUsd",
+       coalesce(e."eva", 0)                as "bridgeEvaDeltaUsd",   k2."evaUsd" - k1."evaUsd"     as "kpiEvaDeltaUsd",
+       abs(coalesce(l."sales", 0) - (k2."salesUsd" - k1."salesUsd")) <= 1
+   and abs(coalesce(l."ebit", 0)  - (k2."ebitUsd"  - k1."ebitUsd"))  <= 1
+   and abs(coalesce(e."eva", 0)   - (k2."evaUsd"   - k1."evaUsd"))   <= 1 as "isBalanced"
+  from "varianceBridge" b
+  left join l on l."bridgeId" = b."bridgeId"
+  left join e on e."bridgeId" = b."bridgeId"
+  join "vKpi" k1 on k1."runId" = b."fromRunId" and k1."basisCode" = 'CONSOLIDADO'
+  join "vKpi" k2 on k2."runId" = b."toRunId"   and k2."basisCode" = 'CONSOLIDADO';
+comment on view "vVarianceBridgeCheck" is 'Σ bridge effects vs Δ consolidated sales, EBIT and EVA between the two runs; isBalanced within ±1 USD.';
 
 commit;

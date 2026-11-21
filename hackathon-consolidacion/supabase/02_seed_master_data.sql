@@ -316,7 +316,11 @@ insert into "validationRule" ("ruleCode", "description", "severityCode") values
   ('V12', 'Documento IC sin contraparte o con monto distinto', 'B'),
   ('V13', 'Transacción con tercero que en realidad es empresa del grupo', 'B'),
   ('V14', 'Precio de transferencia fuera de política', 'A'),
+  ('V15', 'Outlier estadístico por cuenta (z-score > 3 vs serie)', 'A'),
+  ('V16', 'Subtotales del archivo = suma de su detalle', 'B'),
+  ('V17', 'Capital invertido ≤ 0 o NOPAT con tasa de impuesto fuera de rango', 'A'),
   ('V18', 'Diferencia de corte entre emisor y receptor', 'A'),
+  ('V19', 'Mismo hash de archivo ya cargado', 'I'),
   ('V20', 'Diferencia cambiaria IC fuera de tolerancia', 'A');
 
 commit;

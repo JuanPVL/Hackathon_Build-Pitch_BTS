@@ -40,7 +40,8 @@ flowchart TD
     M3 --> M6["consolidatedBalance<br/>agregado + eliminaciones + CTA"]
     M5 --> M6
     M6 --> M7["lineage: Σ aportes = consolidado<br/>→ lineageOk"]
-    M7 --> M8["KPIs (vGroupKpi): EBIT, ROCE,<br/>ROIC, EVA"]
+    M7 --> M8["KPIs (vKpi): EBIT, NOPAT, ROIC,<br/>ROCE, EVA por grupo y empresa"]
+    M8 --> M9["Explicador V1 → V2<br/>varianceBridge: efecto × empresa<br/>× cuenta × periodo + bridge de EVA"]
   end
 
   A2 --> T1
@@ -58,7 +59,7 @@ flowchart TD
   I4 -.->|nueva versión o anulación| I1
   AP --> C2
   C2 --> T4 --> M1
-  M8 --> C3
+  M9 --> C3
   A2 & AP & I2 & I3 & C2 & C3 -.-> T5
 ```
 
@@ -105,6 +106,19 @@ flowchart LR
   S5 --> S6["lineage<br/>Σ contributionUsd = consolidatedUsd ± 1"]
   S6 --> S7["update lineageOk (una sola vez)"]
   S7 --> S8["Resultados inmutables:<br/>UPDATE rechazado por trigger"]
+```
+
+## 3b. Explicador de desviaciones
+
+```mermaid
+flowchart LR
+  R1["Corrida antes<br/>(PPTO_V1 corregida)"] --> B0["varianceBridge<br/>fromRunId → toRunId"]
+  R2["Corrida después<br/>(PPTO_V2)"] --> B0
+  B0 --> B1["varianceBridgeLine<br/>Volumen · Precio · Tipo de cambio<br/>Costo · Gasto · IC neutral<br/>por empresa, cuenta y periodo"]
+  B0 --> B2["varianceBridgeEva<br/>EBIT después de impuestos · Tasa efectiva<br/>WACC · Capital invertido"]
+  B1 --> C["vVarianceBridgeCheck<br/>Σ efectos = ΔVentas y ΔEBIT de vKpi"]
+  B2 --> C
+  C --> D["Director: qué cambió, dónde y por qué<br/>y cada línea baja a vLineageDetail"]
 ```
 
 ## 4. Máquinas de estado (`"statusTransition"`)
