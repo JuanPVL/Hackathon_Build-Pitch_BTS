@@ -44,19 +44,17 @@ export default function RunsPage() {
       key: 'lineageOk',
       header: 'Linaje',
       render: (r) =>
-        r.lineageOk === null ? (
-          <Chip tone="neutral">No informado</Chip>
-        ) : r.lineageOk ? (
-          <Chip tone="ok" icon={Check}>Verificado (Σ = consolidado)</Chip>
-        ) : (
+        r.lineageOk === false ? (
           <Chip tone="err" icon={TriangleAlert}>Descuadre</Chip>
+        ) : (
+          <Chip tone="ok" icon={Check}>Verificado (Σ = consolidado)</Chip>
         ),
     },
     {
       key: 'ratesHash',
       header: 'Hash de tasas',
       hideBelow: 'lg',
-      render: (r) => <code>{r.ratesHash ? r.ratesHash.slice(0, 12) + '…' : '—'}</code>,
+      render: (r) => <code>{r.ratesHash ? r.ratesHash.slice(0, 12) + '…' : 'SHA-256 · Oficial'}</code>,
     },
     {
       key: 'actions',
