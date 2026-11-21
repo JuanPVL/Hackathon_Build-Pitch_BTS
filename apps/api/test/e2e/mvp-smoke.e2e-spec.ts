@@ -25,8 +25,9 @@ describe('Smoke MVP de lectura', () => {
     await jwks.close();
   });
 
-  it('GET /api/companies: las 6 empresas para cualquier autenticado; 401 sin token', async () => {
-    expect((await get('noGrant', '/api/companies', 200)).body).toHaveLength(6);
+  it('GET /api/companies: 403 sin grants, 200 con grant (6 empresas), 401 sin token', async () => {
+    await get('noGrant', '/api/companies', 403);
+    expect((await get('gt1Accountant', '/api/companies', 200)).body).toHaveLength(6);
     expect((await get('gt1Accountant', '/api/companies', 200)).body.map((c: { companyId: string }) => c.companyId)).toContain('GT1');
     await request(app.getHttpServer()).get('/api/companies').expect(401);
   });
