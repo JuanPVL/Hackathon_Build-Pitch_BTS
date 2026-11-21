@@ -23,11 +23,13 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
   const { session } = useAuth()
   const access = useBackendAccess()
   const queryClient = useQueryClient()
-  const { query: scenario } = useScenarioContext()
+  const { query: scenario, setScenario } = useScenarioContext()
 
   const [companyId, setCompanyId] = useState<CompanyCode>('GT1')
   const [statementCode, setStatementCode] = useState<'PYG' | 'BALANCE'>('PYG')
+  const [targetScenarioId, setTargetScenarioId] = useState<string>(scenario.scenarioId)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [autoDetectedNote, setAutoDetectedNote] = useState<string | null>(null)
   const [previewHeaders, setPreviewHeaders] = useState<string[]>([])
   const [previewRows, setPreviewRows] = useState<string[][]>([])
   const [wizardStep, setWizardStep] = useState<1 | 2 | 3 | 4>(1)
@@ -47,19 +49,80 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
 
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file)
+    setActionMsg(null)
     if (!file) {
       setPreviewHeaders([])
       setPreviewRows([])
+      setAutoDetectedNote(null)
       setWizardStep(1)
       return
     }
+    const lowerName = file.name.toLowerCase()
+    let detectedStatement: 'PYG' | 'BALANCE' = statementCode
+    if (lowerName.includes('balance')) {
+      detectedStatement = 'BALANCE'
+      setStatementCode('BALANCE')
+    } else if (lowerName.includes('presupuesto') || lowerName.includes('pyg')) {
+      detectedStatement = 'PYG'
+      setStatementCode('PYG')
+    }
+
     const reader = new FileReader()
     reader.onload = () => {
       const text = typeof reader.result === 'string' ? reader.result : ''
       const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0)
       if (lines.length > 0) {
-        setPreviewHeaders(lines[0].split(',').map((h) => h.trim()))
-        setPreviewRows(lines.slice(1, 5).map((r) => r.split(',').map((c) => c.trim())))
+        const headers = lines[0].split(',').map((h) => h.trim())
+        const firstRows = lines.slice(1, 5).map((r) => r.split(',').map((c) => c.trim()))
+        setPreviewHeaders(headers)
+        setPreviewRows(firstRows)
+
+        const firstData = firstRows[0] ?? []
+        const empIdx = headers.findIndex(h => h === 'empresa' || h === 'companyCode' || h === 'companyId')
+        const escIdx = headers.findIndex(h => h === 'escenario' || h === 'scenarioCode' || h === 'scenarioId')
+        const ctaIdx = headers.findIndex(h => h === 'cuenta_local' || h === 'localAccountCode')
+
+        let detectedComp: CompanyCode = companyId
+        const rawComp = empIdx >= 0 ? firstData[empIdx]?.toUpperCase() : undefined
+        if (rawComp && COMPANIES.some(c => c.code === rawComp)) {
+          detectedComp = rawComp as CompanyCode
+          setCompanyId(detectedComp)
+        } else {
+          const matchComp = COMPANIES.find(c => file.name.toUpperCase().includes(c.code))
+          if (matchComp) {
+            detectedComp = matchComp.code
+            setCompanyId(detectedComp)
+          }
+        }
+
+        let detectedEsc = scenario.scenarioId
+        const rawEsc = escIdx >= 0 ? firstData[escIdx]?.toUpperCase() : undefined
+        if (rawEsc === 'PPTO_V1' || rawEsc === 'PPTO_V2') {
+          detectedEsc = rawEsc
+        } else if (file.name.toUpperCase().includes('_V1')) {
+          detectedEsc = 'PPTO_V1'
+        } else if (file.name.toUpperCase().includes('_V2')) {
+          detectedEsc = 'PPTO_V2'
+        }
+        setTargetScenarioId(detectedEsc)
+        if (detectedEsc !== scenario.scenarioId) {
+          setScenario(detectedEsc)
+        }
+
+        if (!lowerName.includes('balance') && !lowerName.includes('presupuesto') && ctaIdx >= 0) {
+          const firstAcc = firstData[ctaIdx] ?? ''
+          if (/^[123]\./.test(firstAcc)) {
+            detectedStatement = 'BALANCE'
+            setStatementCode('BALANCE')
+          } else if (/^[45678]\./.test(firstAcc)) {
+            detectedStatement = 'PYG'
+            setStatementCode('PYG')
+          }
+        }
+
+        setAutoDetectedNote(
+          `Auto-configurado desde el CSV: Empresa ${detectedComp} · Estado ${detectedStatement} · Escenario ${detectedEsc} (${lines.length - 1} filas detectadas).`,
+        )
       }
     }
     reader.readAsText(file)
@@ -68,10 +131,11 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
   const uploadMutation = useMutation({
     mutationFn: async () => {
       if (!selectedFile) throw new Error('Selecciona un archivo CSV antes de subir.')
+      const effectiveScenario = targetScenarioId || scenario.scenarioId
       const form = new FormData()
       form.append('file', selectedFile)
       form.append('companyId', companyId)
-      form.append('scenarioId', scenario.scenarioId)
+      form.append('scenarioId', effectiveScenario)
       form.append('financialStatementCode', statementCode)
       return backend.uploadLoad(form)
     },
@@ -209,18 +273,38 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
                 style={{ minHeight: 38, padding: '6px 10px', borderRadius: 8, background: 'var(--q-surface-alt, #f8fafc)', border: '1px solid var(--q-line)' }}
               />
             </label>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, fontWeight: 600 }}>
-              Archivo CSV
-              <input
-                type="file"
-                accept=".csv,text/csv"
-                aria-label="Archivo CSV"
-                onChange={(e) => handleFileSelect(e.target.files?.[0] ?? null)}
-              />
-            </label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, fontWeight: 600 }}>
+              <span>Archivo CSV</span>
+              <label
+                style={{
+                  minHeight: 38,
+                  padding: '6px 14px',
+                  borderRadius: 8,
+                  border: '1.5px dashed var(--q-blue, #2563EB)',
+                  background: selectedFile ? 'rgba(37, 99, 235, 0.08)' : 'var(--q-surface-alt, #f8fafc)',
+                  color: 'var(--q-navy, #0F2341)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                <Upload size={15} aria-hidden />
+                <span>{selectedFile ? selectedFile.name : 'Elegir archivo CSV…'}</span>
+                <input
+                  id="quadra-csv-file-input"
+                  type="file"
+                  accept=".csv,text/csv"
+                  aria-label="Archivo CSV"
+                  onChange={(e) => handleFileSelect(e.target.files?.[0] ?? null)}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            </div>
             {selectedFile && wizardStep === 1 && (
               <Button type="button" variant="secondary" onClick={() => setWizardStep(2)}>
-                Revisar mapeo
+                2. Revisar mapeo
               </Button>
             )}
             <Button
@@ -229,9 +313,15 @@ export function LoadBrowser({ showUploader = false }: { showUploader?: boolean }
               icon={Upload}
               disabled={!selectedFile || uploadMutation.isPending || !canWriteCompany(companyId)}
             >
-              {uploadMutation.isPending ? 'Subiendo…' : 'Confirmar carga CSV'}
+              {uploadMutation.isPending ? 'Subiendo archivo…' : 'Confirmar y subir CSV'}
             </Button>
           </form>
+
+          {autoDetectedNote && (
+            <div style={{ marginTop: 10 }}>
+              <Callout tone="info">{autoDetectedNote}</Callout>
+            </div>
+          )}
 
           {(wizardStep === 2 || previewHeaders.length > 0) && (
             <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--q-line)' }}>

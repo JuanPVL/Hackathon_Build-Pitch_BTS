@@ -36,6 +36,31 @@ export class HttpVarianceRepository implements VarianceRepository {
     const companyEffects = new Map<string, CompanyEffect>()
     if (request.metric === 'EVA') {
       for (const row of detail.eva) effectsByCode.set(row.effectCode, { value: numberOf(row.evaDeltaUsd), companies: new Set() })
+      const fromByComp = new Map((fromKpis.companies ?? []).map(c => [c.companyId, c]))
+      for (const toComp of toKpis.companies ?? []) {
+        if (!toComp.companyId) continue
+        const fromComp = fromByComp.get(toComp.companyId)
+        const deltaEva = numberOf(toComp.evaUsd) - numberOf(fromComp?.evaUsd ?? 0)
+        if (Number.isFinite(deltaEva)) {
+          companyEffects.set(`EVA|${toComp.companyId}`, {
+            effect: 'EBIT_DESPUES_IMPUESTOS',
+            label: 'Variación de EVA (NOPAT − cargo de capital)',
+            company: toComp.companyId,
+            value: deltaEva,
+          })
+        }
+      }
+      if (companyEffects.size === 0) {
+        for (const row of detail.lines) {
+          const value = numberOf(row.ebitDeltaUsd)
+          const key = row.effectCode + '|' + row.companyId
+          const company = companyEffects.get(key) ?? {
+            effect: row.effectCode as EffectCode, label: LABELS[row.effectCode] ?? row.effectCode, company: row.companyId, value: 0,
+          }
+          company.value += value
+          companyEffects.set(key, company)
+        }
+      }
     } else {
       for (const row of detail.lines) {
         const value = numberOf(request.metric === 'VENTAS' ? row.salesDeltaUsd : row.ebitDeltaUsd)
