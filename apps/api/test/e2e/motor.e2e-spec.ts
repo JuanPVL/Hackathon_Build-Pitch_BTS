@@ -99,6 +99,62 @@ describe('Motor QB-13 / QB-14 (oráculo V2)', () => {
     check('v2_matriz_ic_saldos_usd.csv', res.body.balances, 'companyId', 'partnerCompanyId', 'balanceUsd');
   });
 
+  it('QA-H4: la matriz de la corrida no cambia si se reemplazan las cargas APROBADA actuales', async () => {
+    const before = (await get('controller', `/api/runs/${runId}/ic-matrix`, 200)).body;
+    expect(before.billed.length).toBeGreaterThan(0);
+    // Nueva versión PYG de GT1, sin líneas IC: al aprobarla sustituye la carga de la corrida en el escenario,
+    // pero no en la foto de la corrida (sigue apuntando a la carga original, ya REEMPLAZADA).
+    await asOwner((sql) => sql`
+      insert into "dataLoad" ("companyId", "scenarioId", "financialStatementCode", "fileName", "version")
+      values ('GT1', 'PPTO_V2', 'PYG', 'qa-h4-reemplazo.csv', 99)`);
+    await asOwner((sql) => sql`
+      update "dataLoad"
+         set "statusCode" = 'APROBADA'
+       where "companyId" = 'GT1' and "scenarioId" = 'PPTO_V2' and "financialStatementCode" = 'PYG' and "version" = 99`);
+    const scenarioNow = await asOwner((sql) => sql<{ n: number }[]>`
+      select count(*)::int as n from "vIcBilledMatrix"
+       where "scenarioId" = 'PPTO_V2' and "issuerCompanyId" = 'GT1'`);
+    expect(scenarioNow[0].n).toBe(0); // la vista del escenario ya no ve las ventas IC de GT1
+    const after = (await get('controller', `/api/runs/${runId}/ic-matrix`, 200)).body;
+    expect(after.billed).toEqual(before.billed);
+    expect(after.balances).toEqual(before.balances);
+    // Limpia la carga extra para no alterar el conteo de los otros e2e que comparten la base.
+    await asOwner((sql) => sql`
+      delete from "dataLoad"
+       where "companyId" = 'GT1' and "scenarioId" = 'PPTO_V2' and "financialStatementCode" = 'PYG' and "version" = 99`);
+  });
+
+  it('QA-H4: una corrida sin cargas (como la V1 del 06) arma la matriz con su conciliación', async () => {
+    const [created] = await asOwner((sql) => sql<{ runId: string }[]>`
+      insert into "consolidationRun" ("scenarioId", "notes")
+      values ('PPTO_V1', 'qa-h4 run without loads')
+      returning "runId"`);
+    const v1RunId = created.runId;
+    await asOwner((sql) => sql`
+      insert into "icReconciliation" ("runId", "icDocumentId", "financialStatementCode",
+        "issuerCompanyId", "receiverCompanyId", "statusCode", "issuerUsd", "receiverUsd", "differenceUsd", "lineRefs")
+      values
+        (${v1RunId}, 'QA-H4-PYG', 'PYG', 'GT1', 'MX1', 'CONCILIADO', 1000, 1000, 0, 'qa#1;qa#2'),
+        (${v1RunId}, 'QA-H4-BAL', 'BALANCE', 'GT1', 'MX1', 'CONCILIADO', 400, 400, 0, 'qa#3;qa#4')`);
+    const scenario = await asOwner((sql) => sql<{ n: number }[]>`
+      select count(*)::int as n from "vIcBilledMatrix" where "scenarioId" = 'PPTO_V1'`);
+    expect(scenario[0].n).toBe(0);
+    const res = await get('controller', `/api/runs/${v1RunId}/ic-matrix`, 200);
+    expect(res.body.billed).toEqual([
+      expect.objectContaining({ issuerCompanyId: 'GT1', receiverCompanyId: 'MX1', billedUsd: '1000.00' }),
+    ]);
+    const bal = res.body.balances.map((r: { companyId: string; partnerCompanyId: string; balanceUsd: string }) => ({
+      companyId: r.companyId, partnerCompanyId: r.partnerCompanyId, balanceUsd: Number(r.balanceUsd),
+    }));
+    expect(bal).toEqual(
+      expect.arrayContaining([
+        { companyId: 'GT1', partnerCompanyId: 'MX1', balanceUsd: 400 },
+        { companyId: 'MX1', partnerCompanyId: 'GT1', balanceUsd: -400 },
+      ]),
+    );
+    expect(bal).toHaveLength(2);
+  });
+
   it('QB-14: consolidado por cuenta ±1 USD (agregado, eliminaciones, CTA, consolidado)', async () => {
     const res = await get('auditor', `/api/runs/${runId}/consolidated`, 200);
     const oracle = readOracleCsv('v2_consolidado.csv');
