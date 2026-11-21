@@ -22,7 +22,7 @@ export default function EliminationsPage() {
         eyebrow={`PASO 4 · ELIMINAR${run}`}
         title="Lo que el grupo se vende a sí mismo se elimina solo"
         subtitle="Los asientos salen de los pares conciliados; nadie los captura. Lo que no concilia no se elimina a la fuerza: queda visible como intercompany pendiente."
-        actions={!query.data?.ledger && <SegmentedControl label="Vista de eliminaciones" options={VIEW_OPTIONS} value={view} onChange={setView} />}
+        actions={<SegmentedControl label="Vista de eliminaciones" options={VIEW_OPTIONS} value={view} onChange={setView} />}
       />
       <QueryState query={query} emptyTitle="Sin eliminaciones" emptyText="El servicio todavía no expone los asientos de eliminación de este escenario.">
         {report => (

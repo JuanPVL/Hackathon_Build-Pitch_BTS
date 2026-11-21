@@ -167,12 +167,18 @@ export default function UsersPage() {
     {
       key: 'role',
       header: 'Rol',
-      render: (u) => u.roleCode ? <Chip tone="brand">{u.roleCode}</Chip> : <Chip tone="neutral">Sin rol</Chip>,
+      render: (u) => u.roleCode ? <Chip tone="brand">{u.roleCode}</Chip> : <Chip tone="neutral">Sin rol asignado</Chip>,
     },
     {
       key: 'company',
-      header: 'Empresa',
-      render: (u) => u.companyId ? <Chip tone="key">{u.companyId}</Chip> : <span className={s.groupScope}>Todo el grupo (null)</span>,
+      header: 'Alcance / Empresa',
+      render: (u) => {
+        if (u.companyId) {
+          const comp = COMPANIES.find(c => c.code === u.companyId)
+          return <Chip tone="key">{comp ? `${u.companyId} · ${comp.name}` : u.companyId}</Chip>
+        }
+        return <Chip tone="info">Corporativo · 6 empresas del grupo</Chip>
+      },
     },
     {
       key: 'status',
@@ -269,7 +275,7 @@ export default function UsersPage() {
                   <label className={s.field}>
                     <span className={s.label}>Empresa asignada</span>
                     {isGroupRole(editRole) ? (
-                      <input type="text" value="Todo el grupo (companyId: null)" disabled aria-label="Editar empresa" />
+                      <input type="text" value="Corporativo · Todas las empresas del grupo" disabled aria-label="Editar empresa" />
                     ) : (
                       <select
                         aria-label="Editar empresa"
@@ -362,7 +368,7 @@ export default function UsersPage() {
               {isGroupRole(roleCode) ? (
                 <input
                   type="text"
-                  value="Nivel grupo (null)"
+                  value="Corporativo · Todas las empresas del grupo"
                   disabled
                   aria-label="Empresa"
                 />

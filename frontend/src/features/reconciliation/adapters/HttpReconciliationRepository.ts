@@ -18,9 +18,12 @@ export class HttpReconciliationRepository implements ReconciliationRepository {
       (!filter.type || pair.type === filter.type),
     )
     const counts = pairCounts(data.reconciliation)
+    const snap = run.parameterSnapshot ?? {}
+    const tolUsd = numberOf(snap.TOLERANCIA_FX_USD ?? snap.TOLERANCIA_USD ?? 50)
+    const tolPct = numberOf(snap.TOLERANCIA_FX_PCT ?? snap.TOLERANCIA_PCT ?? 0.02)
     return {
       totals: counts,
-      tolerance: { usd: numberOf(run.parameterSnapshot?.TOLERANCIA_FX_USD), pct: numberOf(run.parameterSnapshot?.TOLERANCIA_FX_PCT) },
+      tolerance: { usd: Number.isFinite(tolUsd) ? tolUsd : 50, pct: Number.isFinite(tolPct) ? tolPct : 0.02 },
       pairs,
       byResult: [...new Set(allPairs.map(pair => pair.result))].map(result => ({ result, count: allPairs.filter(pair => pair.result === result).length })),
       typeFilterAvailable: true,

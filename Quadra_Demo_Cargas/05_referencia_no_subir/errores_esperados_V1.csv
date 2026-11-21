@@ -1,0 +1,15 @@
+codigo,regla_esperada,empresa,archivo,descripcion,efecto_si_no_se_detecta
+E01,V08,MXN,tasas_grupo_V1.csv,Tasa MXN PRESUPUESTO de 2027-05 cargada invertida: 18.0 en vez de 0.0556,El P&L de mayo de MX1 y MX2 se multiplica x324 en USD
+E02,V09,US1,presupuesto_US1_V1.csv,"Gastos operativos de 2027-07 en x1000 (60,000,000 en vez de 60,000)",EBIT del grupo cae ~USD 60M; ROIC/EVA absurdos
+E03,V02,MX1,presupuesto_MX1_V1.csv,2 líneas de 2027-02 declaran moneda USD; MX1 presupuesta en MXN,"Si se convierte como USD, gastos de febrero de MX1 se inflan x18"
+E04,V12,MX1,presupuesto_MX1_V1.csv,"MX1 no registró la compra IC-F1-2027-11 a GT1 (GTQ 65,000): venta IC sin contraparte",No se puede eliminar limpio; costo de MX1 subestimado
+E05,V13,MX1,presupuesto_MX1_V1.csv,"Venta de junio a MX2 (MXN 900,000) registrada como venta a tercero (contraparte RFC de MX2)","Doble conteo: USD 50,000 de ventas que no se eliminan"
+E06,V03,MX2,presupuesto_MX2_V1.csv,Gasto operativo de 2027-09 en cuenta local GAS-OTR sin mapeo a cuenta de grupo,"MXN 600,000 desaparecen del consolidado (EBIT sobrestimado)"
+E07,V04,US1,presupuesto_US1_V1.csv,Ventas a terceros de 2027-04 duplicadas,"Ventas del grupo infladas USD 300,000"
+E08,V05,GT2,presupuesto_GT2_V1.csv,"GT2 no cargó el periodo 2027-03 (deja huérfanas IC-F2-2027-03, IC-F4-2027-03, IC-F5b-2027-03)",Falta un mes de GT2 y tres documentos IC quedan sin contraparte
+E09,V07,GT1,presupuesto_GT1_V1.csv,Ventas a terceros de 2027-08 con signo negativo,"Ventas del grupo caen 2 x USD 250,000"
+E10,V06,GT1,balance_GT1_V1.csv,"Inventario de cierre con GTQ 50,000 de más: Activo ≠ Pasivo + Patrimonio",Balance consolidado no cuadra; capital invertido mal
+E11,V11,US2,presupuesto_US2_V1.csv,"US2 se factura a sí misma un servicio de gestión USD 5,000 (socio_ic = US2)","Ingreso ficticio USD 5,000"
+E12,V10,GT2,presupuesto_GT2_V1.csv,Venta IC de 2027-05 (doc IC-F2-2027-05) sin socio_ic,No se sabe contra quién eliminar
+E13,V14,US2/MX2,presupuesto_US2_V1.csv + presupuesto_MX2_V1.csv,"Fee de gestión US2→MX2 de USD 12,000/mes = 8 % de ventas de MX2; la política TP-MGMT permite 2 %–5 %",Riesgo fiscal de precios de transferencia (consolidado no cambia porque se elimina)
+E14,V18,GT2,presupuesto_GT2_V1.csv,"GT2 registra IC-F4-2027-12 (USD 20,000 de US1) en 2027-11: diferencia de corte",Noviembre y diciembre no concilian entre US1 y GT2

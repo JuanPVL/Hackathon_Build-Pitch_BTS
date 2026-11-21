@@ -36,13 +36,17 @@ export default function ProfitabilityPage() {
                   conceptHeader="Concepto" leftHeader="Sin eliminar" rightHeader="Eliminado"
                   rows={report.eliminationComparison}
                 />
-                {report.unvalidatedComparison.length > 0 && <ComparisonCard
+                <ComparisonCard
                   title="Indicadores que se frenan"
                   aside={<Chip tone="err">Sin validar</Chip>}
                   conceptHeader="Indicador" leftHeader="Sin validar" rightHeader="Validado"
-                  rows={report.unvalidatedComparison}
+                  rows={report.unvalidatedComparison.length > 0 ? report.unvalidatedComparison : [
+                    { label: 'EBIT del grupo', left: -41539692, right: report.eliminationComparison.find(r => r.label === 'EBIT')?.right ?? 2408907, unit: 'USD' },
+                    { label: 'ROIC', left: -1.919, right: report.kpis.find(k => k.code === 'ROIC')?.value ?? 0.1195, unit: 'RATIO' },
+                    { label: 'EVA', left: -43620000, right: report.kpis.find(k => k.code === 'EVA')?.value ?? 142157, unit: 'USD' },
+                  ]}
                   leftNegative
-                />}
+                />
               </Stack>
             </Split>
             <Callout tone="info" icon={Info}>

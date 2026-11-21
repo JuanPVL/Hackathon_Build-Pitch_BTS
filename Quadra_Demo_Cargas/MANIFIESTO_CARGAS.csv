@@ -1,0 +1,37 @@
+﻿carpeta,archivo,empresa,nombre_empresa,escenario,estado_financiero,moneda_funcional,filas,cuentas,periodos,sha256
+01_V1_con_errores,balance_GT1_V1.csv,GT1,"Alfa Guatemala, S.A.",PPTO_V1,BALANCE,GTQ,11,10,1,4f5b8353a2697a424ea3f716d049833609357d785acbba098c536bffb39276f8
+01_V1_con_errores,balance_GT2_V1.csv,GT2,"Beta Guatemala, S.A.",PPTO_V1,BALANCE,GTQ,11,10,1,3709077d46d91487ac5f2ed9f980cd64e63b3a4910169d054f7e127dfbe513a0
+01_V1_con_errores,balance_MX1_V1.csv,MX1,"Alfa México, S.A. de C.V.",PPTO_V1,BALANCE,MXN,13,11,1,feaa1ceb4ec72724aca12d972306c57d25a1fe42cfd32b88ca010aa1a7c28cef
+01_V1_con_errores,balance_MX2_V1.csv,MX2,"Gamma México, S.A. de C.V.",PPTO_V1,BALANCE,MXN,9,8,1,0d6de9b797f883d4f747a308e088602de83769334d75e2685386d3e3933cb539
+01_V1_con_errores,balance_US1_V1.csv,US1,"Alfa USA, Inc.",PPTO_V1,BALANCE,USD,10,10,1,a440b1f61ed9119a9d53b3ccd72fd481cafc7f99af8e4b205cd47790e23c1efd
+01_V1_con_errores,balance_US2_V1.csv,US2,"Delta Holding USA, Inc.",PPTO_V1,BALANCE,USD,14,9,1,ead6f2183c9008e47f658df9433a4b5b43ab8cd4efc8c9acb16407d3acb7cefb
+01_V1_con_errores,presupuesto_GT1_V1.csv,GT1,"Alfa Guatemala, S.A.",PPTO_V1,PYG,GTQ,96,8,12,7e3f3c76ab2a270f629559062cdc8f3858622c288c5d018c11c897434d0eefa6
+01_V1_con_errores,presupuesto_GT2_V1.csv,GT2,"Beta Guatemala, S.A.",PPTO_V1,PYG,GTQ,88,8,11,b9311efcb1a1b552ce15d30e2da6b00e657a765c2d7fba1d04bcdcbaee7ea795
+01_V1_con_errores,presupuesto_MX1_V1.csv,MX1,"Alfa México, S.A. de C.V.",PPTO_V1,PYG,MXN,107,9,12,45ec8f368365a5fd4679bb40c54a5e9cb3af089df9d2630aa5d5ae5fd5debe85
+01_V1_con_errores,presupuesto_MX2_V1.csv,MX2,"Gamma México, S.A. de C.V.",PPTO_V1,PYG,MXN,60,6,12,376c20d737198f9e8a3111fc82fc927f4ed4699e1d639bd08f18a5cf3e43ae74
+01_V1_con_errores,presupuesto_US1_V1.csv,US1,"Alfa USA, Inc.",PPTO_V1,PYG,USD,85,7,12,72ea8572b2d3b355a2bb38ca4431e85941d692a037fcc1c7b9dad1b503276a0d
+01_V1_con_errores,presupuesto_US2_V1.csv,US2,"Delta Holding USA, Inc.",PPTO_V1,PYG,USD,97,4,12,bb5cd1aea3963036eacd84bcaf12e9698ae42099117ae178d384388d74bf43b2
+02_V1_corregida,balance_GT1_V1.csv,GT1,"Alfa Guatemala, S.A.",PPTO_V1,BALANCE,GTQ,11,10,1,c1eb3cab38f0f1ef9397708a8760c6b0905c275f2431d28d4715f0f7ff50b692
+02_V1_corregida,balance_GT2_V1.csv,GT2,"Beta Guatemala, S.A.",PPTO_V1,BALANCE,GTQ,11,10,1,3709077d46d91487ac5f2ed9f980cd64e63b3a4910169d054f7e127dfbe513a0
+02_V1_corregida,balance_MX1_V1.csv,MX1,"Alfa México, S.A. de C.V.",PPTO_V1,BALANCE,MXN,13,11,1,feaa1ceb4ec72724aca12d972306c57d25a1fe42cfd32b88ca010aa1a7c28cef
+02_V1_corregida,balance_MX2_V1.csv,MX2,"Gamma México, S.A. de C.V.",PPTO_V1,BALANCE,MXN,9,8,1,0d6de9b797f883d4f747a308e088602de83769334d75e2685386d3e3933cb539
+02_V1_corregida,balance_US1_V1.csv,US1,"Alfa USA, Inc.",PPTO_V1,BALANCE,USD,10,10,1,a440b1f61ed9119a9d53b3ccd72fd481cafc7f99af8e4b205cd47790e23c1efd
+02_V1_corregida,balance_US2_V1.csv,US2,"Delta Holding USA, Inc.",PPTO_V1,BALANCE,USD,14,9,1,ead6f2183c9008e47f658df9433a4b5b43ab8cd4efc8c9acb16407d3acb7cefb
+02_V1_corregida,presupuesto_GT1_V1.csv,GT1,"Alfa Guatemala, S.A.",PPTO_V1,PYG,GTQ,96,8,12,6479afcefd728cd106c18d2c037684ec8737c6ddcfde61de4517929731d4d578
+02_V1_corregida,presupuesto_GT2_V1.csv,GT2,"Beta Guatemala, S.A.",PPTO_V1,PYG,GTQ,96,8,12,86ae5f764960d1a3edd28f7099a26ba681be7c03490701196af85cb2a1f91f0d
+02_V1_corregida,presupuesto_MX1_V1.csv,MX1,"Alfa México, S.A. de C.V.",PPTO_V1,PYG,MXN,108,9,12,916dbdf79e99e4f1002fbc7bcd4f69e1fba8f8a868479f1cf162acfa4522b591
+02_V1_corregida,presupuesto_MX2_V1.csv,MX2,"Gamma México, S.A. de C.V.",PPTO_V1,PYG,MXN,60,5,12,a6837b999fc3f9c8548f6140e6a34a80b53ae38fc46b4a36f85189995c6dbb5d
+02_V1_corregida,presupuesto_US1_V1.csv,US1,"Alfa USA, Inc.",PPTO_V1,PYG,USD,84,7,12,0a3b2895ba99637f574516f0487edd37c96e1fa523ded95a423d1e0638ca3a1d
+02_V1_corregida,presupuesto_US2_V1.csv,US2,"Delta Holding USA, Inc.",PPTO_V1,PYG,USD,96,4,12,6abbf6e8c5e082fcf700ede698d4bf6157433e9121e6fe69bb0ae11bd8ff885f
+03_V2_limpia,balance_GT1_V2.csv,GT1,"Alfa Guatemala, S.A.",PPTO_V2,BALANCE,GTQ,11,10,1,0bc73271774a85f37b17a20a0a724f9e9a6e87d520ef0064212b3bb654dcdbc8
+03_V2_limpia,balance_GT2_V2.csv,GT2,"Beta Guatemala, S.A.",PPTO_V2,BALANCE,GTQ,11,10,1,09d9ca55b3f9f9a8ac49b5413cc83ce828d2a5235f93b7ef34051ea47020bccd
+03_V2_limpia,balance_MX1_V2.csv,MX1,"Alfa México, S.A. de C.V.",PPTO_V2,BALANCE,MXN,13,11,1,4955f5496d276e9be653e923e4c4ac34aeedb962289cefefcc984821e4a6eff9
+03_V2_limpia,balance_MX2_V2.csv,MX2,"Gamma México, S.A. de C.V.",PPTO_V2,BALANCE,MXN,9,8,1,2b0e7ed7cc655eb43720c5f2d1b68a68a8ad3ce015fa7a1922d94db55af89916
+03_V2_limpia,balance_US1_V2.csv,US1,"Alfa USA, Inc.",PPTO_V2,BALANCE,USD,10,10,1,c444443895a790a7187c2e3ecd1e7bd059b227ff89af390526f59c71c46c6016
+03_V2_limpia,balance_US2_V2.csv,US2,"Delta Holding USA, Inc.",PPTO_V2,BALANCE,USD,14,9,1,77a0881b4e44641274268a4a7dc27bbf014bd4021cf197528c620d7b4aed7bc4
+03_V2_limpia,presupuesto_GT1_V2.csv,GT1,"Alfa Guatemala, S.A.",PPTO_V2,PYG,GTQ,96,8,12,0864cf9ee20c1cce69b69cd1b0c825163cd6c1c7b24c001ea3f9a95805005df3
+03_V2_limpia,presupuesto_GT2_V2.csv,GT2,"Beta Guatemala, S.A.",PPTO_V2,PYG,GTQ,96,8,12,348e202154280e23185148e4446c2303582a42375e691b42d867829fa4af64f4
+03_V2_limpia,presupuesto_MX1_V2.csv,MX1,"Alfa México, S.A. de C.V.",PPTO_V2,PYG,MXN,108,9,12,fa8650110d0e93a36591c62e927aa01741675ffca8db63544f4f7d2bebb86663
+03_V2_limpia,presupuesto_MX2_V2.csv,MX2,"Gamma México, S.A. de C.V.",PPTO_V2,PYG,MXN,60,5,12,cc4462866f91a735a32c28cfb47ebcffcf57e48922a46718fef0adc9b8d26a33
+03_V2_limpia,presupuesto_US1_V2.csv,US1,"Alfa USA, Inc.",PPTO_V2,PYG,USD,84,7,12,483f1a57f40e63d49858b27441af869365efa4157a72b65da804184e27e9a080
+03_V2_limpia,presupuesto_US2_V2.csv,US2,"Delta Holding USA, Inc.",PPTO_V2,PYG,USD,96,4,12,b7460a20cd2f87845870573636e83548197c26a47b41d88841942e28072b2dd0

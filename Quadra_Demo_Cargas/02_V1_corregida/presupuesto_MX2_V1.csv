@@ -1,0 +1,61 @@
+empresa,escenario,periodo,cuenta_local,descripcion,moneda,monto,socio_ic,doc_ic_id,moneda_tx,monto_tx,contraparte_id_fiscal,volumen,precio
+MX2,PPTO_V1,2027-01,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-01,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-01,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-01,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-01,MXN,900000,,,
+MX2,PPTO_V1,2027-01,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-01,USD,4500,,,
+MX2,PPTO_V1,2027-02,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-02,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-02,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-02,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-02,MXN,900000,,,
+MX2,PPTO_V1,2027-02,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-02,USD,4500,,,
+MX2,PPTO_V1,2027-03,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-03,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-03,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-03,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-03,MXN,900000,,,
+MX2,PPTO_V1,2027-03,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-03,USD,4500,,,
+MX2,PPTO_V1,2027-04,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-04,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-04,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-04,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-04,MXN,900000,,,
+MX2,PPTO_V1,2027-04,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-04,USD,4500,,,
+MX2,PPTO_V1,2027-05,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-05,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-05,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-05,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-05,MXN,900000,,,
+MX2,PPTO_V1,2027-05,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-05,USD,4500,,,
+MX2,PPTO_V1,2027-06,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-06,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-06,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-06,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-06,MXN,900000,,,
+MX2,PPTO_V1,2027-06,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-06,USD,4500,,,
+MX2,PPTO_V1,2027-07,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-07,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-07,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-07,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-07,MXN,900000,,,
+MX2,PPTO_V1,2027-07,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-07,USD,4500,,,
+MX2,PPTO_V1,2027-08,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-08,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-08,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-08,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-08,MXN,900000,,,
+MX2,PPTO_V1,2027-08,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-08,USD,4500,,,
+MX2,PPTO_V1,2027-09,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-09,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-09,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-09,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-09,MXN,900000,,,
+MX2,PPTO_V1,2027-09,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-09,USD,4500,,,
+MX2,PPTO_V1,2027-10,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-10,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-10,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-10,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-10,MXN,900000,,,
+MX2,PPTO_V1,2027-10,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-10,USD,4500,,,
+MX2,PPTO_V1,2027-11,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-11,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-11,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-11,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-11,MXN,900000,,,
+MX2,PPTO_V1,2027-11,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-11,USD,4500,,,
+MX2,PPTO_V1,2027-12,VTA-NAC,Ventas a terceros,MXN,2700000,,,,,VARIOS,3000,900
+MX2,PPTO_V1,2027-12,CV-NAC,Costo de ventas terceros,MXN,1620000.0,,,,,,,
+MX2,PPTO_V1,2027-12,GAS-OPE,Gastos operativos,MXN,600000,,,,,,,
+MX2,PPTO_V1,2027-12,CV-IC,Compras / costo intercompany,MXN,900000,MX1,IC-F3-2027-12,MXN,900000,,,
+MX2,PPTO_V1,2027-12,GAS-SRV-IC,Servicios de gestión IC (gasto),MXN,81900.0,US2,IC-F5d-2027-12,USD,4500,,,

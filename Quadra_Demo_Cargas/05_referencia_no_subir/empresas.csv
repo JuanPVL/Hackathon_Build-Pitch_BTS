@@ -1,0 +1,7 @@
+empresa_id,nombre,pais,moneda_funcional,id_fiscal,tasa_isr
+GT1,"Alfa Guatemala, S.A.",GT,GTQ,NIT-1000001,0.25
+GT2,"Beta Guatemala, S.A.",GT,GTQ,NIT-1000002,0.25
+MX1,"Alfa México, S.A. de C.V.",MX,MXN,RFC-AMX010101,0.3
+MX2,"Gamma México, S.A. de C.V.",MX,MXN,RFC-GMX020202,0.3
+US1,"Alfa USA, Inc.",US,USD,EIN-11-1111111,0.21
+US2,"Delta Holding USA, Inc.",US,USD,EIN-22-2222222,0.21

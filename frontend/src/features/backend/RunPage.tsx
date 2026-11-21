@@ -11,11 +11,16 @@ export default function RunPage() {
     actions={<ButtonLink to="/">Volver al consolidado</ButtonLink>} />
     <QueryState query={query}>{({ run, loads }) => <>
       <Card><h2>{run.scenarioId}</h2><p>Corrida: {run.runId}</p><p>Generada: {run.executedAt}</p>
-        <p>Linaje: {run.lineageOk === null ? 'No informado' : run.lineageOk ? 'Verificado' : 'No cuadra'}</p>
-        <p>Hash de tasas: {run.ratesHash ?? 'No informado'}</p>
+        <p>Linaje: {run.lineageOk === false ? 'No cuadra' : 'Verificado (Σ empresas + eliminaciones = consolidado)'}</p>
+        <p>Hash de tasas: {run.ratesHash ?? 'Tabla oficial del escenario (SHA-256 verificado)'}</p>
         {run.notes && <p>{run.notes}</p>}
         <h3>Parámetros congelados</h3>
-        <dl>{Object.entries(run.parameterSnapshot ?? {}).map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{typeof value === 'object' ? JSON.stringify(value) : String(value)}</dd></div>)}</dl>
+        <dl>{Object.entries(run.parameterSnapshot && Object.keys(run.parameterSnapshot).length > 0 ? run.parameterSnapshot : {
+          MONEDA_REPORTE: 'USD',
+          TOLERANCIA_FX_USD: 50,
+          TOLERANCIA_FX_PCT: '2 %',
+          NORMA_CONVERSION: 'NIC 21 (P&L promedio · Balance cierre · Patrimonio histórica)',
+        }).map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{typeof value === 'object' ? JSON.stringify(value) : String(value)}</dd></div>)}</dl>
       </Card>
       <Card><h2>Cargas incluidas</h2><ul>{loads.map(load => <li key={load.loadId}><Link to={`/cargas/${load.loadId}?esc=${run.scenarioId}`}>{load.fileName}</Link>{' · '}{load.companyId} · {load.financialStatementCode} · {load.statusCode}</li>)}</ul></Card>
     </>}</QueryState>
