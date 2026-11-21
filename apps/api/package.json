@@ -11,7 +11,8 @@
     "test:unit": "jest --runInBand --selectProjects unit",
     "test:e2e": "jest --runInBand --selectProjects e2e",
     "db:local": "bash test/local-db/setup-local-db.sh",
-    "db:pull": "drizzle-kit pull --config drizzle.config.ts && node scripts/post-pull.mjs"
+    "db:pull": "drizzle-kit pull --config drizzle.config.ts && node scripts/post-pull.mjs",
+    "seed:demo-users": "node scripts/seed-demo-users.mjs"
   },
   "engines": {
     "node": ">=20"

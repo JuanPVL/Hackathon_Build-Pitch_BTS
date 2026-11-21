@@ -84,3 +84,19 @@ carga `01`–`05`. **Nunca carga el `06`.** Los stubs son solo para desarrollo y
 del producto. Los fixtures e2e crean usuarios de prueba (controller, auditor, contador y viewer de GT1,
 contador de MX1 y un usuario sin acceso), hallazgos, documentos IC y una corrida mínima. Los JWT de prueba son ES256
 firmados con un par de claves efímero, publicado por un JWKS local en 127.0.0.1 en cada corrida.
+
+## Usuarios demo (QB-04)
+
+`scripts/seed-demo-users.mjs` crea o encuentra en Supabase Auth (Admin API, signup público no
+requerido) al `GROUP_CONTROLLER` (grupo), `AUDITOR` (grupo), `COMPANY_ACCOUNTANT` de GT1 y
+`COMPANY_VIEWER` de MX1, y emite el `INSERT` idempotente de `"userCompanyAccess"`. Las contraseñas
+y el SQL con UUIDs reales quedan en archivos locales ignorados por git (`apps/api/.demo-users.json`
+y `apps/api/.demo-user-company-access.sql`, chmod 600). El modo `tokens` escribe
+`/home/box/quadra/qa/tokens.env` (chmod 600). El script no imprime contraseñas ni tokens, y no
+ejecuta el SQL contra la base en vivo.
+
+```bash
+node scripts/seed-demo-users.mjs              # alta idempotente + SQL
+node scripts/seed-demo-users.mjs local-test   # idempotencia del SQL en Postgres local (puerto 54329)
+node scripts/seed-demo-users.mjs tokens       # tokens para QA
+```
