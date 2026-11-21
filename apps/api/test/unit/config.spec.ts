@@ -39,13 +39,19 @@ describe('.env.example (QB-02)', () => {
     expect(config.databaseUrl).toBeUndefined();
     expect(config.port).toBe(8080);
     expect(config.corsOrigins).toEqual([...DEV_LOCALHOST_ORIGINS]);
+    expect(config.anthropicApiKey).toBeUndefined();
+  });
+
+  it('ANTHROPIC_API_KEY es opcional: el API arranca sin ella y la lee si está', () => {
+    expect(loadConfig({ NODE_ENV: 'production', CORS_ORIGIN: 'https://front.dominio' }).anthropicApiKey).toBeUndefined();
+    expect(loadConfig({ ANTHROPIC_API_KEY: 'sk-test' }).anthropicApiKey).toBe('sk-test');
   });
 });
 
 describe('.gitignore (QB-02)', () => {
   it('ignora .env, .DS_Store, node_modules y dist pero no el example', () => {
     const lines = readFileSync(join(repoRoot, '.gitignore'), 'utf8').split('\n').map((l) => l.trim());
-    for (const entry of ['.env', '.env.*', '!.env.example', '.DS_Store', 'node_modules/', 'dist/']) {
+    for (const entry of ['.env', '.env.*', '!.env.example', '.DS_Store', '.local/', 'node_modules/', 'dist/']) {
       expect(lines).toContain(entry);
     }
   });

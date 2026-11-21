@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import type { AppConfig } from './config/app-config';
 
@@ -15,6 +16,33 @@ export function configureApp(app: INestApplication, config: AppConfig): void {
     credentials: false,
   });
   app.enableShutdownHooks();
+  setupOpenApi(app);
+}
+
+/** Swagger UI en /api/docs y el documento en /api/openapi.json. Ambos son públicos. */
+export function setupOpenApi(app: INestApplication): void {
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Quadra API')
+    .setDescription(
+      'API de consolidación presupuestaria Quadra. Las rutas de negocio exigen un access token de Supabase Auth en `Authorization: Bearer`.',
+    )
+    .setVersion('0.1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Access token de Supabase Auth (Authorization: Bearer <jwt>)',
+      },
+      'bearer',
+    )
+    .addSecurityRequirements('bearer')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, {
+    useGlobalPrefix: true,
+    jsonDocumentUrl: 'openapi.json',
+  });
 }
 
 export async function createApp(

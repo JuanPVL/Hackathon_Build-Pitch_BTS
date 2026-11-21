@@ -3,6 +3,7 @@
 !.env.example
 .DS_Store
 .vercel/
+.local/
 **/env.local.yaml
 
 # Node
