@@ -1,4 +1,6 @@
 import type { INestApplication } from '@nestjs/common';
+import type { NextFunction, Request, Response } from 'express';
+import helmet from 'helmet';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -8,6 +10,7 @@ import type { AppConfig } from './config/app-config';
 /** El front (nginx) reenvía /api/* al backend: todas las rutas cuelgan de /api. */
 export function configureApp(app: INestApplication, config: AppConfig): void {
   app.setGlobalPrefix('api');
+  app.use(securityHeaders);
   // Allowlist exacta de CORS_ORIGIN. El front manda Bearer JWT, no cookies: sin credentials.
   app.enableCors({
     origin: config.corsOrigins,
@@ -17,6 +20,43 @@ export function configureApp(app: INestApplication, config: AppConfig): void {
   });
   app.enableShutdownHooks();
   setupOpenApi(app);
+}
+
+const HSTS_MAX_AGE_SECONDS = 15552000; // 180 días
+
+function isDocsPath(path: string): boolean {
+  return path === '/api/docs' || path.startsWith('/api/docs/') || path === '/api/openapi.json';
+}
+
+/**
+ * Cabeceras de seguridad (QA-H8): HSTS, nosniff, X-Frame-Options DENY y CSP con frame-ancestors 'none'.
+ * En /api/docs y sus assets la CSP permite los inline scripts/styles que necesita Swagger UI.
+ */
+export function securityHeaders(req: Request, res: Response, next: NextFunction): void {
+  const docs = isDocsPath(req.path);
+  helmet({
+    xContentTypeOptions: true,
+    frameguard: { action: 'deny' },
+    hsts: { maxAge: HSTS_MAX_AGE_SECONDS, includeSubDomains: true },
+    contentSecurityPolicy: {
+      useDefaults: !docs,
+      directives: {
+        defaultSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+        ...(docs
+          ? {
+              scriptSrc: ["'self'", "'unsafe-inline'"],
+              styleSrc: ["'self'", "'unsafe-inline'"],
+              imgSrc: ["'self'", 'data:', 'https://validator.swagger.io'],
+              fontSrc: ["'self'", 'data:'],
+              connectSrc: ["'self'"],
+            }
+          : {}),
+      },
+    },
+  })(req, res, next);
 }
 
 /** Swagger UI en /api/docs y el documento en /api/openapi.json. Ambos son públicos. */
