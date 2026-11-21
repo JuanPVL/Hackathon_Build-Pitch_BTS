@@ -1,7 +1,7 @@
 import type { IcPair, ReconciliationReport } from './domain/types'
 
 /** Datos de prueba tomados del mockup (V2). Solo para pruebas. */
-const pair = (key: string, type: IcPair['type'], issuer: IcPair['issuer'], receiver: IcPair['receiver'], currency: IcPair['agreed']['currency'], amount: number, differenceUsd: number, result: IcPair['result']): IcPair =>
+const pair = (key: string, type: IcPair['type'], issuer: IcPair['issuer'], receiver: IcPair['receiver'], currency: NonNullable<IcPair['agreed']>['currency'], amount: number, differenceUsd: number, result: IcPair['result']): IcPair =>
   ({ key, type, issuer, receiver, agreed: { currency, amount }, issuerUsd: 0, receiverUsd: 0, differenceUsd, result })
 
 export const reconciliationReport: ReconciliationReport = {

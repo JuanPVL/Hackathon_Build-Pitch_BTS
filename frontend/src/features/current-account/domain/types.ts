@@ -13,13 +13,14 @@ export interface MatrixCell {
 
 /** Respuesta de GET /scenarios/{scenarioId}/ic/balances?view= (propuesta). Fila = quien reporta. */
 export interface BalanceMatrix {
+  receivedIsBilledTranspose?: boolean
   view: MatrixView
   companies: CompanyCode[]
   cells: MatrixCell[]
   totals: { documents: number; exact: number; fx: number; orphan: number; disputed: number }
 }
 
-export interface PairDocument { key: IcDocumentKey; agreed: Money; result: ReconciliationResult }
+export interface PairDocument { key: IcDocumentKey; agreed: Money | null; reportedUsd?: number; statement?: string; result: ReconciliationResult }
 
 /** Respuesta de GET /scenarios/{scenarioId}/ic/balances/{company}/{counterparty} (propuesta). */
 export interface PairDetail {

@@ -1,3 +1,4 @@
+import { ConsolidateControl } from '@/features/backend/ConsolidateControl'
 import { Download, GitCompareArrows } from 'lucide-react'
 import { Button, ButtonLink, PageHeader, Pipeline, QueryState, Split, Stack } from '@/shared/ui'
 import { useConsolidation } from './hooks/useConsolidation'
@@ -19,6 +20,7 @@ export default function ConsolidationPage() {
         meta={query.data && <RunMeta runId={query.data.runId} generatedAt={query.data.generatedAt} />}
         actions={
           <>
+            <ConsolidateControl />
             <ButtonLink icon={GitCompareArrows} to="/desviaciones">Comparar con V1</ButtonLink>
             <Button icon={Download} disabled title="Próximamente">Exportar</Button>
           </>
@@ -27,7 +29,7 @@ export default function ConsolidationPage() {
       <QueryState query={query} emptyTitle="Aún no hay consolidado" emptyText="Todavía no se ha ejecutado una corrida para este escenario.">
         {summary => (
           <>
-            <Pipeline steps={toPipelineSteps(summary.steps)} />
+            {summary.steps.length > 0 && <Pipeline steps={toPipelineSteps(summary.steps)} />}
             <SalesEquationCard summary={summary} />
             <KpiGrid kpis={summary.kpis} />
             <Split aside={380}>

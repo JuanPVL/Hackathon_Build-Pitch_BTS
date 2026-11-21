@@ -7,11 +7,12 @@ import type { Finding } from '../domain/types'
 import s from './FindingDetail.module.css'
 
 /** Cuerpo del detalle de un hallazgo (sobre navy): encontrado/esperado, impacto, sugerencia y aceptación con motivo. */
-export function FindingDetail({ finding, pending, onAccept, compact }: {
+export function FindingDetail({ finding, pending, onAccept, compact, canAccept = true }: {
   finding: Finding
   pending: boolean
   onAccept: (justification: string) => void
   /** Dentro de la tarjeta móvil: sin título ni registro, que la tarjeta ya muestra. */
+  canAccept?: boolean
   compact?: boolean
 }) {
   const [open, setOpen] = useState(false)
@@ -45,7 +46,7 @@ export function FindingDetail({ finding, pending, onAccept, compact }: {
         <p className={s.suggestion}><Sparkles size={16} aria-hidden /><span>Sugerencia: {finding.suggestion}</span></p>
       )}
       {finding.suggestion && !open && (
-        <Button variant="accent" icon={Check} block onClick={() => setOpen(true)}>Aceptar corrección sugerida</Button>
+        <Button variant="accent" icon={Check} block disabled={!canAccept} title={!canAccept ? 'El backend aún no ofrece esta acción' : undefined} onClick={() => setOpen(true)}>Aceptar corrección sugerida</Button>
       )}
       {open && (
         <form className={s.form} onSubmit={submit} noValidate>

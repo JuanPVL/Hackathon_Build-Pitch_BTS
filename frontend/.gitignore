@@ -6,3 +6,6 @@ dist/
 *.tsbuildinfo
 .vercel/
 !.env.production.example
+
+# Versioned public Vite configuration for Vercel builds.
+!.env.production

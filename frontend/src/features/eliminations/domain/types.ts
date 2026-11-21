@@ -14,7 +14,14 @@ export interface EliminationEntry {
 }
 
 /** Respuesta de GET /scenarios/{scenarioId}/eliminations (propuesta). Montos en USD. */
+export interface LedgerEntry {
+  id: string; code: string; rule: string; document: string | null; company: string | null
+  account: string; accountName: string; effectUsd: number; source: string | null
+}
+
 export interface EliminationReport {
+  /** Asientos originales del backend: efecto firmado por cuenta, sin patas ficticias. */
+  ledger?: LedgerEntry[]
   runId: string
   summary: { pnl: number; balance: number; pending: number; ebitEffect: number; icIncome: number; icExpense: number; pairs: number }
   entries: EliminationEntry[]

@@ -1,4 +1,4 @@
-import { PageHeader, QueryState, SegmentedControl, Split, Stack } from '@/shared/ui'
+import { Callout, PageHeader, QueryState, SegmentedControl, Split, Stack } from '@/shared/ui'
 import { VIEW_OPTIONS } from './domain/matrix'
 import { useAccountSelection } from './hooks/useAccountSelection'
 import { useBalanceMatrix } from './hooks/useBalanceMatrix'
@@ -33,6 +33,7 @@ export default function CurrentAccountPage() {
           : (
             <>
               <MatrixTotals totals={matrix.totals} />
+              {matrix.receivedIsBilledTranspose && <Callout tone="info">Vista recibida = facturación de emisores agrupada por receptor. La API no expone una matriz de recepción independiente.</Callout>}
               <Split aside={400}>
                 <BalanceMatrixTable matrix={matrix} selected={pair} onSelect={selectPair} />
                 {detail}

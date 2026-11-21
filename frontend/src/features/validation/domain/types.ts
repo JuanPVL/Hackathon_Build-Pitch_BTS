@@ -30,6 +30,7 @@ export interface LoadSummary {
 
 /** Respuesta de GET /scenarios/{scenarioId}/validation (propuesta). */
 export interface ValidationReport {
+  canAcceptCorrection?: boolean
   publishable: boolean
   loads: LoadSummary[]
   totals: { blocking: number; warnings: number; info: number }

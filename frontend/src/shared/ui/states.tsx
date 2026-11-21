@@ -49,6 +49,7 @@ export function QueryState<T>({ query, isEmpty, emptyTitle = 'Aún no hay datos'
   if (query.isError) {
     const err = query.error
     if (err instanceof ApiError) {
+      if (err.status === 501) return <StateMessage kind="empty" title="Función pendiente del backend">{err.message}</StateMessage>
       if (err.isForbidden) return <StateMessage kind="forbidden" title="Sin permiso">Tu usuario no tiene acceso a esta información. Pide acceso al controller del grupo.</StateMessage>
       if (err.isNotFound) return <StateMessage kind="empty" title={emptyTitle}>{emptyText ?? 'El servicio todavía no expone esta información.'}</StateMessage>
       if (err.isNetwork || err.isUnavailable) return <StateMessage kind="offline" title="Sin conexión con el servidor" onRetry={() => query.refetch()}>No se pudo conectar con la API de QUADRA. Revisa que el backend esté en línea.</StateMessage>

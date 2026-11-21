@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { LogOut, Search } from 'lucide-react'
+import { useBackendAccess } from '@/shared/auth/useBackendAccess'
 import { useAuth } from '@/shared/auth'
 import { SCENARIOS, useScenarioContext } from '@/shared/hooks'
 import s from './AppShell.module.css'
@@ -16,11 +17,12 @@ function ScenarioSelect({ className }: { className?: string }) {
 
 function UserMenu() {
   const { session, signOut } = useAuth()
+  const access = useBackendAccess()
   const [error, setError] = useState<string | null>(null)
   const email = session?.user.email ?? 'Modo desarrollo'
   return (
     <div className={s.user}>
-      <div className={s.userText}><span className={s.userName}>{email}</span><span className={s.userRole}>Controller de grupo</span></div>
+      <div className={s.userText}><span className={s.userName}>{email}</span><span className={s.userRole}>{access.data?.grants.map(grant => grant.roleCode).filter((role, index, roles) => roles.indexOf(role) === index).join(' · ') || 'Verificando acceso'}</span></div>
       <span className={s.avatar} aria-hidden>{email[0]?.toUpperCase() ?? 'Q'}</span>
       {session && <button type="button" className={s.iconBtn} aria-label="Cerrar sesión" onClick={async () => setError(await signOut())}><LogOut size={18} /></button>}
       {error && <span role="alert" className="q-sr-only">{error}</span>}
@@ -37,7 +39,7 @@ export function TopBar({ status }: { status?: ReactNode }) {
       <div className={s.ctx}><span className={s.ctxK}>Moneda</span><span className={s.ctxV}>USD</span></div>
       <span className={s.flex} />
       {status}
-      <button type="button" className={s.iconBtn} aria-label="Buscar"><Search size={20} /></button>
+      <button type="button" className={s.iconBtn} aria-label="Buscar" disabled title="Búsqueda próximamente"><Search size={20} /></button>
       <UserMenu />
     </header>
   )

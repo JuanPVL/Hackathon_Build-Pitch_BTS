@@ -20,13 +20,13 @@ export function SalesEquationCard({ summary }: { summary: ConsolidationSummary }
       </div>
       <Equation
         minuend={{ label: 'Agregado', value: formatAmount(sales.aggregate), caption: 'Suma simple de las 6 empresas' }}
-        subtrahend={{ label: 'Eliminaciones IC', value: formatAmount(sales.eliminations), caption: `Ventas entre empresas · ${sales.icDocuments} docs`, tone: 'orange' }}
+        subtrahend={{ label: 'Eliminaciones IC', value: formatAmount(sales.eliminations), caption: `Intercompany · ${sales.icDocuments} docs en la conciliación`, tone: 'orange' }}
         result={{ label: 'Consolidado', value: formatAmount(sales.consolidated), caption: 'Sin doble conteo' }}
       />
       <ul className={s.facts}>
         <li><Info size={16} aria-hidden />Sin eliminar: {formatSigned(ratio * 100, 1)} % de ventas</li>
         <li><ArrowLeftRight size={16} aria-hidden />Diferencia cambiaria IC → 7900: {formatMoney(fxDifferenceIc, 'USD')}</li>
-        <li><GitBranch size={16} aria-hidden />Linaje: {lineage.accountsOk} de {lineage.accountsTotal} cuentas cuadran</li>
+        <li><GitBranch size={16} aria-hidden />{Number.isFinite(lineage.accountsTotal) ? <>Linaje: {lineage.accountsOk} de {lineage.accountsTotal} cuentas cuadran</> : <>Linaje de la corrida: {lineageOk ? 'verificado' : 'no verificado'}</>}</li>
       </ul>
     </Card>
   )

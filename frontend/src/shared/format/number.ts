@@ -29,6 +29,7 @@ function getFormatter(decimals: number): Intl.NumberFormat {
  * formatAmount(-977540)  => "−977,540"
  */
 export function formatAmount(value: number, decimals = 0): string {
+  if (!Number.isFinite(value)) return '—';
   const raw = getFormatter(decimals).format(value);
   if (/^-?0(\.0+)?$/.test(raw)) return '0';
   return raw.replace('-', MINUS);
@@ -41,6 +42,7 @@ export function formatAmount(value: number, decimals = 0): string {
  * formatSigned(-78.4319, 2)   => "−78.43"
  */
 export function formatSigned(value: number, decimals = 0): string {
+  if (!Number.isFinite(value)) return '—';
   const text = formatAmount(value, decimals);
   if (text === '0' || text.startsWith(MINUS)) return text;
   return `+${text}`;

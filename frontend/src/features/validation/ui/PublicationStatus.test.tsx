@@ -9,9 +9,9 @@ import { PublicationStatus } from './PublicationStatus'
 const repo = (getReport: ValidationRepository['getReport']): ValidationRepository => ({ getReport, acceptCorrection: vi.fn() })
 
 describe('PublicationStatus', () => {
-  it('publicable → "0 hallazgos · linaje cuadra"', async () => {
+  it('publicable → "Cargas aprobadas · sin bloqueantes"', async () => {
     renderWithProviders(<PublicationStatus />, { repositories: { validation: repo(vi.fn().mockResolvedValue(buildReport({ publishable: true, findings: [] }))) } })
-    expect(await screen.findByText('0 hallazgos · linaje cuadra')).toBeInTheDocument()
+    expect(await screen.findByText('Cargas aprobadas · sin bloqueantes')).toBeInTheDocument()
   })
 
   it('no publicable → "N hallazgos · no se publica"', async () => {

@@ -16,7 +16,7 @@ export default function ReconciliationPage() {
         eyebrow="PASO 2 · CONCILIAR"
         title="Cada venta entre empresas nace en pareja"
         subtitle="Se concilia por la llave del documento, no por monto ni por texto. Cada diferencia tiene nombre y una acción del sistema."
-        actions={<SegmentedControl label="Filtrar por tipo de documento" options={TYPE_FILTER_OPTIONS} value={filter.value} onChange={filter.setValue} />}
+        actions={query.data?.typeFilterAvailable === false ? undefined : <SegmentedControl label="Filtrar por tipo de documento" options={TYPE_FILTER_OPTIONS} value={filter.value} onChange={filter.setValue} />}
       />
       <QueryState query={query} emptyTitle="Sin conciliación disponible" emptyText="Todavía no hay documentos intercompany para este escenario.">
         {report => (
