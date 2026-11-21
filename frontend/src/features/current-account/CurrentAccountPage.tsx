@@ -33,7 +33,23 @@ export default function CurrentAccountPage() {
           : (
             <>
               <MatrixTotals totals={matrix.totals} />
-              {matrix.receivedIsBilledTranspose && <Callout tone="info">Vista recibida = facturación de emisores agrupada por receptor. La API no expone una matriz de recepción independiente.</Callout>}
+              <Callout tone="info">
+                {view === 'saldo' && (
+                  <>
+                    <strong>Vista activa: Saldos al cierre (Balance General)</strong> · Muestra las cuentas por cobrar (<code>+</code> en azul) y cuentas por pagar / préstamos (<code>−</code> en naranja) abiertas al 31 de diciembre entre las 6 empresas.
+                  </>
+                )}
+                {view === 'facturado' && (
+                  <>
+                    <strong>Vista activa: Facturado en el año (Estado de Resultados · Emisor)</strong> · Muestra los ingresos intercompany facturados por cada empresa vendedora (fila) a su compradora (columna) convertidos a tasa del emisor.
+                  </>
+                )}
+                {view === 'recibido' && (
+                  <>
+                    <strong>Vista activa: Recibido en el año (Estado de Resultados · Receptor)</strong> · Vista recibida = facturación de emisores agrupada por receptor y convertida a la tasa de cada empresa compradora (en signo negativo por representar costo/gasto IC recibido).
+                  </>
+                )}
+              </Callout>
               <Split aside={400}>
                 <BalanceMatrixTable matrix={matrix} selected={pair} onSelect={selectPair} />
                 {detail}
