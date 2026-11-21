@@ -75,7 +75,9 @@ gcloud run deploy quadra-api \
   --memory 512Mi \
   --cpu 1 \
   --concurrency 20 \
-  --timeout 300
+  --timeout 300 \
+  --min-instances 0 \
+  --max-instances 2
 ```
 
 Usa una versión habilitada verificada de cada secreto (no asumas `:1` ni dejes de comprobarla). `ANTHROPIC_API_KEY` solo se añade a `--set-secrets` si hace falta; el API arranca sin ella.
@@ -85,11 +87,13 @@ Usa una versión habilitada verificada de cada secreto (no asumas `:1` ni dejes 
   Postgres aplica RLS con ese usuario. Son públicos `/api/health`, `/api/docs` y `/api/openapi.json`.
 - `--port 8080`: el servicio debe publicar ese puerto. Cloud Run inyecta `PORT=8080` al contenedor, que
   escucha en `0.0.0.0:$PORT`.
-- `NODE_ENV=production` hay que pasarlo en `--set-env-vars`. Cloud Run no lo define por su cuenta. Si la
-  variable falta, está vacía o contiene `*`, el contenedor no arranca.
-- `CORS_ORIGIN` es una lista de orígenes exactos separados por coma (sin `*`). Como `--set-env-vars` también
-  usa comas para separar variables, el delimitador se cambia a `;` con el prefijo `^;^`.
-- Recursos alineados con el script: `--memory 512Mi`, `--cpu 1`, `--concurrency 20`, `--timeout 300`.
+- `NODE_ENV=production` hay que pasarlo en `--set-env-vars`. Cloud Run no lo define por su cuenta.
+- Cuando `NODE_ENV=production`, la regla de «falta, está vacía o contiene `*`» aplica a `CORS_ORIGIN`, no a
+  `NODE_ENV`: si `CORS_ORIGIN` falta, está vacía o contiene `*`, el contenedor no arranca. `CORS_ORIGIN` es
+  una lista de orígenes exactos separados por coma (sin `*`). Como `--set-env-vars` también usa comas para
+  separar variables, el delimitador se cambia a `;` con el prefijo `^;^`.
+- Recursos alineados con el script: `--memory 512Mi`, `--cpu 1`, `--concurrency 20`, `--timeout 300`,
+  `--min-instances 0`, `--max-instances 2`.
 - La imagen no lleva `.env` ni secretos (`.dockerignore`).
 
 ## 4. Verificación
