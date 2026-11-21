@@ -55,7 +55,7 @@ están en [DEPLOY.md](DEPLOY.md). En esta rama no se despliega nada.
 |---|---|---|
 | `GET /api/health` | Healthcheck | Público |
 | `GET /api/me` | `sub`, `currentUserId()` en la base, accesos y permisos | JWT (sin grants requeridos) |
-| `GET /api/companies` | Catálogo de empresas | JWT (sin grants requeridos) |
+| `GET /api/companies` | Catálogo de empresas | JWT + algún grant |
 | `GET /api/loads[?scenarioId=&companyId=]` | Cargas visibles (RLS) | JWT + algún grant |
 | `GET /api/loads/:loadId` | Carga con sus líneas (404 si RLS no la deja ver) | JWT + algún grant |
 | `GET /api/scenarios/:scenarioId/findings` | Hallazgos visibles (los de `"loadId"` null solo con `readAll`) | JWT + algún grant |

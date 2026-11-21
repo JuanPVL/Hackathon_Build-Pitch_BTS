@@ -18,6 +18,7 @@ const BUSINESS_ROUTES: Array<['get' | 'post', string]> = [
   ['get', '/api/runs/00000000-0000-4000-8000-0000000000bb/kpis'],
   ['post', '/api/ic-documents/T-GT1-MX1-ACCEPT/accept'],
   ['post', '/api/ic-documents/T-GT1-MX1-ACCEPT/dispute'],
+  ['get', '/api/companies'],
   ['get', '/api/me'],
 ];
 
@@ -86,9 +87,10 @@ describe('Guard JWT y cliente de usuario con RLS', () => {
   describe('usuario autenticado sin fila en "userCompanyAccess"', () => {
     it('recibe 403 en rutas de negocio', async () => {
       const token = await jwks.sign(USERS.noGrant.id);
-      for (const path of ['/api/loads', '/api/scenarios/PPTO_V1/findings']) {
+      for (const path of ['/api/loads', '/api/scenarios/PPTO_V1/findings', '/api/companies']) {
         await request(app.getHttpServer()).get(path).set('Authorization', `Bearer ${token}`).expect(403);
       }
+      await request(app.getHttpServer()).get('/api/me').set('Authorization', `Bearer ${token}`).expect(200);
     });
 
     it('RLS le devuelve 0 filas de negocio y sí le deja ver catálogos (vía el cliente de usuario)', async () => {
