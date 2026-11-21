@@ -1,0 +1,11 @@
+empresa,escenario,periodo,cuenta_local,descripcion,moneda,monto,socio_ic,doc_ic_id,moneda_tx,monto_tx,contraparte_id_fiscal,volumen,precio
+US1,PPTO_V2,2027-12,1000,Efectivo,USD,600000,,,,,,,
+US1,PPTO_V2,2027-12,1100,Cuentas por cobrar terceros,USD,300000,,,,,,,
+US1,PPTO_V2,2027-12,1200,Inventario,USD,400000,,,,,,,
+US1,PPTO_V2,2027-12,1500,Activo fijo neto,USD,3500000,,,,,,,
+US1,PPTO_V2,2027-12,2000,Cuentas por pagar terceros,USD,93000.0,,,,,,,
+US1,PPTO_V2,2027-12,2200,Deuda financiera largo plazo,USD,1000000,,,,,,,
+US1,PPTO_V2,2027-12,1110,Cuentas por cobrar IC,USD,20000,GT2,IC-F4-2027-12,USD,20000,,,
+US1,PPTO_V2,2027-12,2010,Cuentas por pagar IC,USD,9000,US2,IC-F5e-2027-12,USD,9000,,,
+US1,PPTO_V2,2027-12,3000,Capital social,USD,2000000,,,,,,,
+US1,PPTO_V2,2027-12,3100,Utilidades retenidas,USD,1718000.0,,,,,,,

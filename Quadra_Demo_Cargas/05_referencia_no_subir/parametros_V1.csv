@@ -1,0 +1,6 @@
+escenario,parametro,valor,descripcion
+PPTO_V1,WACC,0.1,Costo promedio ponderado de capital del grupo
+PPTO_V1,TOLERANCIA_FX_USD,50,Diferencia FX absoluta por documento IC que siempre se acepta
+PPTO_V1,TOLERANCIA_FX_PCT,0.02,Diferencia FX relativa por documento IC aceptada (se cumple USD o %)
+PPTO_V1,UMBRAL_ESCALA,10,Veces sobre la mediana de la cuenta para alertar error de escala
+PPTO_V1,BANDA_TASA_PCT,0.25,Variación máxima de una tasa vs su mediana del año

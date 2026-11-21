@@ -1,0 +1,10 @@
+empresa,escenario,periodo,cuenta_local,descripcion,moneda,monto,socio_ic,doc_ic_id,moneda_tx,monto_tx,contraparte_id_fiscal,volumen,precio
+MX2,PPTO_V2,2027-12,BAN,Efectivo,MXN,4000000,,,,,,,
+MX2,PPTO_V2,2027-12,CXC-NAC,Cuentas por cobrar terceros,MXN,2700000,,,,,,,
+MX2,PPTO_V2,2027-12,INV,Inventario,MXN,3000000,,,,,,,
+MX2,PPTO_V2,2027-12,AF-NETO,Activo fijo neto,MXN,30000000,,,,,,,
+MX2,PPTO_V2,2027-12,CXP-NAC,Cuentas por pagar terceros,MXN,810000.0,,,,,,,
+MX2,PPTO_V2,2027-12,CXP-IC,Cuentas por pagar IC,MXN,900000,MX1,IC-F3-2027-12,MXN,900000,,,
+MX2,PPTO_V2,2027-12,CXP-IC,Cuentas por pagar IC,MXN,85050.0,US2,IC-F5d-2027-12,USD,4500,,,
+MX2,PPTO_V2,2027-12,CAP,Capital social,MXN,20000000,,,,,,,
+MX2,PPTO_V2,2027-12,UTR,Utilidades retenidas,MXN,17904950.0,,,,,,,

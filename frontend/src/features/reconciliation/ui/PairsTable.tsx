@@ -49,12 +49,20 @@ function PairCard({ pair }: { pair: IcPair }) {
 }
 
 export function PairsTable({ report }: { report: ReconciliationReport }) {
+  const [params] = useSearchParams()
+  const esc = params.get('esc')
   return (
     <Card>
       <CardHeader title="Pares CxC ↔ CxP espejo" aside={`${report.pairs.length} de ${report.totals.documents}`} />
       <ResponsiveTable
         caption="Pares de documentos intercompany: llave, tipo, ruta, monto pactado, diferencia y resultado"
-        columns={columns} rows={report.pairs} rowKey={p => p.key + (p.statement ?? '')} renderCard={p => <PairCard pair={p} />}
+        columns={columns}
+        rows={report.pairs}
+        rowKey={p => p.key + (p.statement ?? '')}
+        onRowClick={p => {
+          window.location.assign(`/documentos/${encodeURIComponent(p.key)}${esc ? '?esc=' + encodeURIComponent(esc) : ''}`)
+        }}
+        renderCard={p => <PairCard pair={p} />}
       />
       <p className={s.note}>
         <Info size={16} aria-hidden />

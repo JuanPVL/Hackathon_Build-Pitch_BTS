@@ -1,0 +1,5 @@
+empresa,escenario,periodo,cuenta_local,descripcion,moneda,importe,socio_ic,doc_ic_id,moneda_tx,monto_tx,contraparte_id_fiscal,volumen,precio
+GT1,PPTO_V2,2027-01,4.1.01,Ventas a terceros,GTQ,1891500.0,,,,,VARIOS,1000,1891.5
+GT1,PPTO_V2,2027-01,5.1.01,Costo de ventas terceros,GTQ,1134900.0,,,,,,,
+GT1,PPTO_V2,2027-01,6.1.01,Gastos operativos,GTQ,300000,,,,,,,
+GT1,PPTO_V2,2027-01,7.1.01,Gasto financiero terceros,GTQ,20000,,,,,,,
